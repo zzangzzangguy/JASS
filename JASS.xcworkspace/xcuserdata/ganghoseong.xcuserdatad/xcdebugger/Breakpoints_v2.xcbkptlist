@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "A20AA981-481D-4328-A4D7-3FB89D2B3001"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6F6D6DCC-98F1-485F-9FEF-E6174DF841D2"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "JASS/MapViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "262"
+            endingLineNumber = "262"
+            landmarkName = "loadGymsInBounds(_:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "6F6D6DCC-98F1-485F-9FEF-E6174DF841D2 - dbfa9510bd8186a4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "JASS.MapViewController.addMarker(for: JASS.Place) -&gt; ()"
+                  moduleName = "JASS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ganghoseong/JASS/JASS/MapViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "197"
+                  endingLineNumber = "197"
+                  offsetFromSymbolStart = "204">
+               </Location>
+               <Location
+                  uuid = "6F6D6DCC-98F1-485F-9FEF-E6174DF841D2 - 4d6b3c8e77ab6e2a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Array&lt;JASS.Place&gt;) -&gt; () in JASS.MapViewController.loadGymsInBounds(__C.GMSCoordinateBounds) -&gt; ()"
+                  moduleName = "JASS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ganghoseong/JASS/JASS/MapViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "197"
+                  endingLineNumber = "197"
+                  offsetFromSymbolStart = "656">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

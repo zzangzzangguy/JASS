@@ -1,0 +1,6 @@
+framework module Pods_JASS_JASSUITests {
+  umbrella header "Pods-JASS-JASSUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
