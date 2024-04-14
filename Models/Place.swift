@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct Place: Codable {
     let name: String
@@ -13,22 +14,25 @@ struct Place: Codable {
     let geometry: Geometry
     let type: String?
     var isGym: Bool {
-           let gymKeywords = ["헬스", "피트니스", "휘트니스", "운동센터"]
-           return gymKeywords.contains(where: name.localizedCaseInsensitiveContains)
-       }
+        let gymKeywords = ["헬스", "피트니스", "휘트니스", "운동센터"]
+        return gymKeywords.contains(where: name.localizedCaseInsensitiveContains)
+    }
     var isPilates: Bool {
         return name.localizedStandardContains("필라테스")
     }
-   }
-struct Geometry: Codable {
-    let location: Location
-}
+    var coordinate: CLLocationCoordinate2D {
+        return CLLocationCoordinate2D(latitude: geometry.location.lat, longitude: geometry.location.lng)
+    }
+    struct Geometry: Codable {
+        let location: Location
+    }
 
-struct Location: Codable {
-    let lat: Double
-    let lng: Double
-}
+    struct Location: Codable {
+        let lat: Double
+        let lng: Double
+    }
 
-struct SearchResults: Codable {
-    let results: [Place]
+    struct SearchResults: Codable {
+        let results: [Place]
+    }
 }

@@ -8,11 +8,12 @@
 import UIKit
 import GoogleMaps
 
+
 extension GMSMapView {
 
-    func addCustomMarker(at location: Location, title: String? = nil, snippet: String? = nil, iconName: String? = nil) {
+    func addCustomMarker(at location: CLLocationCoordinate2D, title: String? = nil, snippet: String? = nil, iconName: String? = nil) {
         let marker = GMSMarker()
-        marker.position = CLLocationCoordinate2D(latitude: location.lat, longitude: location.lng)
+        marker.position = location
         marker.title = title
         marker.snippet = snippet
         if let iconName = iconName, let icon = UIImage(named: iconName)?.scaledToSize(size: CGSize(width: 30, height: 30)) {
@@ -21,8 +22,8 @@ extension GMSMapView {
         marker.map = self
     }
 
-    func animateToLocation(_ location: Location, zoomLevel: Float = 15.0) {
-        let camera = GMSCameraPosition.camera(withLatitude: location.lat, longitude: location.lng, zoom: zoomLevel)
+    func animateToLocation(_ location: CLLocationCoordinate2D, zoomLevel: Float = 15.0) {
+        let camera = GMSCameraPosition.camera(withLatitude: location.latitude, longitude: location.longitude, zoom: zoomLevel)
         self.animate(to: camera)
     }
 

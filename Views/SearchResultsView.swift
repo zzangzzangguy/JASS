@@ -43,7 +43,12 @@ class SearchResultsView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     // UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel?.searchResults.count ?? 0
+        // 옵셔널 바인딩을 사용하여 viewModel의 searchResults가 유효한지 확인
+        guard let count = viewModel?.searchResults.count else {
+            // viewModel이 nil이거나 searchResults가 없는 경우
+            return 0
+        }
+        return count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
