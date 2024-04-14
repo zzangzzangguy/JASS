@@ -4,6 +4,8 @@ import GoogleMaps
 enum GooglePlacesAPI {
     case placeSearch(input: String)
     case searchInBounds(northeast: CLLocationCoordinate2D, southwest: CLLocationCoordinate2D)
+    case nearbySearch(parameters: [String: String])
+
 
 }
 
@@ -18,8 +20,10 @@ extension GooglePlacesAPI: TargetType {
               return "/textsearch/json"
           case .searchInBounds:
               return "/nearbysearch/json"
-          }
-      }
+          case .nearbySearch:
+                      return "/nearbysearch/json" // 여기에서 경로를 지정합니다.
+                  }
+              }
 
 
     var method: Moya.Method {
@@ -46,10 +50,19 @@ extension GooglePlacesAPI: TargetType {
                        "keyword": "health|pilates|fitness|swimming|gym|yoga"
                    ]
                    return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
+                   
                }
                fatalError("API 키를 로드할 수 없음")
+
+           case let .nearbySearch(parameters):
+                   if let apiKey = Bundle.main.infoDictionary?["API_KEY"] as? String {
+                       var newParameters = parameters
+                       newParameters["key"] = apiKey
+                       return .requestParameters(parameters: newParameters, encoding: URLEncoding.queryString)
+                   }
+                   fatalError("API 키를 로드할 수 없음")
+               }
            }
-       }
 
 
     var headers: [String: String]? {

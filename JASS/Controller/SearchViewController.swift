@@ -149,8 +149,8 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         let selectedPlace = placeSearchViewModel.searchResults[indexPath.row]
         searchRecentViewModel.saveSearchHistory(query: selectedPlace.name)
 
-        mapView.addCustomMarker(at: selectedPlace.geometry.location, title: selectedPlace.name)
-        mapView.animateToLocation(selectedPlace.geometry.location)
+        mapView.addCustomMarker(at: selectedPlace.coordinate, title: selectedPlace.name)
+         mapView.animateToLocation(selectedPlace.coordinate)
 
         mapView.isHidden = false
         recentSearchesView.isHidden = true
@@ -159,8 +159,8 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
 
     // RecentSearchesViewDelegate 및 SearchResultsViewDelegate 메서드
     func didSelectPlace(_ place: Place) {
-        mapView.addCustomMarker(at: place.geometry.location, title: place.name)
-        mapView.animateToLocation(place.geometry.location)
+        mapView.addCustomMarker(at: place.coordinate, title: place.name)
+        mapView.animateToLocation(place.coordinate)
 
         mapView.isHidden = false
         searchResultsView.isHidden = true

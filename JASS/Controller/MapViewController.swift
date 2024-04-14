@@ -22,6 +22,9 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     let zoomInButton = UIButton(type: .system)
     let zoomOutButton = UIButton(type: .system)
 
+    let locationManager = CLLocationManager()
+       var currentLocation: CLLocation?
+
     var gymLoader: Gymload! // GymsLoader 인스턴스
 
     override func viewDidLoad() {
@@ -33,9 +36,13 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         setupStatusBarBackground()
         setupFilterButtonView()
 
-        gymLoader = Gymload(mapView: mapView, placeSearchViewModel: placeSearchViewModel) // GymsLoader 초기화
+        gymLoader = Gymload(mapView: mapView, placeSearchViewModel: placeSearchViewModel)
 
-        // 최근 검색 이력 업데이트 콜백 설정
+        locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            locationManager.requestWhenInUseAuthorization()
+            locationManager.startUpdatingLocation()
+
         searchRecentViewModel.updateRecentSearches = { [weak self] in
             DispatchQueue.main.async {
                 self?.recentSearchesView.updateSearchHistoryViews()
@@ -234,6 +241,46 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         MarkerDebounce = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
             guard let self = self else { return }
             self.gymLoader.loadGymsInBounds() // GymsLoader의 loadGymsInBounds() 메서드 호출
+        }
+    }
+    func searchGymsNearCurrentLocation() {
+        guard let currentLocation = currentLocation else {
+            print("현재 위치를 가져올 수 없습니다.")
+            return
+        }
+
+        let coordinate = currentLocation.coordinate
+        let radius = 5000.0 // 5km 반경
+
+        gymLoader.searchGymsNearCoordinate(coordinate, radius: radius) { [weak self] places in
+            // 검색 결과 처리
+            self?.handleSearchResults(places)
+        }
+    }
+    func handleSearchResults(_ places: [Place]) {
+        // 기존 마커 제거
+        mapView.clear()
+
+        // 검색 결과를 마커로 추가
+        for place in places {
+            let marker = GMSMarker(position: place.coordinate)
+            marker.title = place.name
+            marker.map = mapView
+        }
+
+        // 검색 결과가 있는 경우 첫 번째 결과로 지도 이동
+        if let firstPlace = places.first {
+            let camera = GMSCameraPosition.camera(withTarget: firstPlace.coordinate, zoom: 15)
+            mapView.animate(to: camera)
+        }
+    }
+}
+extension MapViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            currentLocation = location
+            // 현재 위치를 기반으로 헬스장 검색 메서드 호출
+            searchGymsNearCurrentLocation()
         }
     }
 }
