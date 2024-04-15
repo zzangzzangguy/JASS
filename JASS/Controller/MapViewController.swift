@@ -2,8 +2,9 @@ import UIKit
 import GoogleMaps
 import GooglePlaces
 import SnapKit
+import GooglePlaces
 
-class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsViewDelegate, GMSMapViewDelegate {
+class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsViewDelegate {
     // 프로퍼티 선언
     var mapView: GMSMapView!
     var searchController: UISearchController!
@@ -11,6 +12,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     var searchResultsView: SearchResultsView!
     var searchTask: DispatchWorkItem?
     var MarkerDebounce: Timer?
+    var markers: [GMSMarker] = []
 
     var filterContainerView: UIView!
     var filterStackView: UIStackView!
@@ -241,9 +243,21 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         MarkerDebounce = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
             guard let self = self else { return }
             self.gymLoader.loadGymsInBounds() // GymsLoader의 loadGymsInBounds() 메서드 호출
+
+            let visibleRegion = mapView.projection.visibleRegion()
+            let bounds = GMSCoordinateBounds(region: visibleRegion)
+
+            // 현재 보이는 영역 내에 있는 마커들만 표시
+            for marker in self.markers {
+                if bounds.contains(marker.position) {
+                    marker.map = mapView
+                } else {
+                    marker.map = nil
+                }
+            }
         }
     }
-    func searchGymsNearCurrentLocation() {
+        func searchGymsNearCurrentLocation() {
         guard let currentLocation = currentLocation else {
             print("현재 위치를 가져올 수 없습니다.")
             return
@@ -258,8 +272,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         }
     }
     func handleSearchResults(_ places: [Place]) {
-        // 기존 마커 제거
         mapView.clear()
+        markers.removeAll()
 
         // 검색 결과를 마커로 추가
         for place in places {
@@ -282,5 +296,17 @@ extension MapViewController: CLLocationManagerDelegate {
             // 현재 위치를 기반으로 헬스장 검색 메서드 호출
             searchGymsNearCurrentLocation()
         }
+    }
+}
+extension MapViewController: GMSMapViewDelegate {
+    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
+        guard let place = marker.userData as? Place else { return false }
+
+        let gymDetailVC = GymDetailViewController().then {
+            $0.gym = place
+        }
+        navigationController?.pushViewController(gymDetailVC, animated: true)
+
+        return true
     }
 }

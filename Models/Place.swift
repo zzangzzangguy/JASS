@@ -12,6 +12,7 @@ struct Place: Codable {
     let name: String
     let formatted_address: String?
     let geometry: Geometry
+    let place_id: String 
     let type: String?
     var isGym: Bool {
         let gymKeywords = ["헬스", "피트니스", "휘트니스", "운동센터"]

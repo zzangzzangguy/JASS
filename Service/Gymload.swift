@@ -55,6 +55,8 @@ class Gymload {
          marker.position = CLLocationCoordinate2D(latitude: place.geometry.location.lat, longitude: place.geometry.location.lng)
          marker.title = place.name
          marker.snippet = place.isGym ? "헬스장" : "일반 위치"
+         marker.userData = place 
+
 
          var iconName: String
          if place.name.lowercased().contains("gym") || place.name.lowercased().contains("fitness") || place.name.lowercased().contains("피트니스") || place.name.lowercased().contains("휘트니스") || place.name.lowercased().contains("헬스") {

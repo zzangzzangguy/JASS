@@ -13,6 +13,8 @@
 		4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D22B6837EA006A1D51 /* Filter.swift */; };
 		4EA179D52B69F670006A1D51 /* CategoryModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D42B69F66F006A1D51 /* CategoryModalView.swift */; };
 		4EA17A042B7B8574006A1D51 /* Gymload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA17A032B7B8574006A1D51 /* Gymload.swift */; };
+		4EF0BE222BCCE6350076074E /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF0BE212BCCE6350076074E /* Then */; };
+		4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */; };
 		4EF9312C2B1C912E00E5794B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9312B2B1C912E00E5794B /* AppDelegate.swift */; };
 		4EF9312E2B1C912E00E5794B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9312D2B1C912E00E5794B /* SceneDelegate.swift */; };
 		4EF931352B1C913000E5794B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4EF931342B1C913000E5794B /* Assets.xcassets */; };
@@ -69,6 +71,7 @@
 		4EA179D22B6837EA006A1D51 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
 		4EA179D42B69F66F006A1D51 /* CategoryModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryModalView.swift; sourceTree = "<group>"; };
 		4EA17A032B7B8574006A1D51 /* Gymload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gymload.swift; sourceTree = "<group>"; };
+		4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymDetailViewController.swift; sourceTree = "<group>"; };
 		4EF931282B1C912E00E5794B /* JASS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JASS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EF9312B2B1C912E00E5794B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4EF9312D2B1C912E00E5794B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -109,6 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EF0BE222BCCE6350076074E /* Then in Frameworks */,
 				4EF931782B294E3700E5794B /* RealmSwift in Frameworks */,
 				4EF931762B294E3700E5794B /* Realm in Frameworks */,
 				83EF4D61803A49947903D872 /* Pods_JASS.framework in Frameworks */,
@@ -162,6 +166,7 @@
 				4EF9316E2B21C3A300E5794B /* SearchViewController.swift */,
 				4EF931852B3AE3CA00E5794B /* TabBarController.swift */,
 				4EF931912B46CB5E00E5794B /* MainViewController.swift */,
+				4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -301,6 +306,7 @@
 				4EF931642B218B3800E5794B /* SnapKit */,
 				4EF931752B294E3700E5794B /* Realm */,
 				4EF931772B294E3700E5794B /* RealmSwift */,
+				4EF0BE212BCCE6350076074E /* Then */,
 			);
 			productName = JASS;
 			productReference = 4EF931282B1C912E00E5794B /* JASS.app */;
@@ -381,6 +387,7 @@
 			packageReferences = (
 				4EF931632B218B3800E5794B /* XCRemoteSwiftPackageReference "SnapKit" */,
 				4EF931742B294DE900E5794B /* XCRemoteSwiftPackageReference "realm-swift" */,
+				4EF0BE202BCCE6350076074E /* XCRemoteSwiftPackageReference "Then" */,
 			);
 			productRefGroup = 4EF931292B1C912E00E5794B /* Products */;
 			projectDirPath = "";
@@ -578,6 +585,7 @@
 				4EF9318A2B3D5FEC00E5794B /* RecentSearchCell.swift in Sources */,
 				4EF931622B218AFC00E5794B /* GooglePlaceService.swift in Sources */,
 				4EF9317E2B29DB7800E5794B /* SearchResultsCell.swift in Sources */,
+				4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */,
 				4EA179D12B662512006A1D51 /* MapView+Extension.swift in Sources */,
 				4EF931802B31918200E5794B /* SearchResultsView.swift in Sources */,
 				4EF9312E2B1C912E00E5794B /* SceneDelegate.swift in Sources */,
@@ -926,6 +934,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		4EF0BE202BCCE6350076074E /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 		4EF931632B218B3800E5794B /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit";
@@ -945,6 +961,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4EF0BE212BCCE6350076074E /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4EF0BE202BCCE6350076074E /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
+		};
 		4EF931642B218B3800E5794B /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 4EF931632B218B3800E5794B /* XCRemoteSwiftPackageReference "SnapKit" */;
