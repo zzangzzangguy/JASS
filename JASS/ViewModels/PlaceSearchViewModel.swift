@@ -13,7 +13,7 @@ class PlaceSearchViewModel {
    var isSearching: Bool = false
    var updateSearchResults: (() -> Void)?
    var showError: ((String) -> Void)?
-   let apiKey: String = "YOUR_API_KEY"
+   let apiKey: String = "apiKey"
 
    // 텍스트 기반 장소 검색
    func searchPlace(input: String) {
@@ -82,7 +82,6 @@ class PlaceSearchViewModel {
    }
 
    func searchPlacesNearCoordinate(_ coordinate: CLLocationCoordinate2D, radius: Double, bounds: GMSCoordinateBounds, completion: @escaping ([Place]) -> Void) {
-       // Google Places API를 사용하여 주변 헬스장 검색
        let location = "\(coordinate.latitude),\(coordinate.longitude)"
        let type = "gym"
        let parameters: [String: String] = [
