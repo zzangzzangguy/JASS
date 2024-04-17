@@ -15,8 +15,11 @@
 
 #import "GooglePlacesXCFrameworkDemos/DemoListViewController.h"
 
+#if __has_feature(modules)
+@import GooglePlaces;
+#else
 #import <GooglePlaces/GooglePlaces.h>
-
+#endif
 
 // The cell reuse identifier we are going to use.
 static NSString *gOverrideVersion = nil;
@@ -29,6 +32,7 @@ static const CGFloat kEdgeBuffer = 8;
   UIViewController *_editSelectionsViewController;
   NSMutableDictionary<NSString *, UISwitch *> *_autocompleteFiltersSelectionMap;
   NSMutableDictionary<NSNumber *, UISwitch *> *_placeFieldsSelectionMap;
+  NSMutableDictionary<GMSPlaceProperty, UISwitch *> *_placePropertySelectionMap;
   NSMutableDictionary<NSString *, UISwitch *> *_restrictionBoundsMap;
   CGFloat _nextSelectionYPos;
   DemoData *_demoData;
@@ -39,6 +43,7 @@ static const CGFloat kEdgeBuffer = 8;
     _demoData = demoData;
     _autocompleteFiltersSelectionMap = [NSMutableDictionary dictionary];
     _placeFieldsSelectionMap = [NSMutableDictionary dictionary];
+    _placePropertySelectionMap = [NSMutableDictionary dictionary];
     _restrictionBoundsMap = [NSMutableDictionary dictionary];
   }
   return self;
@@ -119,6 +124,8 @@ static const CGFloat kEdgeBuffer = 8;
   UIViewController *viewController =
       [demo createViewControllerWithAutocompleteFilter:autocompleteFilter
                                            placeFields:[self selectedPlaceFields]];
+  viewController = [demo createViewControllerWithAutocompleteFilter:autocompleteFilter
+                                                    placeProperties:[self selectedPlaceProperties]];
 
   [self.navigationController pushViewController:viewController animated:YES];
 }
@@ -159,15 +166,14 @@ static const CGFloat kEdgeBuffer = 8;
   _nextSelectionYPos += kSelectionHeight;
   [scrollView addSubview:[self selectionButtonForRestrictionBoundsArea:@"Kansas"]];
 
-  // Add heading for the place fields that we can request.
+  // Add heading for the place properties that we can request.
   _nextSelectionYPos += kSelectionHeight;
-  [scrollView addSubview:[self headerLabelForTitle:@"Place Fields"]];
+  [scrollView addSubview:[self headerLabelForTitle:@"Place Properties"]];
 
-  // Set up the individual place fields that we can request.
+  // Set up the individual place properties that we can request.
   _nextSelectionYPos += kSelectionHeight;
-  for (uint64_t placeField = GMSPlaceFieldName; placeField <= GMSPlaceFieldIconBackgroundColor;
-       placeField <<= 1) {
-    [scrollView addSubview:[self selectionButtonForPlaceField:(GMSPlaceField)placeField]];
+  for (GMSPlaceProperty placeProperty in GMSPlacePropertyArray()) {
+    [scrollView addSubview:[self selectionButtonForPlaceProperty:placeProperty]];
   }
 
   // Add the close button to dismiss the selection UI.
@@ -257,11 +263,75 @@ static const CGFloat kEdgeBuffer = 8;
     @(GMSPlaceFieldBusinessStatus) : @"Business Status",
     @(GMSPlaceFieldIconImageURL) : @"Icon Image URL",
     @(GMSPlaceFieldIconBackgroundColor) : @"Icon Background Color",
+    @(GMSPlaceFieldTakeout) : @"Takeout",
+    @(GMSPlaceFieldDelivery) : @"Delivery",
+    @(GMSPlaceFieldDineIn) : @"Dine In",
+    @(GMSPlaceFieldCurbsidePickup) : @"Curbside Pickup",
+    @(GMSPlaceFieldReservable) : @"Reservable",
+    @(GMSPlaceFieldServesBreakfast) : @"Serves Breakfast",
+    @(GMSPlaceFieldServesLunch) : @"Serves Lunch",
+    @(GMSPlaceFieldServesDinner) : @"Serves Dinner",
+    @(GMSPlaceFieldServesBeer) : @"Serves Beer",
+    @(GMSPlaceFieldServesWine) : @"Serves Wine",
+    @(GMSPlaceFieldServesBrunch) : @"Serves Brunch",
+    @(GMSPlaceFieldServesVegetarianFood) : @"Serves Vegetarian Food",
+    @(GMSPlaceFieldWheelchairAccessibleEntrance) : @"Wheelchair Accessible Entrance",
   };
   UIButton *selectionButton = [self selectionButtonForTitle:fieldsMapping[@(placeField)]];
   UISwitch *selectionSwitch = [self switchFromButton:selectionButton];
   [selectionSwitch setOn:YES];
   _placeFieldsSelectionMap[@(placeField)] = selectionSwitch;
+  _nextSelectionYPos += selectionButton.frame.size.height;
+  return selectionButton;
+}
+
+- (UIButton *)selectionButtonForPlaceProperty:(GMSPlaceProperty)placeProperty {
+  static NSDictionary<GMSPlaceProperty, NSString *> *propertyMapping = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    propertyMapping = @{
+      GMSPlacePropertyName : @"Name",
+      GMSPlacePropertyPlaceID : @"Place ID",
+      GMSPlacePropertyPlusCode : @"Plus Code",
+      GMSPlacePropertyCoordinate : @"Coordinate",
+      GMSPlacePropertyOpeningHours : @"Opening Hours",
+      GMSPlacePropertyPhoneNumber : @"Phone Number",
+      GMSPlacePropertyFormattedAddress : @"Formatted Address",
+      GMSPlacePropertyRating : @"Rating",
+      GMSPlacePropertyUserRatingsTotal : @"User Ratings Total",
+      GMSPlacePropertyPriceLevel : @"Price Level",
+      GMSPlacePropertyTypes : @"Types",
+      GMSPlacePropertyWebsite : @"Website",
+      GMSPlacePropertyViewport : @"Viewport",
+      GMSPlacePropertyAddressComponents : @"Address Components",
+      GMSPlacePropertyPhotos : @"Photos",
+      GMSPlacePropertyUTCOffsetMinutes : @"UTC Offset Minutes",
+      GMSPlacePropertyBusinessStatus : @"Business Status",
+      GMSPlacePropertyIconImageURL : @"Icon Image URL",
+      GMSPlacePropertyIconBackgroundColor : @"Icon Background Color",
+      GMSPlacePropertyTakeout : @"Takeout",
+      GMSPlacePropertyDelivery : @"Delivery",
+      GMSPlacePropertyDineIn : @"Dine In",
+      GMSPlacePropertyCurbsidePickup : @"Curbside Pickup",
+      GMSPlacePropertyReservable : @"Reservable",
+      GMSPlacePropertyServesBreakfast : @"Serves Breakfast",
+      GMSPlacePropertyServesLunch : @"Serves Lunch",
+      GMSPlacePropertyServesDinner : @"Serves Dinner",
+      GMSPlacePropertyServesBeer : @"Serves Beer",
+      GMSPlacePropertyServesWine : @"Serves Wine",
+      GMSPlacePropertyServesBrunch : @"Serves Brunch",
+      GMSPlacePropertyServesVegetarianFood : @"Serves Vegetarian Food",
+      GMSPlacePropertyWheelchairAccessibleEntrance : @"Wheelchair Accessible Entrance",
+      GMSPlacePropertyCurrentOpeningHours : @"Current Opening Hours",
+      GMSPlacePropertySecondaryOpeningHours : @"Secondary Opening Hours",
+      GMSPlacePropertyEditorialSummary : @"Editorial Summary",
+    };
+  });
+
+  UIButton *selectionButton = [self selectionButtonForTitle:propertyMapping[placeProperty]];
+  UISwitch *selectionSwitch = [self switchFromButton:selectionButton];
+  [selectionSwitch setOn:YES];
+  _placePropertySelectionMap[placeProperty] = selectionSwitch;
   _nextSelectionYPos += selectionButton.frame.size.height;
   return selectionButton;
 }
@@ -369,6 +439,16 @@ static const CGFloat kEdgeBuffer = 8;
   }
   return placeFields;
 }
+- (NSArray<GMSPlaceProperty> *)selectedPlaceProperties {
+  NSMutableArray<GMSPlaceProperty> *placeProperties = [NSMutableArray array];
+  for (GMSPlaceProperty placeProperty in _placePropertySelectionMap) {
+    UISwitch *selectionSwitch = _placePropertySelectionMap[placeProperty];
+    if ([selectionSwitch isOn]) {
+      [placeProperties addObject:placeProperty];
+    }
+  }
+  return placeProperties;
+}
 
 - (CGFloat)horizontalInset {
   // Take into account the safe areas of the device screen and do not use that space.
@@ -396,6 +476,7 @@ static const CGFloat kEdgeBuffer = 8;
 
   // Configure the demo title on the cell.
   cell.textLabel.text = demo.title;
+  cell.accessibilityTraits = UIAccessibilityTraitButton;
 
   return cell;
 }

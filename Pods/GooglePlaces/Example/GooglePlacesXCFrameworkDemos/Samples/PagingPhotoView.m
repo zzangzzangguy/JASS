@@ -14,6 +14,10 @@
  */
 
 #import "GooglePlacesXCFrameworkDemos/Samples/PagingPhotoView.h"
+#import <Foundation/Foundation.h>
+#import <UIKit/UIAccessibility.h>
+
+static const NSTimeInterval kAccessibilityAnnouncementDelay = 1.5 * NSEC_PER_SEC;
 
 /** Class to store the image and text views that display the image and attributions. */
 @interface ImageViewAndAttribution : NSObject
@@ -38,7 +42,7 @@
    * An array of |ImageViewAndAttribution| objects representing the actual views that are being
    * displayed.
    */
-  NSMutableArray *_photoImageViews;
+  NSMutableArray<ImageViewAndAttribution *> *_photoImageViews;
 
   /**
    * Whether we should update the image and attribution view frames on the next |layoutSubviews|
@@ -52,11 +56,12 @@
     _photoImageViews = [NSMutableArray array];
     self.backgroundColor = [UIColor systemBackgroundColor];
     self.pagingEnabled = YES;
+    self.accessibilityIdentifier = @"PagingPhotoView";
   }
   return self;
 }
 
-- (void)setPhotoList:(NSArray *)photoList {
+- (void)setPhotoList:(NSArray<AttributedPhoto *> *)photoList {
   // First, remove all of the existing image and attribution subviews.
   for (ImageViewAndAttribution *photoView in _photoImageViews) {
     [photoView.imageView removeFromSuperview];
@@ -172,6 +177,38 @@
     imageView.frame = CGRectMake(contentWidth, 0, scrollViewWidth, imageHeight);
     contentWidth += imageView.frame.size.width;
   }
+}
+
+- (void)scrollToPageNumber:(int)pageNumber {
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  _photoImageViews[pageNumber].attributionView.text);
+
+  // Delay to allow attribution author to be read before page number.
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, kAccessibilityAnnouncementDelay), dispatch_get_main_queue(),
+      ^{
+        UIAccessibilityPostNotification(
+            UIAccessibilityPageScrolledNotification,
+            [NSString stringWithFormat:@"Page %d of %lu", pageNumber + 1, _photoImageViews.count]);
+      });
+}
+
+- (BOOL)accessibilityScroll:(UIAccessibilityScrollDirection)direction {
+  double frameWidth = self.frame.size.width;
+  double horizontalContentOffset = self.contentOffset.x;
+  if (direction == UIAccessibilityScrollDirectionLeft &&
+      horizontalContentOffset < (self.contentSize.width - frameWidth)) {
+    self.contentOffset = CGPointMake(horizontalContentOffset + frameWidth, 0);
+    int pageNumber = (int)fmax(0, (int)round(self.contentOffset.x / frameWidth));
+    [self scrollToPageNumber:pageNumber];
+    return YES;
+  } else if (direction == UIAccessibilityScrollDirectionRight && horizontalContentOffset > 0) {
+    self.contentOffset = CGPointMake(horizontalContentOffset - frameWidth, 0);
+    int pageNumber = (int)fmax(0, (int)round(self.contentOffset.x / frameWidth));
+    [self scrollToPageNumber:pageNumber];
+    return YES;
+  }
+  return NO;
 }
 
 @end

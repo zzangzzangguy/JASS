@@ -3,16 +3,20 @@ import GoogleMaps
 import GooglePlaces
 import SnapKit
 import GooglePlaces
+import Then
 
 class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsViewDelegate {
-    // 프로퍼티 선언
+
+    var viewModel: MapViewModel!
     var mapView: GMSMapView!
     var searchController: UISearchController!
     var recentSearchesView: RecentSearchesView!
     var searchResultsView: SearchResultsView!
     var searchTask: DispatchWorkItem?
-    var MarkerDebounce: Timer?
-    var markers: [GMSMarker] = []
+    //    var MarkerDebounce: Timer?
+    //    var markers: [GMSMarker] = []
+    //    var places: [Place] = [] // 장소 데이터를 저장할 배열
+
 
     var filterContainerView: UIView!
     var filterStackView: UIStackView!
@@ -25,9 +29,9 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     let zoomOutButton = UIButton(type: .system)
 
     let locationManager = CLLocationManager()
-       var currentLocation: CLLocation?
+    //    var currentLocation: CLLocation?
 
-    var gymLoader: Gymload! // GymsLoader 인스턴스
+    //    var gymLoader: Gymload! // GymsLoader 인스턴스
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,13 +41,15 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         setupZoomButtons()
         setupStatusBarBackground()
         setupFilterButtonView()
+        viewModel = MapViewModel(mapView: mapView, placeSearchViewModel: placeSearchViewModel)
 
-        gymLoader = Gymload(mapView: mapView, placeSearchViewModel: placeSearchViewModel)
+
+        //        gymLoader = Gymload(mapView: mapView, placeSearchViewModel: placeSearchViewModel)
 
         locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.requestWhenInUseAuthorization()
-            locationManager.startUpdatingLocation()
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
 
         searchRecentViewModel.updateRecentSearches = { [weak self] in
             DispatchQueue.main.async {
@@ -199,12 +205,12 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
 
     func didSelectPlace(_ place: Place) {
         searchRecentViewModel.saveSearchHistory(query: place.name)
-        gymLoader.loadGymsInBounds() // GymsLoader의 loadGymsInBounds() 메서드 호출
+        viewModel.loadGymsInBounds() // 수정
 
         let camera = GMSCameraPosition.camera(withLatitude: place.geometry.location.lat, longitude: place.geometry.location.lng, zoom: 15.0)
-        mapView.camera = camera
+        viewModel.mapView.camera = camera // 수정
         searchController.isActive = false
-        mapView.isHidden = false
+        viewModel.mapView.isHidden = false // 수정
         zoomInButton.isHidden = false
         zoomOutButton.isHidden = false
         searchResultsView.isHidden = true
@@ -213,7 +219,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        mapView.isHidden = false
+        viewModel.mapView.isHidden = false // 수정
         zoomInButton.isHidden = false
         zoomOutButton.isHidden = false
         searchBar.text = ""
@@ -224,7 +230,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        mapView.isHidden = true
+        viewModel.mapView.isHidden = true // 수정
         zoomInButton.isHidden = true
         zoomOutButton.isHidden = true
         filterContainerView.isHidden = true
@@ -239,62 +245,67 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     }
 
     func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
-        MarkerDebounce?.invalidate()
-        MarkerDebounce = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
-            guard let self = self else { return }
-            self.gymLoader.loadGymsInBounds() // GymsLoader의 loadGymsInBounds() 메서드 호출
+        //        MarkerDebounce?.invalidate()
+        //        MarkerDebounce = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
+        //            guard let self = self else { return }
+        //            self.gymLoader.loadGymsInBounds() // GymsLoader의 loadGymsInBounds() 메서드 호출
+        //
+        //            let visibleRegion = mapView.projection.visibleRegion()
+        //            let bounds = GMSCoordinateBounds(region: visibleRegion)
+        //
+        //            // 현재 보이는 영역 내에 있는 마커들만 표시
+        //            for marker in self.markers {
+        //                if bounds.contains(marker.position) {
+        //                    marker.map = mapView
+        //                } else {
+        //                    marker.map = nil
+        //                }
+        //            }
+        //        }
+        viewModel.loadGymsInBounds() // 추가
 
-            let visibleRegion = mapView.projection.visibleRegion()
-            let bounds = GMSCoordinateBounds(region: visibleRegion)
-
-            // 현재 보이는 영역 내에 있는 마커들만 표시
-            for marker in self.markers {
-                if bounds.contains(marker.position) {
-                    marker.map = mapView
-                } else {
-                    marker.map = nil
-                }
-            }
-        }
     }
-        func searchGymsNearCurrentLocation() {
-        guard let currentLocation = currentLocation else {
-            print("현재 위치를 가져올 수 없습니다.")
-            return
-        }
-
-        let coordinate = currentLocation.coordinate
-        let radius = 5000.0 // 5km 반경
-
-        gymLoader.searchGymsNearCoordinate(coordinate, radius: radius) { [weak self] places in
-            // 검색 결과 처리
-            self?.handleSearchResults(places)
-        }
-    }
+    //        func searchGymsNearCurrentLocation() {
+    //        guard let currentLocation = currentLocation else {
+    //            print("현재 위치를 가져올 수 없습니다.")
+    //            return
+    //        }
+    //
+    //        let coordinate = currentLocation.coordinate
+    //        let radius = 5000.0 // 5km 반경
+    //
+    //        gymLoader.searchGymsNearCoordinate(coordinate, radius: radius) { [weak self] places in
+    //            // 검색 결과 처리
+    //            self?.handleSearchResults(places)
+    //        }
+    //    }
     func handleSearchResults(_ places: [Place]) {
-        mapView.clear()
-        markers.removeAll()
-
-        // 검색 결과를 마커로 추가
-        for place in places {
-            let marker = GMSMarker(position: place.coordinate)
-            marker.title = place.name
-            marker.map = mapView
-        }
-
-        // 검색 결과가 있는 경우 첫 번째 결과로 지도 이동
-        if let firstPlace = places.first {
-            let camera = GMSCameraPosition.camera(withTarget: firstPlace.coordinate, zoom: 15)
-            mapView.animate(to: camera)
-        }
+        //        mapView.clear()
+        //        markers.removeAll()
+        //
+        //        // 검색 결과를 마커로 추가
+        //        for place in places {
+        //            let marker = GMSMarker(position: place.coordinate)
+        //            marker.title = place.name
+        //            marker.map = mapView
+        //        }
+        //
+        //        // 검색 결과가 있는 경우 첫 번째 결과로 지도 이동
+        //        if let firstPlace = places.first {
+        //            let camera = GMSCameraPosition.camera(withTarget: firstPlace.coordinate, zoom: 15)
+        //            mapView.animate(to: camera)
+        viewModel.places = places // 추가
+        viewModel.filteredPlaces = places // 추가
+    }
+    func updateMapMarkers() { // 추가
+        viewModel.updateMapView()
     }
 }
 extension MapViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
-            currentLocation = location
-            // 현재 위치를 기반으로 헬스장 검색 메서드 호출
-            searchGymsNearCurrentLocation()
+            viewModel.currentLocation = location // 수정
+            viewModel.searchGymsNearCurrentLocation() // 수정
         }
     }
 }

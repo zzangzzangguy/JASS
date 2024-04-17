@@ -40,7 +40,8 @@
   self.view = _mapView;
 
   // The possible floors that might be shown.
-  NSArray *types = @[ @"1", @"2", @"3" ];
+  //
+  NSArray<NSString *> *types = @[ @"1", @"3" ];
 
   // Create a UISegmentedControl that is the navigationItem's titleView.
   _switcher = [[UISegmentedControl alloc] initWithItems:types];

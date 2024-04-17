@@ -15,8 +15,11 @@
 
 #import "GooglePlacesXCFrameworkDemos/Samples/FindPlaceLikelihoodListViewController.h"
 
+#if __has_feature(modules)
+@import GooglePlaces;
+#else
 #import <GooglePlaces/GooglePlaces.h>
-
+#endif
 
 static NSString *const kCellIdentifier = @"LikelihoodCellIdentifier";
 

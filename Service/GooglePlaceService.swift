@@ -21,7 +21,7 @@ extension GooglePlacesAPI: TargetType {
           case .searchInBounds:
               return "/nearbysearch/json"
           case .nearbySearch:
-                      return "/nearbysearch/json" // 여기에서 경로를 지정합니다.
+                      return "/nearbysearch/json" 
                   }
               }
 

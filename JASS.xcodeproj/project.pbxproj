@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		0F7781F9BEE728F967E5D3D1 /* Pods_JASS_JASSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ADE2E927D41D5B9C27E076B7 /* Pods_JASS_JASSUITests.framework */; };
+		4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */; };
+		4E17CF552BCFEF640064FD48 /* FilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF542BCFEF640064FD48 /* FilterViewModel.swift */; };
+		4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */; };
 		4EA179CF2B5BB241006A1D51 /* UIIconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */; };
 		4EA179D12B662512006A1D51 /* MapView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D02B662512006A1D51 /* MapView+Extension.swift */; };
 		4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D22B6837EA006A1D51 /* Filter.swift */; };
@@ -66,12 +69,16 @@
 		3A7485288857D6630BE3418D /* Pods_JASS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JASS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		48D985F539EEC5F4071293B3 /* Pods-JASS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASS.debug.xcconfig"; path = "Target Support Files/Pods-JASS/Pods-JASS.debug.xcconfig"; sourceTree = "<group>"; };
 		4E1233F47A1AA6C8FCA1E36D /* Pods-JASSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASSTests.release.xcconfig"; path = "Target Support Files/Pods-JASSTests/Pods-JASSTests.release.xcconfig"; sourceTree = "<group>"; };
+		4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
+		4E17CF542BCFEF640064FD48 /* FilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewModel.swift; sourceTree = "<group>"; };
+		4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIIconImage.swift; sourceTree = SOURCE_ROOT; };
 		4EA179D02B662512006A1D51 /* MapView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Extension.swift"; sourceTree = "<group>"; };
 		4EA179D22B6837EA006A1D51 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
 		4EA179D42B69F66F006A1D51 /* CategoryModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryModalView.swift; sourceTree = "<group>"; };
 		4EA17A032B7B8574006A1D51 /* Gymload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gymload.swift; sourceTree = "<group>"; };
 		4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymDetailViewController.swift; sourceTree = "<group>"; };
+		4EF0BE252BCD2D750076074E /* GooglePlaces.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GooglePlaces.xcframework; path = Pods/GooglePlaces/Frameworks/GooglePlaces.xcframework; sourceTree = "<group>"; };
 		4EF931282B1C912E00E5794B /* JASS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JASS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EF9312B2B1C912E00E5794B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4EF9312D2B1C912E00E5794B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -142,6 +149,7 @@
 		44E0939288AE7E343577D17F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4EF0BE252BCD2D750076074E /* GooglePlaces.xcframework */,
 				3A7485288857D6630BE3418D /* Pods_JASS.framework */,
 				ADE2E927D41D5B9C27E076B7 /* Pods_JASS_JASSUITests.framework */,
 				D611A2B069D632C12F4063C0 /* Pods_JASSTests.framework */,
@@ -162,6 +170,8 @@
 			isa = PBXGroup;
 			children = (
 				4EF9316C2B21C32D00E5794B /* MapViewController.swift */,
+				4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */,
+				4E17CF542BCFEF640064FD48 /* FilterViewModel.swift */,
 				4EF931702B284D1700E5794B /* SearchViewControllerDelegate.swift */,
 				4EF9316E2B21C3A300E5794B /* SearchViewController.swift */,
 				4EF931852B3AE3CA00E5794B /* TabBarController.swift */,
@@ -266,6 +276,7 @@
 				4EF9316A2B21C04600E5794B /* PlaceSearchViewModel.swift */,
 				4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */,
 				4EF931812B336EEB00E5794B /* SearchRecentViewModel.swift */,
+				4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -571,6 +582,7 @@
 			files = (
 				4EF9312C2B1C912E00E5794B /* AppDelegate.swift in Sources */,
 				4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */,
+				4E17CF552BCFEF640064FD48 /* FilterViewModel.swift in Sources */,
 				4EF9317C2B29DB6400E5794B /* RecentSearchView.swift in Sources */,
 				4EA179CF2B5BB241006A1D51 /* UIIconImage.swift in Sources */,
 				4EF931712B284D1700E5794B /* SearchViewControllerDelegate.swift in Sources */,
@@ -585,8 +597,10 @@
 				4EF9318A2B3D5FEC00E5794B /* RecentSearchCell.swift in Sources */,
 				4EF931622B218AFC00E5794B /* GooglePlaceService.swift in Sources */,
 				4EF9317E2B29DB7800E5794B /* SearchResultsCell.swift in Sources */,
+				4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */,
 				4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */,
 				4EA179D12B662512006A1D51 /* MapView+Extension.swift in Sources */,
+				4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */,
 				4EF931802B31918200E5794B /* SearchResultsView.swift in Sources */,
 				4EF9312E2B1C912E00E5794B /* SceneDelegate.swift in Sources */,
 				4EF931862B3AE3CA00E5794B /* TabBarController.swift in Sources */,

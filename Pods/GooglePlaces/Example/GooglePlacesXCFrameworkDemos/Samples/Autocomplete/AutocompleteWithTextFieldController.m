@@ -15,8 +15,11 @@
 
 #import "GooglePlacesXCFrameworkDemos/Samples/Autocomplete/AutocompleteWithTextFieldController.h"
 
+#if __has_feature(modules)
+@import GooglePlaces;
+#else
 #import <GooglePlaces/GooglePlaces.h>
-
+#endif
 
 @interface AutocompleteWithTextFieldController () <UITextFieldDelegate,
                                                    GMSAutocompleteTableDataSourceDelegate>
@@ -44,6 +47,10 @@
   // Configure the text field to our linking.
   _searchField = [[UITextField alloc] initWithFrame:CGRectZero];
 
+  BOOL isRTL = [UIApplication sharedApplication].userInterfaceLayoutDirection ==
+               UIUserInterfaceLayoutDirectionRightToLeft;
+  NSTextAlignment textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
+  _searchField.textAlignment = textAlignment;
   _searchField.translatesAutoresizingMaskIntoConstraints = NO;
   _searchField.borderStyle = UITextBorderStyleNone;
   _searchField.backgroundColor = [UIColor systemBackgroundColor];
@@ -64,7 +71,7 @@
   _tableDataSource = [[GMSAutocompleteTableDataSource alloc] init];
   _tableDataSource.delegate = self;
   _tableDataSource.autocompleteFilter = self.autocompleteFilter;
-  _tableDataSource.placeFields = self.placeFields;
+  _tableDataSource.placeProperties = self.placeProperties;
   _tableDataSource.tableCellBackgroundColor = [UIColor systemBackgroundColor];
 
   _resultsController = [[UITableViewController alloc] initWithStyle:UITableViewStylePlain];

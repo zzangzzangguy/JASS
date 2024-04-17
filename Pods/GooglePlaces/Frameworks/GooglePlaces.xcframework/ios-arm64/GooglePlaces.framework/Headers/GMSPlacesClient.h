@@ -24,7 +24,7 @@
 @class GMSPlaceLikelihoodList;
 @class GMSPlacePhotoMetadata;
 @class GMSPlacePhotoMetadataList;
-
+@class GMSPlaceSearchByTextRequest;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -101,6 +101,17 @@ typedef void (^GMSPlacePhotoImageResultCallback)(UIImage *_Nullable photo,
  */
 typedef void (^GMSPlaceOpenStatusCallback)(GMSPlaceOpenStatus result, NSError *_Nullable error);
 
+/**
+ * Callback type for receiving search by text results. |results| is an array of
+ * GMSPlace representing individual results matching the query.
+ * @param results An array of |GMSPlace|s.
+ * @param error The error that occurred, if any.
+ *
+ * @related GMSPlacesClient
+ */
+
+typedef void (^GMSPlaceSearchByTextResultCallback)(NSArray<GMSPlace *> *_Nullable places,
+                                                   NSError *_Nullable error);
 
 /**
  * Main interface to the Places SDK. Used for searching and getting details about places. This class
@@ -152,6 +163,7 @@ typedef void (^GMSPlaceOpenStatusCallback)(GMSPlaceOpenStatus result, NSError *_
  * @param callback The callback to invoke with the lookup result.
  */
 - (void)lookUpPlaceID:(NSString *)placeID callback:(GMSPlaceResultCallback)callback;
+
 
 /**
  * Gets the metadata for up to 10 photos associated with a place.
@@ -258,7 +270,6 @@ typedef void (^GMSPlaceOpenStatusCallback)(GMSPlaceOpenStatus result, NSError *_
                  sessionToken:(nullable GMSAutocompleteSessionToken *)sessionToken
                      callback:(GMSPlaceResultCallback)callback;
 
-
 /**
  * Find place likelihoods using the user's current location. This method is non-blocking.
  *
@@ -268,7 +279,6 @@ typedef void (^GMSPlaceOpenStatusCallback)(GMSPlaceOpenStatus result, NSError *_
  * @param placeFields The individual place fields requested for the place objects in the list.
  * @param callback The callback to invoke with place likelihoods.
  */
-
 - (void)findPlaceLikelihoodsFromCurrentLocationWithPlaceFields:(GMSPlaceField)placeFields
                                                       callback:
                                                           (GMSPlaceLikelihoodsCallback)callback;
@@ -314,6 +324,16 @@ typedef void (^GMSPlaceOpenStatusCallback)(GMSPlaceOpenStatus result, NSError *_
 - (void)isOpenWithPlace:(GMSPlace *)place
                    date:(NSDate *)date
                callback:(GMSPlaceOpenStatusCallback)callback;
+
+/**
+ * Search for places by text and restrictions. This method is non-blocking.
+ * @param textSearchRequest |GMSPlaceSearchByTextRequest| The text request to use for the query.
+ * @param callback The callback to invoke with the lookup result.
+ */
+
+- (void)searchByTextWithRequest:(GMSPlaceSearchByTextRequest *)textSearchRequest
+                       callback:(GMSPlaceSearchByTextResultCallback)callback;
+
 
 @end
 

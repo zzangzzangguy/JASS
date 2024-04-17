@@ -15,6 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/** An advanced marker is an icon placed at a particular point on the map's surface. */
 @interface GMSAdvancedMarker : GMSMarker
 
 /**

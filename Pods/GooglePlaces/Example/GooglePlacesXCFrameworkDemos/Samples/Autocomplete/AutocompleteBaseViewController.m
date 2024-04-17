@@ -15,6 +15,13 @@
 
 #import "GooglePlacesXCFrameworkDemos/Samples/Autocomplete/AutocompleteBaseViewController.h"
 
+#import <UIKit/UIKit.h>
+
+#if __has_feature(modules)
+@import GooglePlaces;
+#else
+#import <GooglePlaces/GooglePlaces.h>
+#endif
 #import "GooglePlacesXCFrameworkDemos/Samples/PagingPhotoView.h"
 
 
@@ -85,6 +92,7 @@
   [text addAttribute:NSForegroundColorAttributeName
                value:[UIColor labelColor]
                range:NSMakeRange(0, text.length)];
+  [self formatAttributedString:text];
 
   _textView.attributedText = text;
   [_textView setIsAccessibilityElement:YES];
@@ -103,16 +111,34 @@
   NSString *formatString =
       NSLocalizedString(@"Demo.Content.Autocomplete.FailedErrorMessage",
                         @"Format string for 'autocomplete failed with error' message");
-  _textView.text = [NSString stringWithFormat:formatString, error];
+  NSMutableAttributedString *text = [[NSMutableAttributedString alloc]
+      initWithString:[NSString stringWithFormat:formatString, @""]];
+  [self formatAttributedString:text];
+  _textView.attributedText = text;
 }
 
 - (void)autocompleteDidCancel {
-  _textView.text = NSLocalizedString(@"Demo.Content.Autocomplete.WasCanceledMessage",
-                                     @"String for 'autocomplete canceled message'");
+  [_photoButton setHidden:YES];
+  NSMutableAttributedString *text = [[NSMutableAttributedString alloc]
+      initWithString:NSLocalizedString(@"Demo.Content.Autocomplete.WasCanceledMessage",
+                                       @"String for 'autocomplete canceled message'")];
+  [self formatAttributedString:text];
+  _textView.attributedText = text;
 }
 
 - (void)showCustomMessageInResultPane:(NSString *)message {
-  _textView.text = message;
+  NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message];
+  [self formatAttributedString:text];
+  _textView.attributedText = text;
+}
+
+- (void)formatAttributedString:(NSMutableAttributedString *)string {
+  UIFontWeight weight = UIAccessibilityIsBoldTextEnabled() ? UIFontWeightBold : UIFontWeightRegular;
+  UIFont *font = [UIFont systemFontOfSize:12 weight:weight];
+  [string
+      addAttribute:NSFontAttributeName
+             value:[[UIFontMetrics metricsForTextStyle:UIFontTextStyleBody] scaledFontForFont:font]
+             range:NSMakeRange(0, string.length)];
 }
 
 - (void)resetViews {
@@ -165,7 +191,14 @@
 - (UIButton *)createButton:(SEL)selector title:(NSString *)title {
   // Create a button to show the autocomplete widget.
   UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-  [button setTitle:title forState:UIControlStateNormal];
+
+  // Set button title to have a font attribute that respond to the device text size
+  NSAttributedString *buttonTitle = [[NSAttributedString alloc]
+      initWithString:title
+          attributes:@{
+            NSFontAttributeName : [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+          }];
+  [button setAttributedTitle:buttonTitle forState:UIControlStateNormal];
 
   // Set the text color to adapt to light and dark mode.
   [button setTitleColor:[UIColor labelColor] forState:UIControlStateNormal];
@@ -179,8 +212,6 @@
   [button.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:kButtonTopMargin].active =
       YES;
   [button.heightAnchor constraintEqualToConstant:kButtonHeight].active = YES;
-  [button.widthAnchor constraintEqualToConstant:kButtonWidth].active = YES;
-
   return button;
 }
 
