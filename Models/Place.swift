@@ -1,19 +1,15 @@
-//
-//  Place.swift
-//  JASS
-//
-//  Created by 김기현 on 12/7/23.
-//
-
 import Foundation
 import CoreLocation
+import GooglePlaces
 
 struct Place: Codable {
     let name: String
     let formatted_address: String?
     let geometry: Geometry
-    let place_id: String 
+    let place_id: String
     let type: String?
+    let phoneNumber: String?
+    let openingHours: String?
     var isGym: Bool {
         let gymKeywords = ["헬스", "피트니스", "휘트니스", "운동센터"]
         return gymKeywords.contains(where: name.localizedCaseInsensitiveContains)
@@ -24,6 +20,7 @@ struct Place: Codable {
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: geometry.location.lat, longitude: geometry.location.lng)
     }
+
     struct Geometry: Codable {
         let location: Location
     }

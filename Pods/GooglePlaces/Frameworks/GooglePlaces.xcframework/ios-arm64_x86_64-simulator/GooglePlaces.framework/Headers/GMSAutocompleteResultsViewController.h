@@ -13,6 +13,7 @@
 #import "GMSPlaceFieldMask.h"
 
 
+#import "GMSPlaceProperty.h"
 #import "GMSPlacesDeprecationUtils.h"
 
 @class GMSAutocompleteFilter;
@@ -122,6 +123,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** The tint color applied to controls in the Autocomplete view. */
 @property(nonatomic, strong, nullable) IBInspectable UIColor *tintColor;
+
+/**
+ * Specify array of place property names to fetch for object |GMSPlace|. Defaults to returning all
+ * details if not overridden.
+ */
+@property(nonatomic, strong) NSArray<GMSPlaceProperty> *placeProperties;
 
 /**
  * Specify individual place details to fetch for object |GMSPlace|. Defaults to returning all

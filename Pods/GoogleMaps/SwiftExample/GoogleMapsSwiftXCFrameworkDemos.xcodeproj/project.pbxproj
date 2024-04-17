@@ -36,7 +36,6 @@
 		432140AD81C292CF700CA7CE /* VisibleRegionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D352205B6B3A8624B7640B1 /* VisibleRegionViewController.swift */; };
 		4336E0BDE21D982CE4078DDC /* step5.png in Resources */ = {isa = PBXBuildFile; fileRef = 3EB880171F8782BB95056A63 /* step5.png */; };
 		439FB623B538BBD552F65269 /* SnapshotReadyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6BA50D14237A802AF073AE /* SnapshotReadyViewController.swift */; };
-		43D9CF4C4FC8A254CEAC3089 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 813AA650D6B913CB76AAAB53 /* UIKit.framework */; };
 		463BA070C2CA35953777C8A3 /* SampleListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AC250362E76571F777376E /* SampleListViewController.swift */; };
 		48429416E1B15AF62D26CCBB /* FixedPanoramaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09AF3C38EC1E3DB3EABE7ABA /* FixedPanoramaViewController.swift */; };
 		49C00B590AB3FAD0ABE722B1 /* IndoorMuseumNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A148313C8CDFAED9C9C4B4 /* IndoorMuseumNavigationViewController.swift */; };
@@ -59,6 +58,7 @@
 		74E88C427B498F911D32A44B /* australia.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FFD3A6BE4BD4C012EF50AFD /* australia.png */; };
 		776382BEFFA4C43C5F9F38B6 /* h1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EE67692C7A590BCF85C3ED9 /* h1.png */; };
 		781F9CEB35235538D6F5634E /* step3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 825447853189D2D4563BB028 /* step3@2x.png */; };
+		78D1E74704B5966731F0EAFD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 813AA650D6B913CB76AAAB53 /* UIKit.framework */; };
 		791E7FEACC10DFDA9E5512BD /* argentina.png in Resources */ = {isa = PBXBuildFile; fileRef = BEB38D778B61FCFDCD0BAF3E /* argentina.png */; };
 		82043308F53102E889C6B28F /* DataDrivenStylingEventsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF2332C983F2B61EE8D591A /* DataDrivenStylingEventsViewController.swift */; };
 		8672736AB1BB98F58F6C5ED9 /* botswana.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CB004432BC22DC920797C87 /* botswana.png */; };
@@ -220,14 +220,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43D9CF4C4FC8A254CEAC3089 /* UIKit.framework in Frameworks */,
+				78D1E74704B5966731F0EAFD /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5067A8B4F7D88BE7C6848EC7 /* Frameworks */ = {
+		1770C8310E66B2F5721EFB53 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				813AA650D6B913CB76AAAB53 /* UIKit.framework */,
@@ -375,7 +375,7 @@
 			isa = PBXGroup;
 			children = (
 				66BBCDCC5A47AE0211100656 /* Source */,
-				5067A8B4F7D88BE7C6848EC7 /* Frameworks */,
+				1770C8310E66B2F5721EFB53 /* Frameworks */,
 				C28851C9B618723E4F44AB23 /* Products */,
 			);
 			sourceTree = "<group>";

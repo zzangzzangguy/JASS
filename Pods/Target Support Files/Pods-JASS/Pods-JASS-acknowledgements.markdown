@@ -26,11 +26,11 @@ THE SOFTWARE.
 
 ## GoogleMaps
 
-Copyright 2023 Google
+Copyright 2024 Google LLC
 
 ## GooglePlaces
 
-Copyright 2023 Google
+Copyright 2024 Google LLC
 
 ## Kingfisher
 

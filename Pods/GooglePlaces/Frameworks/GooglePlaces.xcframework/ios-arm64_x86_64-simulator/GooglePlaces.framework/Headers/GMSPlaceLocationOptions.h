@@ -44,5 +44,14 @@ FOUNDATION_EXTERN id<GMSPlaceLocationBias, GMSPlaceLocationRestriction>
 GMSPlaceRectangularLocationOption(CLLocationCoordinate2D northEastBounds,
                                   CLLocationCoordinate2D southWestBounds);
 
+/**
+ * Returns a circular location to bias place results.
+ * Supports filtering as a bias where results inside the circle are preferred.
+ *
+ * @param center The center of the circle.
+ * @param radius The radius of the circle.
+ */
+FOUNDATION_EXTERN id<GMSPlaceLocationBias, GMSPlaceLocationRestriction>
+GMSPlaceCircularLocationOption(CLLocationCoordinate2D center, CLLocationDistance radius);
 
 NS_ASSUME_NONNULL_END

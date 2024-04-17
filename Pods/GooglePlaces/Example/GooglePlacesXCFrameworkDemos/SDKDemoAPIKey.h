@@ -14,7 +14,7 @@
  */
 
 /**
- * To use GooglePlacesXCFrameworkDemos, please register an API Key for your application and set it here. Your
+ * To use GooglePlacesDemos, please register an API Key for your application and set it here. Your
  * API Key should be kept private.
  *
  * See documentation on getting an API Key for your API Project here:

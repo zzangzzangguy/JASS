@@ -15,7 +15,11 @@
 
 #import "GooglePlacesXCFrameworkDemos/Samples/Autocomplete/AutocompleteWithSearchViewController.h"
 
+#if __has_feature(modules)
+@import GooglePlaces;
+#else
 #import <GooglePlaces/GooglePlaces.h>
+#endif
 #import "GooglePlacesXCFrameworkDemos/Support/BaseDemoViewController.h"
 NSString *const kSearchBarAccessibilityIdentifier = @"searchBarAccessibilityIdentifier";
 
@@ -41,7 +45,7 @@ NSString *const kSearchBarAccessibilityIdentifier = @"searchBarAccessibilityIden
 
   _acViewController = [[GMSAutocompleteResultsViewController alloc] init];
   _acViewController.autocompleteFilter = self.autocompleteFilter;
-  _acViewController.placeFields = self.placeFields;
+  _acViewController.placeProperties = self.placeProperties;
   _acViewController.delegate = self;
 
   _searchController =
@@ -50,6 +54,7 @@ NSString *const kSearchBarAccessibilityIdentifier = @"searchBarAccessibilityIden
 
   _searchController.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   _searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+  _searchController.searchBar.showsCancelButton = YES;
   _searchController.searchBar.delegate = self;
   _searchController.searchBar.accessibilityIdentifier = kSearchBarAccessibilityIdentifier;
 

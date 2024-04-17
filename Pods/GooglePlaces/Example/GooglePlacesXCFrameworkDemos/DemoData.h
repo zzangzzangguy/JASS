@@ -15,7 +15,11 @@
 
 #import <UIKit/UIKit.h>
 
+#if __has_feature(modules)
+@import GooglePlaces;
+#else
 #import <GooglePlaces/GooglePlaces.h>
+#endif
 
 // This file contains a set of data objects which represent the list of demos which are provided by
 // this sample app.
@@ -47,6 +51,18 @@
 - (UIViewController *)createViewControllerWithAutocompleteFilter:
                           (GMSAutocompleteFilter *)autocompleteFilter
                                                      placeFields:(GMSPlaceField)placeField;
+
+/**
+ * Construct and return a new UIViewController instance which contains the view to present when the
+ * demo is selected from the list.
+ *
+ * @param autocompleteFilter The |GMSAutocompleteFilter| that filters on types and countries.
+ * @param placeProperties The array of|GMSPlaceProperty| to request individual properties for the
+ * |GMSPlace| result.
+ */
+- (UIViewController *)
+    createViewControllerWithAutocompleteFilter:(GMSAutocompleteFilter *)autocompleteFilter
+                               placeProperties:(NSArray<GMSPlaceProperty> *)placeProperties;
 
 @end
 
