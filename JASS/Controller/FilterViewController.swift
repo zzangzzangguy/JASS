@@ -1,96 +1,179 @@
-//
-//  FilterViewController.swift
-//  JASS
-//
-//  Created by 김기현 on 4/17/24.
-//
-
-import Foundation
 import UIKit
+import SnapKit
 import Then
 
+protocol FilterViewDelegate: AnyObject {
+    func filterView(_ filterView: FilterViewController, didSelectCategories categories: [String])
+    func filterViewDidCancel(_ filterView: FilterViewController)
+}
 
-class FilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    // 필터링 옵션을 저장할 프로퍼티
-    var selectedOptions: [String] = []
+class FilterCollectionViewCell: UICollectionViewCell {
+    static let identifier = "FilterCollectionViewCell"
 
-    // 필터링 옵션 리스트
-    let options = ["헬스", "필라테스", "수영", "복싱", "요가", "크로스핏", "격투기", "댄스", "골프", "테니스"]
+    private lazy var nameLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        return label
+    }()
 
-    // 필터링 옵션을 표시할 테이블뷰
-    let tableView = UITableView()
+    private lazy var checkboxImageView: UIImageView = {
+        let imageView = UIImageView()
+        return imageView
+    }()
 
-    // 적용 버튼
-    let applyButton = UIButton(type: .system)
+    var isChecked: Bool = false {
+        didSet {
+            let checkboxImageName = isChecked ? "checkmark.square.fill" : "square"
+            checkboxImageView.image = UIImage(systemName: checkboxImageName)
+            checkboxImageView.tintColor = isChecked ? .blue : .gray
+        }
+    }
 
-    // 필터링 옵션이 선택되었을 때 호출될 클로저
-    var onApply: (([String]) -> Void)?
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupViews()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupViews() {
+        addSubview(nameLabel)
+        addSubview(checkboxImageView)
+
+        nameLabel.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(10)
+            make.centerY.equalToSuperview()
+        }
+
+        checkboxImageView.snp.makeConstraints { make in
+            make.width.height.equalTo(20)
+            make.right.equalToSuperview().inset(10)
+            make.centerY.equalToSuperview()
+        }
+    }
+
+    func configure(with name: String) {
+        nameLabel.text = name
+    }
+}
+
+class FilterViewController: UIViewController {
+    private var categories = ["헬스", "필라테스", "복싱", "크로스핏", "골프", "수영", "클라이밍"]
+    private var selectedCategories: Set<String> = []
+
+    weak var delegate: FilterViewDelegate?
+
+    private let applyButton = UIButton().then {
+        $0.setTitle("적용하기", for: .normal)
+        $0.backgroundColor = .blue
+        $0.setTitleColor(.white, for: .normal)
+        $0.layer.cornerRadius = 10
+    }
+
+    private let cancelButton = UIButton().then {
+        $0.setTitle("취소", for: .normal)
+        $0.backgroundColor = .lightGray
+        $0.setTitleColor(.black, for: .normal)
+        $0.layer.cornerRadius = 10
+    }
+
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: FilterCollectionViewCell.identifier)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.backgroundColor = .white
+        return collectionView
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTableView()
-        setupApplyButton()
+        view.backgroundColor = .white
+        setupViews()
+        setupActions()
     }
 
-    func setupTableView() {
-        view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: applyButton.topAnchor, constant: -16).isActive = true
-
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-    }
-
-    func setupApplyButton() {
+    private func setupViews() {
+        view.addSubview(collectionView)
         view.addSubview(applyButton)
-        applyButton.translatesAutoresizingMaskIntoConstraints = false
-        applyButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        applyButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        applyButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
-        applyButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        view.addSubview(cancelButton)
 
-        applyButton.setTitle("Apply", for: .normal)
-        applyButton.backgroundColor = .systemBlue
-        applyButton.setTitleColor(.white, for: .normal)
-        applyButton.layer.cornerRadius = 8
-        applyButton.addTarget(self, action: #selector(applyButtonTapped), for: .touchUpInside)
-    }
-
-    @objc func applyButtonTapped() {
-        onApply?(selectedOptions)
-        dismiss(animated: true, completion: nil)
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return options.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = options[indexPath.row]
-
-        if selectedOptions.contains(options[indexPath.row]) {
-            cell.accessoryType = .checkmark
-        } else {
-            cell.accessoryType = .none
+        collectionView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.left.right.equalToSuperview()
+            make.bottom.equalTo(applyButton.snp.top).offset(-10)
         }
 
+        applyButton.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(20)
+            make.right.equalTo(view.snp.centerX).offset(-5)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(20)
+            make.height.equalTo(50)
+        }
+
+        cancelButton.snp.makeConstraints { make in
+            make.right.equalToSuperview().inset(20)
+            make.left.equalTo(view.snp.centerX).offset(5)
+            make.bottom.equalTo(applyButton.snp.bottom)
+            make.height.equalTo(50)
+        }
+    }
+
+    private func setupActions() {
+        applyButton.addTarget(self, action: #selector(applyButtonTapped), for: .touchUpInside)
+        cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+    }
+
+    @objc private func applyButtonTapped() {
+        let selectedCategoriesArray = Array(selectedCategories)
+        delegate?.filterView(self, didSelectCategories: selectedCategoriesArray)
+    }
+
+    @objc private func cancelButtonTapped() {
+        delegate?.filterViewDidCancel(self)
+    }
+}
+
+// UICollectionViewDataSource 프로토콜 준수
+extension FilterViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return categories.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilterCollectionViewCell.identifier, for: indexPath) as? FilterCollectionViewCell else {
+            fatalError("Unable to dequeue FilterCollectionViewCell")
+        }
+        let category = categories[indexPath.item]
+        cell.configure(with: category)
+        cell.isChecked = selectedCategories.contains(category)
         return cell
     }
+}
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedOption = options[indexPath.row]
-
-        if let index = selectedOptions.firstIndex(of: selectedOption) {
-            selectedOptions.remove(at: index)
+// UICollectionViewDelegate 프로토콜 준수
+extension FilterViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let category = categories[indexPath.item]
+        if selectedCategories.contains(category) {
+            selectedCategories.remove(category)
         } else {
-            selectedOptions.append(selectedOption)
+            selectedCategories.insert(category)
         }
+        collectionView.reloadItems(at: [indexPath])
+    }
+}
 
-        tableView.reloadRows(at: [indexPath], with: .automatic)
+// UICollectionViewDelegateFlowLayout 프로토콜 준수
+extension FilterViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let numberOfColumns: CGFloat = 2
+        let spacing: CGFloat = 10
+        let totalSpacing: CGFloat = (2 * spacing) + ((numberOfColumns - 1) * spacing)
+        let width = (collectionView.bounds.width - totalSpacing) / numberOfColumns
+        return CGSize(width: width, height: 50)
     }
 }

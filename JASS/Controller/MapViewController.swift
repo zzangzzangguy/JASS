@@ -13,10 +13,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     var recentSearchesView: RecentSearchesView!
     var searchResultsView: SearchResultsView!
     var searchTask: DispatchWorkItem?
-    //    var MarkerDebounce: Timer?
-    //    var markers: [GMSMarker] = []
-    //    var places: [Place] = [] // 장소 데이터를 저장할 배열
-
+//    var categoryModalView: CategoryModalView!
 
     var filterContainerView: UIView!
     var filterStackView: UIStackView!
@@ -29,9 +26,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     let zoomOutButton = UIButton(type: .system)
 
     let locationManager = CLLocationManager()
-    //    var currentLocation: CLLocation?
 
-    //    var gymLoader: Gymload! // GymsLoader 인스턴스
+    private var filterView: FilterViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,13 +39,15 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         setupFilterButtonView()
         viewModel = MapViewModel(mapView: mapView, placeSearchViewModel: placeSearchViewModel)
 
-
-        //        gymLoader = Gymload(mapView: mapView, placeSearchViewModel: placeSearchViewModel)
+        setupFilterView()
+        setupFilterButton()
 
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        mapView.setMinZoom(6, maxZoom: mapView.maxZoom)
+
 
         searchRecentViewModel.updateRecentSearches = { [weak self] in
             DispatchQueue.main.async {
@@ -97,6 +95,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         mapView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+
     }
 
     private func setupSearchViews() {
@@ -121,6 +120,20 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         }
         searchResultsView.isHidden = true
     }
+    private func setupFilterView() {
+           let filterView = FilterViewController()
+           filterView.delegate = self
+           self.filterView = filterView
+       }
+
+       private func setupFilterButton() {
+           filterButton.addTarget(self, action: #selector(showFilterView(_:)), for: .touchUpInside)
+       }
+
+       @objc private func showFilterView(_ sender: Any) {
+           guard let filterView = filterView else { return }
+           present(filterView, animated: true, completion: nil)
+       }
 
     private func setupSearchController() {
         searchController = UISearchController(searchResultsController: nil)
@@ -319,5 +332,17 @@ extension MapViewController: GMSMapViewDelegate {
         navigationController?.pushViewController(gymDetailVC, animated: true)
 
         return true
+    }
+}
+extension MapViewController: FilterViewDelegate {
+    func filterView(_ filterView: FilterViewController, didSelectCategories categories: [String]) {
+        // 선택된 카테고리를 처리하는 로직
+        viewModel.selectedCategories = Set(categories)  // 배열을 Set으로 변환
+        dismiss(animated: true, completion: nil)
+    }
+
+    func filterViewDidCancel(_ filterView: FilterViewController) {
+        // 필터 취소 로직
+        dismiss(animated: true, completion: nil)
     }
 }
