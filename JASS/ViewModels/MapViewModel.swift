@@ -7,6 +7,7 @@ class MapViewModel {
     var mapView: GMSMapView!
     var markers: [GMSMarker] = []
     var places: [Place] = []
+    var selectedCategories: Set<String> = []
     var filteredPlaces: [Place] = [] {
         didSet {
             updateMarkers?()

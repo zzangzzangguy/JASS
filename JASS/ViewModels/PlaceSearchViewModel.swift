@@ -36,12 +36,12 @@ class PlaceSearchViewModel {
                do {
                    let searchResults = try JSONDecoder().decode(SearchResults.self, from: response.data)
                    self?.searchResults = searchResults.results
-                   print("검색 결과를 성공적으로 받았습니다: \(searchResults.results)")
+                   print("검색 결과 성공 : \(searchResults.results)")
                    DispatchQueue.main.async {
                        self?.updateSearchResults?()
                    }
                } catch {
-                   print("JSON 디코딩 중 오류가 발생했습니다: \(error)")
+                   print("JSON 디코딩 오류 발생: \(error)")
                    DispatchQueue.main.async {
                        self?.showError?("오류 발생: \(error.localizedDescription)")
                    }
@@ -60,7 +60,7 @@ class PlaceSearchViewModel {
        let northeast = bounds.northEast
        let southwest = bounds.southWest
 
-       print("지도 영역 내 검색을 시작합니다: 북동쪽 \(northeast), 남서쪽 \(southwest)")
+       print("지도 영역  검색: 북동쪽 \(northeast), 남서쪽 \(southwest)")
        provider.request(.searchInBounds(northeast: northeast, southwest: southwest)) { [weak self] result in
            self?.isSearching = false
            switch result {
@@ -68,10 +68,10 @@ class PlaceSearchViewModel {
                do {
                    let searchResults = try JSONDecoder().decode(SearchResults.self, from: response.data)
                    self?.searchResults = searchResults.results
-                   print("지도 영역 내 검색 결과를 성공적으로 받았습니다: \(searchResults.results)")
+                   print("지도 영역 검색 성공: \(searchResults.results)")
                    completion(searchResults.results)
                } catch {
-                   print("JSON 디코딩 중 오류가 발생했습니다: \(error)")
+                   print("JSON 디코딩 오류 발생: \(error)")
                    self?.showError?("오류 발생: \(error.localizedDescription)")
                }
            case .failure(let error):
@@ -92,7 +92,6 @@ class PlaceSearchViewModel {
        ]
 
        provider.request(.nearbySearch(parameters: parameters), callbackQueue: DispatchQueue.main) { result in
-           // 검색 결과 처리
            switch result {
            case .success(let response):
                do {

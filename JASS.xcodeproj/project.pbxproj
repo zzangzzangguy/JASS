@@ -14,7 +14,6 @@
 		4EA179CF2B5BB241006A1D51 /* UIIconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */; };
 		4EA179D12B662512006A1D51 /* MapView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D02B662512006A1D51 /* MapView+Extension.swift */; };
 		4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D22B6837EA006A1D51 /* Filter.swift */; };
-		4EA179D52B69F670006A1D51 /* CategoryModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D42B69F66F006A1D51 /* CategoryModalView.swift */; };
 		4EA17A042B7B8574006A1D51 /* Gymload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA17A032B7B8574006A1D51 /* Gymload.swift */; };
 		4EF0BE222BCCE6350076074E /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF0BE212BCCE6350076074E /* Then */; };
 		4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */; };
@@ -75,7 +74,6 @@
 		4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIIconImage.swift; sourceTree = SOURCE_ROOT; };
 		4EA179D02B662512006A1D51 /* MapView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Extension.swift"; sourceTree = "<group>"; };
 		4EA179D22B6837EA006A1D51 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
-		4EA179D42B69F66F006A1D51 /* CategoryModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryModalView.swift; sourceTree = "<group>"; };
 		4EA17A032B7B8574006A1D51 /* Gymload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gymload.swift; sourceTree = "<group>"; };
 		4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymDetailViewController.swift; sourceTree = "<group>"; };
 		4EF0BE252BCD2D750076074E /* GooglePlaces.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GooglePlaces.xcframework; path = Pods/GooglePlaces/Frameworks/GooglePlaces.xcframework; sourceTree = "<group>"; };
@@ -265,7 +263,6 @@
 				4EF9317D2B29DB7800E5794B /* SearchResultsCell.swift */,
 				4EF9317B2B29DB6400E5794B /* RecentSearchView.swift */,
 				4EF931892B3D5FEB00E5794B /* RecentSearchCell.swift */,
-				4EA179D42B69F66F006A1D51 /* CategoryModalView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -590,7 +587,6 @@
 				4EF9316F2B21C3A300E5794B /* SearchViewController.swift in Sources */,
 				4EA17A042B7B8574006A1D51 /* Gymload.swift in Sources */,
 				4EF9316D2B21C32D00E5794B /* MapViewController.swift in Sources */,
-				4EA179D52B69F670006A1D51 /* CategoryModalView.swift in Sources */,
 				4EF931882B3B426D00E5794B /* RecentPlacesViewModel.swift in Sources */,
 				4EF931922B46CB5E00E5794B /* MainViewController.swift in Sources */,
 				4EF931822B336EEB00E5794B /* SearchRecentViewModel.swift in Sources */,
