@@ -3,10 +3,9 @@ import GoogleMaps
 
 enum GooglePlacesAPI {
     case placeSearch(input: String)
-    case searchInBounds(northeast: CLLocationCoordinate2D, southwest: CLLocationCoordinate2D)
+    case searchInBounds(parameters: [String: Any])
     case nearbySearch(parameters: [String: String])
-
-
+    case textSearch(parameters: [String: Any])
 }
 
 extension GooglePlacesAPI: TargetType {
@@ -15,57 +14,57 @@ extension GooglePlacesAPI: TargetType {
     }
 
     var path: String {
-          switch self {
-          case .placeSearch:
-              return "/textsearch/json"
-          case .searchInBounds:
-              return "/nearbysearch/json"
-          case .nearbySearch:
-                      return "/nearbysearch/json" 
-                  }
-              }
-
+        switch self {
+        case .placeSearch:
+            return "/textsearch/json"
+        case .searchInBounds:
+            return "/nearbysearch/json"
+        case .nearbySearch:
+            return "/nearbysearch/json"
+        case .textSearch:
+            return "/textsearch/json"
+        }
+    }
 
     var method: Moya.Method {
         return .get
     }
 
     var task: Task {
-           switch self {
-           case let .placeSearch(input):
-               if let apiKey = Bundle.main.infoDictionary?["API_KEY"] as? String {
-                   return .requestParameters(parameters: [
-                       "key": apiKey,
-                       "query": input
-                   ], encoding: URLEncoding.queryString)
-               }
-               fatalError("API 키를 로드할 수 없음")
+        switch self {
+        case .placeSearch(let input):
+            return .requestParameters(parameters: [
+                "key": Bundle.apiKey,
+                "query": input
+            ], encoding: URLEncoding.queryString)
 
-           case let .searchInBounds(northeast, southwest):
-               if let apiKey = Bundle.main.infoDictionary?["API_KEY"] as? String {
-                   let parameters: [String: Any] = [
-                       "key": apiKey,
-                       "location": "\(northeast.latitude),\(northeast.longitude)",
-                       "radius": 5000,
-                       "keyword": "health|pilates|fitness|swimming|gym|yoga"
-                   ]
-                   return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
-                   
-               }
-               fatalError("API 키를 로드할 수 없음")
+        case .searchInBounds(let parameters):
+            var newParameters = parameters
+            newParameters["key"] = Bundle.apiKey
+            return .requestParameters(parameters: newParameters, encoding: URLEncoding.queryString)
 
-           case let .nearbySearch(parameters):
-                   if let apiKey = Bundle.main.infoDictionary?["API_KEY"] as? String {
-                       var newParameters = parameters
-                       newParameters["key"] = apiKey
-                       return .requestParameters(parameters: newParameters, encoding: URLEncoding.queryString)
-                   }
-                   fatalError("API 키를 로드할 수 없음")
-               }
-           }
+        case .nearbySearch(let parameters):
+            var newParameters = parameters
+            newParameters["key"] = Bundle.apiKey
+            return .requestParameters(parameters: newParameters, encoding: URLEncoding.queryString)
 
+        case .textSearch(let parameters):
+            var newParameters = parameters
+            newParameters["key"] = Bundle.apiKey
+            return .requestParameters(parameters: newParameters, encoding: URLEncoding.queryString)
+        }
+    }
 
     var headers: [String: String]? {
         return ["Content-Type": "application/json"]
+    }
+}
+
+extension Bundle {
+    static var apiKey: String {
+        guard let apiKey = Bundle.main.infoDictionary?["API_KEY"] as? String else {
+            fatalError("API_KEY not found in .xcconfig file")
+        }
+        return apiKey
     }
 }

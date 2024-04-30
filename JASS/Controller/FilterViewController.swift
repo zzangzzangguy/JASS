@@ -130,6 +130,8 @@ class FilterViewController: UIViewController {
     @objc private func applyButtonTapped() {
         let selectedCategoriesArray = Array(selectedCategories)
         delegate?.filterView(self, didSelectCategories: selectedCategoriesArray)
+        dismiss(animated: true, completion: nil)
+
     }
 
     @objc private func cancelButtonTapped() {

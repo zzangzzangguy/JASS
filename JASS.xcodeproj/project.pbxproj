@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		0F7781F9BEE728F967E5D3D1 /* Pods_JASS_JASSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ADE2E927D41D5B9C27E076B7 /* Pods_JASS_JASSUITests.framework */; };
 		4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */; };
-		4E17CF552BCFEF640064FD48 /* FilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF542BCFEF640064FD48 /* FilterViewModel.swift */; };
 		4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */; };
+		4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */; };
 		4EA179CF2B5BB241006A1D51 /* UIIconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */; };
 		4EA179D12B662512006A1D51 /* MapView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D02B662512006A1D51 /* MapView+Extension.swift */; };
 		4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D22B6837EA006A1D51 /* Filter.swift */; };
@@ -69,8 +69,8 @@
 		48D985F539EEC5F4071293B3 /* Pods-JASS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASS.debug.xcconfig"; path = "Target Support Files/Pods-JASS/Pods-JASS.debug.xcconfig"; sourceTree = "<group>"; };
 		4E1233F47A1AA6C8FCA1E36D /* Pods-JASSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASSTests.release.xcconfig"; path = "Target Support Files/Pods-JASSTests/Pods-JASSTests.release.xcconfig"; sourceTree = "<group>"; };
 		4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
-		4E17CF542BCFEF640064FD48 /* FilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewModel.swift; sourceTree = "<group>"; };
 		4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
+		4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterManager.swift; sourceTree = "<group>"; };
 		4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIIconImage.swift; sourceTree = SOURCE_ROOT; };
 		4EA179D02B662512006A1D51 /* MapView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Extension.swift"; sourceTree = "<group>"; };
 		4EA179D22B6837EA006A1D51 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
@@ -169,7 +169,6 @@
 			children = (
 				4EF9316C2B21C32D00E5794B /* MapViewController.swift */,
 				4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */,
-				4E17CF542BCFEF640064FD48 /* FilterViewModel.swift */,
 				4EF931702B284D1700E5794B /* SearchViewControllerDelegate.swift */,
 				4EF9316E2B21C3A300E5794B /* SearchViewController.swift */,
 				4EF931852B3AE3CA00E5794B /* TabBarController.swift */,
@@ -274,6 +273,7 @@
 				4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */,
 				4EF931812B336EEB00E5794B /* SearchRecentViewModel.swift */,
 				4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */,
+				4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -579,7 +579,6 @@
 			files = (
 				4EF9312C2B1C912E00E5794B /* AppDelegate.swift in Sources */,
 				4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */,
-				4E17CF552BCFEF640064FD48 /* FilterViewModel.swift in Sources */,
 				4EF9317C2B29DB6400E5794B /* RecentSearchView.swift in Sources */,
 				4EA179CF2B5BB241006A1D51 /* UIIconImage.swift in Sources */,
 				4EF931712B284D1700E5794B /* SearchViewControllerDelegate.swift in Sources */,
@@ -597,6 +596,7 @@
 				4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */,
 				4EA179D12B662512006A1D51 /* MapView+Extension.swift in Sources */,
 				4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */,
+				4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */,
 				4EF931802B31918200E5794B /* SearchResultsView.swift in Sources */,
 				4EF9312E2B1C912E00E5794B /* SceneDelegate.swift in Sources */,
 				4EF931862B3AE3CA00E5794B /* TabBarController.swift in Sources */,

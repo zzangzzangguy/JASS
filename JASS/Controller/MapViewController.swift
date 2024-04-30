@@ -13,18 +13,14 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     var recentSearchesView: RecentSearchesView!
     var searchResultsView: SearchResultsView!
     var searchTask: DispatchWorkItem?
-//    var categoryModalView: CategoryModalView!
-
     var filterContainerView: UIView!
     var filterStackView: UIStackView!
     var filterButton: UIButton!
-
     var placeSearchViewModel = PlaceSearchViewModel()
     var searchRecentViewModel = SearchRecentViewModel()
-
     let zoomInButton = UIButton(type: .system)
     let zoomOutButton = UIButton(type: .system)
-
+    var clusterManager: ClusterManager!
     let locationManager = CLLocationManager()
 
     private var filterView: FilterViewController?
@@ -38,6 +34,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         setupStatusBarBackground()
         setupFilterButtonView()
         viewModel = MapViewModel(mapView: mapView, placeSearchViewModel: placeSearchViewModel)
+        clusterManager = ClusterManager(mapView: mapView)
+        clusterManager.delegate = self // 추가
 
         setupFilterView()
         setupFilterButton()
@@ -46,7 +44,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
-        mapView.setMinZoom(6, maxZoom: mapView.maxZoom)
+        mapView.setMinZoom(4, maxZoom: mapView.maxZoom)
 
 
         searchRecentViewModel.updateRecentSearches = { [weak self] in
@@ -121,19 +119,19 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         searchResultsView.isHidden = true
     }
     private func setupFilterView() {
-           let filterView = FilterViewController()
-           filterView.delegate = self
-           self.filterView = filterView
-       }
+        let filterView = FilterViewController()
+        filterView.delegate = self
+        self.filterView = filterView
+    }
 
-       private func setupFilterButton() {
-           filterButton.addTarget(self, action: #selector(showFilterView(_:)), for: .touchUpInside)
-       }
+    private func setupFilterButton() {
+        filterButton.addTarget(self, action: #selector(showFilterView(_:)), for: .touchUpInside)
+    }
 
-       @objc private func showFilterView(_ sender: Any) {
-           guard let filterView = filterView else { return }
-           present(filterView, animated: true, completion: nil)
-       }
+    @objc private func showFilterView(_ sender: Any) {
+        guard let filterView = filterView else { return }
+        present(filterView, animated: true, completion: nil)
+    }
 
     private func setupSearchController() {
         searchController = UISearchController(searchResultsController: nil)
@@ -200,10 +198,12 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         searchTask?.cancel()
         let task = DispatchWorkItem { [weak self] in
-            self?.placeSearchViewModel.searchPlace(input: searchText)
-            self?.searchResultsView.isHidden = false
-            self?.recentSearchesView.isHidden = true
-            self?.filterContainerView.isHidden = true
+            guard let self = self else { return }
+            self.placeSearchViewModel.searchPlace(input: searchText) { places in
+                self.searchResultsView.isHidden = places.isEmpty
+                self.recentSearchesView.isHidden = !places.isEmpty
+                self.filterContainerView.isHidden = !places.isEmpty
+            }
         }
         searchTask = task
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: task)
@@ -212,13 +212,20 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let searchText = searchBar.text, !searchText.isEmpty {
             searchRecentViewModel.saveSearchHistory(query: searchText)
-            placeSearchViewModel.searchPlace(input: searchText)
+            if let currentLocation = viewModel.currentLocation {
+                placeSearchViewModel.searchPlacesNearCoordinate(currentLocation.coordinate, radius: 5000, types: [searchText]) { [weak self] places in
+                    guard let self = self else { return }
+                    self.viewModel.places = places
+                    self.viewModel.filterPlaces()
+                }
+            }
         }
     }
 
+
     func didSelectPlace(_ place: Place) {
         searchRecentViewModel.saveSearchHistory(query: place.name)
-        viewModel.loadGymsInBounds() // 수정
+        print("맵뷰 로드짐")// 수정
 
         let camera = GMSCameraPosition.camera(withLatitude: place.geometry.location.lat, longitude: place.geometry.location.lng, zoom: 15.0)
         viewModel.mapView.camera = camera // 수정
@@ -257,92 +264,74 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         }
     }
 
-    func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
-        //        MarkerDebounce?.invalidate()
-        //        MarkerDebounce = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
-        //            guard let self = self else { return }
-        //            self.gymLoader.loadGymsInBounds() // GymsLoader의 loadGymsInBounds() 메서드 호출
-        //
-        //            let visibleRegion = mapView.projection.visibleRegion()
-        //            let bounds = GMSCoordinateBounds(region: visibleRegion)
-        //
-        //            // 현재 보이는 영역 내에 있는 마커들만 표시
-        //            for marker in self.markers {
-        //                if bounds.contains(marker.position) {
-        //                    marker.map = mapView
-        //                } else {
-        //                    marker.map = nil
-        //                }
-        //            }
-        //        }
-        viewModel.loadGymsInBounds() // 추가
+    func handleSearchResults(_ places: [Place]) {
+        viewModel.places = places
+        viewModel.filteredPlaces = places
+        viewModel.filterPlaces()
 
     }
-    //        func searchGymsNearCurrentLocation() {
-    //        guard let currentLocation = currentLocation else {
-    //            print("현재 위치를 가져올 수 없습니다.")
-    //            return
-    //        }
-    //
-    //        let coordinate = currentLocation.coordinate
-    //        let radius = 5000.0 // 5km 반경
-    //
-    //        gymLoader.searchGymsNearCoordinate(coordinate, radius: radius) { [weak self] places in
-    //            // 검색 결과 처리
-    //            self?.handleSearchResults(places)
-    //        }
-    //    }
-    func handleSearchResults(_ places: [Place]) {
-        //        mapView.clear()
-        //        markers.removeAll()
-        //
-        //        // 검색 결과를 마커로 추가
-        //        for place in places {
-        //            let marker = GMSMarker(position: place.coordinate)
-        //            marker.title = place.name
-        //            marker.map = mapView
-        //        }
-        //
-        //        // 검색 결과가 있는 경우 첫 번째 결과로 지도 이동
-        //        if let firstPlace = places.first {
-        //            let camera = GMSCameraPosition.camera(withTarget: firstPlace.coordinate, zoom: 15)
-        //            mapView.animate(to: camera)
-        viewModel.places = places // 추가
-        viewModel.filteredPlaces = places // 추가
-    }
     func updateMapMarkers() { // 추가
-        viewModel.updateMapView()
+        viewModel.updateMapMarkers()
     }
 }
 extension MapViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
             viewModel.currentLocation = location // 수정
-            viewModel.searchGymsNearCurrentLocation() // 수정
+//            viewModel.searchGymsNearCurrentLocation(location)
         }
     }
 }
 extension MapViewController: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
-        guard let place = marker.userData as? Place else { return false }
-
-        let gymDetailVC = GymDetailViewController().then {
-            $0.gym = place
+        guard let place = marker.userData as? Place else {
+            return false
         }
-        navigationController?.pushViewController(gymDetailVC, animated: true)
+
+        if let navigationController = navigationController {
+            let gymDetailVC = GymDetailViewController(place: place)
+            navigationController.pushViewController(gymDetailVC, animated: true)
+        }
 
         return true
     }
 }
 extension MapViewController: FilterViewDelegate {
     func filterView(_ filterView: FilterViewController, didSelectCategories categories: [String]) {
-        // 선택된 카테고리를 처리하는 로직
-        viewModel.selectedCategories = Set(categories)  // 배열을 Set으로 변환
+        let query = categories.joined(separator: " ")
+        print("선택된 카테고리 쿼리: \(query)")
+
+        placeSearchViewModel.searchPlace(input: query) { [weak self] (places: [Place]) in
+            guard let self = self else { return }
+            self.viewModel.places.append(contentsOf: places)
+            self.viewModel.filterPlaces()
+            self.updateClusteringWithSelectedCategories()
+
+            self.viewModel.updateMapMarkers()
+        }
+
         dismiss(animated: true, completion: nil)
     }
+    private func updateClusteringWithSelectedCategories() {
+        let filteredPlaces = viewModel.places.filter { place in
+            guard let types = place.types else { return false }
+            return !Set(types).isDisjoint(with: Set(viewModel.selectedCategories))
+        }
 
+
+        if filteredPlaces.isEmpty {
+            print("필터링된 장소가 없습니다.")
+        } else {
+            clusterManager.addPlaces(viewModel.places)
+        }
+    }
     func filterViewDidCancel(_ filterView: FilterViewController) {
-        // 필터 취소 로직
         dismiss(animated: true, completion: nil)
+    }
+}
+extension MapViewController: ClusterManagerDelegate {
+    func clusterManager(_ clusterManager: ClusterManager, didSelectPlace place: Place) {
+        let gymDetailVC = GymDetailViewController(place: place)
+        navigationController?.pushViewController(gymDetailVC, animated: true)
     }
 }
