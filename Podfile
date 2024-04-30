@@ -6,6 +6,7 @@ target 'JASS' do
  pod 'GooglePlaces'
  pod 'Moya'
  pod 'Kingfisher'
+ pod 'Google-Maps-iOS-Utils'
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 

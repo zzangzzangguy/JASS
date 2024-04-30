@@ -7,16 +7,20 @@ struct Place: Codable {
     let formatted_address: String?
     let geometry: Geometry
     let place_id: String
-    let type: String?
+    let types: [String]?
     let phoneNumber: String?
     let openingHours: String?
+
     var isGym: Bool {
-        let gymKeywords = ["헬스", "피트니스", "휘트니스", "운동센터"]
-        return gymKeywords.contains(where: name.localizedCaseInsensitiveContains)
+        guard let types = types else { return false }
+        return types.contains("gym") || types.contains("health")
     }
+
     var isPilates: Bool {
-        return name.localizedStandardContains("필라테스")
+        guard let types = types else { return false }
+        return types.contains("pilates")
     }
+
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: geometry.location.lat, longitude: geometry.location.lng)
     }

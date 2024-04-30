@@ -1,71 +1,61 @@
 import Foundation
 import UIKit
 import GoogleMaps
-import GooglePlaces
+import CoreLocation
 
 class MapViewModel {
-    var mapView: GMSMapView!
-    var markers: [GMSMarker] = []
+    var mapView: GMSMapView
     var places: [Place] = []
+    var filteredPlaces: [Place] = []
     var selectedCategories: Set<String> = []
-    var filteredPlaces: [Place] = [] {
+    var placeSearchViewModel: PlaceSearchViewModel
+    var clusterManager: ClusterManager
+    var currentLocation: CLLocation? {
         didSet {
-            updateMarkers?()
+            guard let currentLocation = currentLocation else { return }
+//            searchGymsNearCurrentLocation(currentLocation)
         }
     }
-    var updateMarkers: (() -> Void)?
-    var gymLoader: Gymload!
-    var currentLocation: CLLocation?
 
     init(mapView: GMSMapView, placeSearchViewModel: PlaceSearchViewModel) {
         self.mapView = mapView
-        self.gymLoader = Gymload(mapView: mapView, placeSearchViewModel: placeSearchViewModel)
+        self.placeSearchViewModel = placeSearchViewModel
+        self.clusterManager = ClusterManager(mapView: mapView)
     }
 
-    func loadGymsInBounds() {
-        gymLoader.loadGymsInBounds()
-    }
-
-    func searchGymsNearCurrentLocation() {
-        guard let currentLocation = currentLocation else {
-            print("현재 위치를 가져올 수 없습니다.")
-            return
+    func filterPlaces() {
+        if selectedCategories.isEmpty {
+            filteredPlaces = places
+        } else {
+            filteredPlaces = places.filter { place in
+                guard let types = place.types, !types.isEmpty else {
+                    return false
+                }
+                return types.contains(where: selectedCategories.contains)
+            }
         }
-
-        let coordinate = currentLocation.coordinate
-        let radius = 5000.0 // 5km 반경
-
-        gymLoader.searchGymsNearCoordinate(coordinate, radius: radius) { [weak self] places in
-            self?.places = places
-            self?.filteredPlaces = places
-        }
+        print("필터링 후 장소 수: \(filteredPlaces.count)")
+        updateMapMarkers()
     }
 
-    func filterPlaces(with options: [String]) {
-        filteredPlaces = places.filter { place in
-            guard let type = place.type else { return false }
-            return options.contains(type)
-        }
-    }
 
-    func updateMapView() {
+    func updateMapMarkers() {
         mapView.clear()
 
         for place in filteredPlaces {
             let marker = GMSMarker(position: place.coordinate)
             marker.title = place.name
+            marker.snippet = place.formatted_address ?? "주소 정보 없음"
+            marker.userData = place // 마커에 Place 객체 할당
             marker.map = mapView
-            markers.append(marker)
+            print("마커 추가: \(place.name), 주소: \(place.formatted_address ?? "정보 없음")")
         }
 
-        if let firstPlace = filteredPlaces.first {
-            let camera = GMSCameraPosition.camera(withTarget: firstPlace.coordinate, zoom: 15)
-            mapView.animate(to: camera)
+        if filteredPlaces.isEmpty {
+            print("필터링된 장소가 없습니다. 선택된 카테고리: \(selectedCategories)")
+        } else {
+            print("필터링된 장소 수: \(filteredPlaces.count)")
+            clusterManager.addPlaces(filteredPlaces)
         }
-    }
-
-    func didTapMarker(_ marker: GMSMarker) -> Place? {
-        guard let index = markers.firstIndex(of: marker) else { return nil }
-        return filteredPlaces[index]
     }
 }

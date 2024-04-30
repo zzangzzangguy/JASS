@@ -1,7 +1,3 @@
-import UIKit
-import GooglePlaces
-import Then
-import SnapKit
 
 import UIKit
 import GooglePlaces
@@ -15,6 +11,16 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     var scrollView: UIScrollView!
     var pageControl: UIPageControl!
     var images: [UIImage] = []
+
+    init(place: Place) { // 초기화 메소드 추가
+           gym = place
+           super.init(nibName: nil, bundle: nil)
+       }
+
+       required init?(coder: NSCoder) {
+           fatalError("init(coder:) has not been implemented")
+       }
+
 
     private let nameLabel = UILabel().then {
         $0.font = UIFont.systemFont(ofSize: 24, weight: .bold)
@@ -44,7 +50,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("Gym Data: \(gym)")
+        print("Gym Data: \(String(describing: gym))")
 
         setupUI()
         fetchPlaceDetails() // 장소 세부정보 가져오기
