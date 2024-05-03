@@ -11,10 +11,13 @@
 		4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */; };
 		4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */; };
 		4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */; };
+		4E9966C92BE12858002E3763 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 4E9966C82BE12858002E3763 /* SDWebImage */; };
+		4E9966CC2BE12CB1002E3763 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4E9966CB2BE12CB1002E3763 /* Kingfisher */; };
+		4E9966CE2BE141BF002E3763 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9966CD2BE141BF002E3763 /* LocationManager.swift */; };
+		4E9966D02BE141D9002E3763 /* FavoriteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9966CF2BE141D9002E3763 /* FavoriteManager.swift */; };
 		4EA179CF2B5BB241006A1D51 /* UIIconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */; };
 		4EA179D12B662512006A1D51 /* MapView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D02B662512006A1D51 /* MapView+Extension.swift */; };
 		4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D22B6837EA006A1D51 /* Filter.swift */; };
-		4EA17A042B7B8574006A1D51 /* Gymload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA17A032B7B8574006A1D51 /* Gymload.swift */; };
 		4EF0BE222BCCE6350076074E /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF0BE212BCCE6350076074E /* Then */; };
 		4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */; };
 		4EF9312C2B1C912E00E5794B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9312B2B1C912E00E5794B /* AppDelegate.swift */; };
@@ -71,10 +74,11 @@
 		4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
 		4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterManager.swift; sourceTree = "<group>"; };
+		4E9966CD2BE141BF002E3763 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		4E9966CF2BE141D9002E3763 /* FavoriteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteManager.swift; sourceTree = "<group>"; };
 		4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIIconImage.swift; sourceTree = SOURCE_ROOT; };
 		4EA179D02B662512006A1D51 /* MapView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Extension.swift"; sourceTree = "<group>"; };
 		4EA179D22B6837EA006A1D51 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
-		4EA17A032B7B8574006A1D51 /* Gymload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gymload.swift; sourceTree = "<group>"; };
 		4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymDetailViewController.swift; sourceTree = "<group>"; };
 		4EF0BE252BCD2D750076074E /* GooglePlaces.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GooglePlaces.xcframework; path = Pods/GooglePlaces/Frameworks/GooglePlaces.xcframework; sourceTree = "<group>"; };
 		4EF931282B1C912E00E5794B /* JASS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JASS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -117,7 +121,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E9966C92BE12858002E3763 /* SDWebImage in Frameworks */,
 				4EF0BE222BCCE6350076074E /* Then in Frameworks */,
+				4E9966CC2BE12CB1002E3763 /* Kingfisher in Frameworks */,
 				4EF931782B294E3700E5794B /* RealmSwift in Frameworks */,
 				4EF931762B294E3700E5794B /* Realm in Frameworks */,
 				83EF4D61803A49947903D872 /* Pods_JASS.framework in Frameworks */,
@@ -158,6 +164,8 @@
 		4EA179CD2B5BB234006A1D51 /* Extension+ */ = {
 			isa = PBXGroup;
 			children = (
+				4E9966CD2BE141BF002E3763 /* LocationManager.swift */,
+				4E9966CF2BE141D9002E3763 /* FavoriteManager.swift */,
 				4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */,
 				4EA179D02B662512006A1D51 /* MapView+Extension.swift */,
 			);
@@ -239,7 +247,6 @@
 		4EF9318B2B3E9A2C00E5794B /* Service */ = {
 			isa = PBXGroup;
 			children = (
-				4EA17A032B7B8574006A1D51 /* Gymload.swift */,
 				4EF931612B218AFC00E5794B /* GooglePlaceService.swift */,
 				4EA179D22B6837EA006A1D51 /* Filter.swift */,
 			);
@@ -315,6 +322,8 @@
 				4EF931752B294E3700E5794B /* Realm */,
 				4EF931772B294E3700E5794B /* RealmSwift */,
 				4EF0BE212BCCE6350076074E /* Then */,
+				4E9966C82BE12858002E3763 /* SDWebImage */,
+				4E9966CB2BE12CB1002E3763 /* Kingfisher */,
 			);
 			productName = JASS;
 			productReference = 4EF931282B1C912E00E5794B /* JASS.app */;
@@ -396,6 +405,8 @@
 				4EF931632B218B3800E5794B /* XCRemoteSwiftPackageReference "SnapKit" */,
 				4EF931742B294DE900E5794B /* XCRemoteSwiftPackageReference "realm-swift" */,
 				4EF0BE202BCCE6350076074E /* XCRemoteSwiftPackageReference "Then" */,
+				4E9966C72BE12857002E3763 /* XCRemoteSwiftPackageReference "SDWebImage" */,
+				4E9966CA2BE12CB1002E3763 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 4EF931292B1C912E00E5794B /* Products */;
 			projectDirPath = "";
@@ -580,15 +591,16 @@
 				4EF9312C2B1C912E00E5794B /* AppDelegate.swift in Sources */,
 				4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */,
 				4EF9317C2B29DB6400E5794B /* RecentSearchView.swift in Sources */,
+				4E9966D02BE141D9002E3763 /* FavoriteManager.swift in Sources */,
 				4EA179CF2B5BB241006A1D51 /* UIIconImage.swift in Sources */,
 				4EF931712B284D1700E5794B /* SearchViewControllerDelegate.swift in Sources */,
 				4EF931842B3370A600E5794B /* SearchHistory.swift in Sources */,
 				4EF9316F2B21C3A300E5794B /* SearchViewController.swift in Sources */,
-				4EA17A042B7B8574006A1D51 /* Gymload.swift in Sources */,
 				4EF9316D2B21C32D00E5794B /* MapViewController.swift in Sources */,
 				4EF931882B3B426D00E5794B /* RecentPlacesViewModel.swift in Sources */,
 				4EF931922B46CB5E00E5794B /* MainViewController.swift in Sources */,
 				4EF931822B336EEB00E5794B /* SearchRecentViewModel.swift in Sources */,
+				4E9966CE2BE141BF002E3763 /* LocationManager.swift in Sources */,
 				4EF9318A2B3D5FEC00E5794B /* RecentSearchCell.swift in Sources */,
 				4EF931622B218AFC00E5794B /* GooglePlaceService.swift in Sources */,
 				4EF9317E2B29DB7800E5794B /* SearchResultsCell.swift in Sources */,
@@ -944,6 +956,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		4E9966C72BE12857002E3763 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.19.1;
+			};
+		};
+		4E9966CA2BE12CB1002E3763 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.11.0;
+			};
+		};
 		4EF0BE202BCCE6350076074E /* XCRemoteSwiftPackageReference "Then" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/devxoul/Then.git";
@@ -971,6 +999,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4E9966C82BE12858002E3763 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E9966C72BE12857002E3763 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		4E9966CB2BE12CB1002E3763 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E9966CA2BE12CB1002E3763 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
 		4EF0BE212BCCE6350076074E /* Then */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 4EF0BE202BCCE6350076074E /* XCRemoteSwiftPackageReference "Then" */;

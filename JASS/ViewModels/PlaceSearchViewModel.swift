@@ -17,7 +17,7 @@ class PlaceSearchViewModel {
 
    func searchPlacesNearCoordinate(_ coordinate: CLLocationCoordinate2D, radius: Double, types: [String], completion: @escaping ([Place]) -> Void) {
        let location = "\(coordinate.latitude),\(coordinate.longitude)"
-       let typeFilter = types.joined(separator: "|")
+//       let typeFilter = types.joined(separator: "|")
        let parameters: [String: String] = [
               "location": location,
               "radius": "\(Int(radius))",
@@ -85,6 +85,7 @@ class PlaceSearchViewModel {
            "key": apiKey,
            "query": input
        ]
+       print("검색 :\(parameters)")
 
        provider.request(.textSearch(parameters: parameters)) { result in
            switch result {

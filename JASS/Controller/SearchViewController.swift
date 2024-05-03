@@ -4,7 +4,6 @@ import GooglePlaces
 import SnapKit
 
 class SearchViewController: UIViewController {
-
     // MARK: - Properties
     private var searchBar: UISearchBar!
     private var filterContainerView: UIView!
@@ -85,8 +84,6 @@ class SearchViewController: UIViewController {
 
     private func setupSearchResultsView() {
         searchResultsView = SearchResultsView()
-        searchResultsView.tableView.delegate = self
-        searchResultsView.tableView.dataSource = self
         searchResultsView.viewModel = placeSearchViewModel
         searchResultsView.delegate = self
         view.addSubview(searchResultsView)
@@ -98,8 +95,8 @@ class SearchViewController: UIViewController {
     }
 
     private func setupMapView() {
-        let camera = GMSCameraPosition.camera(withLatitude: -33.86, longitude: 151.20, zoom: 6.0)
-        mapView = GMSMapView(frame: view.bounds)
+//        let camera = GMSCameraPosition.camera(withLatitude: -33.86, longitude: 151.20, zoom: 6.0)
+//        mapView = GMSMapView(frame: view.bounds)
         view.addSubview(mapView)
         view.sendSubviewToBack(mapView)
         mapView.isHidden = true
@@ -114,7 +111,7 @@ class SearchViewController: UIViewController {
     private func setupPlaceSearchViewModel() {
         placeSearchViewModel.updateSearchResults = { [weak self] in
             DispatchQueue.main.async {
-                self?.searchResultsView.tableView.reloadData()
+                self?.searchResultsView.update(with: self?.placeSearchViewModel.searchResults ?? [])
                 self?.showSearchResultsView()
             }
         }
@@ -142,28 +139,13 @@ class SearchViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: task)
     }
 
-    // MARK: - Table View Delegate & Data Source
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return placeSearchViewModel.searchResults.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultsCell", for: indexPath) as? SearchResultsCell else {
-            return UITableViewCell()
-        }
-        cell.configure(with: placeSearchViewModel.searchResults[indexPath.row])
-        return cell
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedPlace = placeSearchViewModel.searchResults[indexPath.row]
-        searchRecentViewModel.saveSearchHistory(query: selectedPlace.name)
-        showMapViewWithPlace(selectedPlace)
-    }
-
     // MARK: - RecentSearchesViewDelegate & SearchResultsViewDelegate
     func didSelectPlace(_ place: Place) {
         showMapViewWithPlace(place)
+    }
+
+    func didTapFavoriteButton(for place: Place) {
+        // 즐겨찾기 버튼 탭 시 동작 구현
     }
 
     func didSelectRecentSearch(query: String) {
@@ -187,7 +169,6 @@ class SearchViewController: UIViewController {
         mapView.isHidden = true
     }
 
-    
     private func showMapViewWithPlace(_ place: Place) {
         mapView.addCustomMarker(at: place.coordinate, title: place.name)
         mapView.animateToLocation(place.coordinate)
@@ -201,26 +182,25 @@ class SearchViewController: UIViewController {
 // MARK: - Extensions
 extension SearchViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-           let currentText = searchBar.text ?? ""
-           let updatedText = (currentText as NSString).replacingCharacters(in: range, with: text)
+        let currentText = searchBar.text ?? ""
+        let updatedText = (currentText as NSString).replacingCharacters(in: range, with: text)
 
-           searchTask?.cancel()
-           let task = DispatchWorkItem { [weak self] in
-               self?.placeSearchViewModel.searchPlace(input: updatedText) { places in
-                   DispatchQueue.main.async {
-                       self?.searchResultsView.update(with: places)
-                   }
-               }
-           }
+        searchTask?.cancel()
+        let task = DispatchWorkItem { [weak self] in
+            self?.placeSearchViewModel.searchPlace(input: updatedText) { places in
+                DispatchQueue.main.async {
+                    self?.searchResultsView.update(with: places)
+                }
+            }
+        }
 
-           searchTask = task
-           DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: task)
+        searchTask = task
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: task)
 
-           return true
-       }
-   }
+        return true
+    }
+}
 
-extension SearchViewController: UITableViewDelegate, UITableViewDataSource {}
 extension SearchViewController: RecentSearchesViewDelegate {}
 extension SearchViewController: SearchResultsViewDelegate {}
 extension SearchViewController: GMSMapViewDelegate {

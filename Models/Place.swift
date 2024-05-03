@@ -10,6 +10,9 @@ struct Place: Codable {
     let types: [String]?
     let phoneNumber: String?
     let openingHours: String?
+    let imageURL: String?
+
+
 
     var isGym: Bool {
         guard let types = types else { return false }
