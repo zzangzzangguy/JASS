@@ -2,6 +2,7 @@ import UIKit
 import SnapKit
 import Kingfisher
 import GoogleMaps
+import GooglePlaces
 
 class SearchResultCell: UITableViewCell {
     static let reuseIdentifier = "SearchResultCell"
@@ -36,6 +37,8 @@ class SearchResultCell: UITableViewCell {
 
     weak var delegate: SearchResultCellDelegate?
 
+    private let loadingIndicator = UIActivityIndicatorView(style: .medium)
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
@@ -51,6 +54,7 @@ class SearchResultCell: UITableViewCell {
         contentView.addSubview(addressLabel)
         contentView.addSubview(distanceLabel)
         contentView.addSubview(favoriteButton)
+        contentView.addSubview(loadingIndicator)
 
         placeImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
@@ -81,6 +85,10 @@ class SearchResultCell: UITableViewCell {
             make.trailing.equalToSuperview().inset(20)
         }
 
+        loadingIndicator.snp.makeConstraints { make in
+            make.center.equalTo(placeImageView)
+        }
+
         favoriteButton.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
     }
 
@@ -94,13 +102,59 @@ class SearchResultCell: UITableViewCell {
         } else {
             distanceLabel.text = "거리 정보 없음"
         }
-        
+
+        if let photoMetadatas = place.photos {
+               loadingIndicator.startAnimating()
+               loadFirstPhotoForPlace(place, photoMetadatas: photoMetadatas)
+           } else {
+               placeImageView.image = UIImage(named: "defaultImage")
+               loadingIndicator.stopAnimating()
+           }
+
 
         let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
         favoriteButton.tintColor = isFavorite ? .red : .gray
     }
 
-    
+    private func loadFirstPhotoForPlace(_ place: Place, photoMetadatas: [Photo]) {
+        if let firstPhotoMetadata = photoMetadatas.first {
+            loadImageForMetadata(place: place, photo: firstPhotoMetadata)
+        } else {
+            placeImageView.image = UIImage(named: "defaultImage")
+            loadingIndicator.stopAnimating()
+        }
+    }
+    private func loadImageForMetadata(place: Place, photo: Photo) {
+        let maxWidth = Int(placeImageView.bounds.size.width)
+        GMSPlacesClient.shared().lookUpPhotos(forPlaceID: place.place_id) { [weak self] (photoMetadataList, error) in
+            guard let self = self else { return }
+
+            self.loadingIndicator.stopAnimating()
+
+            if let error = error {
+                print("Error loading photo: \(error.localizedDescription)")
+                self.placeImageView.image = UIImage(named: "defaultImage")
+                return
+            }
+
+            guard let photoMetadata = photoMetadataList?.results.first else {
+                self.placeImageView.image = UIImage(named: "defaultImage")
+                return
+            }
+
+            GMSPlacesClient.shared().loadPlacePhoto(photoMetadata, constrainedTo: CGSize(width: maxWidth, height: maxWidth), scale: UIScreen.main.scale) { [weak self] (photo, error) in
+                guard let self = self else { return }
+
+                if let error = error {
+                    print("Error loading photo: \(error.localizedDescription)")
+                    self.placeImageView.image = UIImage(named: "defaultImage")
+                } else if let photo = photo {
+                    self.placeImageView.image = photo
+                }
+            }
+        }
+    }
+
     @objc private func favoriteButtonTapped() {
         delegate?.didTapFavoriteButton(for: self)
     }

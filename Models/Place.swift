@@ -1,5 +1,5 @@
 import Foundation
-import CoreLocation
+//import CoreLocation
 import GooglePlaces
 
 struct Place: Codable {
@@ -10,9 +10,7 @@ struct Place: Codable {
     let types: [String]?
     let phoneNumber: String?
     let openingHours: String?
-    let imageURL: String?
-
-
+    let photos: [Photo]?  // 수정: imageURL 프로퍼티 제거, photos 프로퍼티 추가
 
     var isGym: Bool {
         guard let types = types else { return false }
@@ -36,8 +34,16 @@ struct Place: Codable {
         let lat: Double
         let lng: Double
     }
+}
 
-    struct SearchResults: Codable {
-        let results: [Place]
+struct Photo: Codable {  // 추가: Photo 구조체 추가
+    let height: Int
+    let width: Int
+    let photoReference: String
+
+    enum CodingKeys: String, CodingKey {
+        case height
+        case width
+        case photoReference = "photo_reference"
     }
 }
