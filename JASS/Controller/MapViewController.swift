@@ -105,6 +105,11 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
     private func setupSearchViews() {
         recentSearchesView = RecentSearchesView()
         recentSearchesView.searchRecentViewModel = searchRecentViewModel
+        recentSearchesView.didSelectRecentSearch = { [weak self] query in
+            guard let self = self else { return }
+            self.searchController.searchBar.text = query
+            self.searchPlace(query)
+        }
         view.addSubview(recentSearchesView)
         recentSearchesView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
@@ -124,7 +129,6 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         }
         searchResultsView.isHidden = true
     }
-
     private func setupFilterView() {
         let filterView = FilterViewController()
         filterView.delegate = self
@@ -146,6 +150,21 @@ class MapViewController: UIViewController, UISearchBarDelegate, SearchResultsVie
         searchController.searchBar.placeholder = "지역, 매장명을 검색해주세요"
         navigationItem.searchController = searchController
     }
+    
+    private func setupSearchRecentViewModel() {
+        searchRecentViewModel.didSelectRecentSearch = { [weak self] query in
+            guard let self = self else { return }
+            self.searchController.searchBar.text = query
+            self.searchPlace(query)
+        }
+    }
+    private func searchPlace(_ query: String) {
+           placeSearchViewModel.searchPlace(input: query) { [weak self] places in
+               guard let self = self else { return }
+               self.searchResultsView.update(with: places)
+               self.showSearchResultsView()
+           }
+       }
 
     private func setupZoomButtons() {
         configureZoomButton(button: zoomInButton, systemName: "plus.magnifyingglass", action: #selector(zoomIn))
@@ -363,10 +382,3 @@ extension MapViewController: ClusterManagerDelegate {
         navigationController?.pushViewController(gymDetailVC, animated: true)
     }
 }
-//extension MapViewController {
-//    func mapView(_ mapView: GMSMapView, didFinishTileRendering renderer: GMSTileLayer) {
-//        mapView.setMinZoom(4, maxZoom: mapView.maxZoom)
-//    }
-//
-//    // 다른 델리게이트 메서드...
-//}

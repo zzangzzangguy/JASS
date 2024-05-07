@@ -36,6 +36,8 @@ class SearchResultCell: UITableViewCell {
     }
 
     weak var delegate: SearchResultCellDelegate?
+    var place: Place?
+    
 
     private let loadingIndicator = UIActivityIndicatorView(style: .medium)
 
@@ -104,12 +106,12 @@ class SearchResultCell: UITableViewCell {
         }
 
         if let photoMetadatas = place.photos {
-               loadingIndicator.startAnimating()
-               loadFirstPhotoForPlace(place, photoMetadatas: photoMetadatas)
-           } else {
-               placeImageView.image = UIImage(named: "defaultImage")
-               loadingIndicator.stopAnimating()
-           }
+            loadingIndicator.startAnimating()
+            loadFirstPhotoForPlace(place, photoMetadatas: photoMetadatas)
+        } else {
+            placeImageView.image = UIImage(named: "defaultImage")
+            loadingIndicator.stopAnimating()
+        }
 
 
         let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
@@ -156,6 +158,14 @@ class SearchResultCell: UITableViewCell {
     }
 
     @objc private func favoriteButtonTapped() {
-        delegate?.didTapFavoriteButton(for: self)
-    }
-}
+           guard let place = place else { return }
+
+           if FavoritesManager.shared.isFavorite(placeID: place.place_id) {
+               FavoritesManager.shared.removeFavorite(placeID: place.place_id)
+               favoriteButton.setImage(UIImage(systemName: "heart"), for: .normal)
+           } else {
+               FavoritesManager.shared.addFavorite(placeID: place.place_id)
+               favoriteButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+           }
+       }
+   }

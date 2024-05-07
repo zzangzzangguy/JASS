@@ -3,9 +3,14 @@ import UIKit
 
 class SearchRecentViewModel {
     let realm: Realm
-
     var updateRecentSearches: (() -> Void)?
     var handleError: ((Error) -> Void)?
+
+    // 최근 검색어 캐시 추가
+    private var cachedRecentSearches: [String] = []
+
+    // 이전 코드에서는 없었던 프로퍼티 추가
+    var didSelectRecentSearch: ((String) -> Void)?
 
     init() {
         do {
@@ -18,20 +23,36 @@ class SearchRecentViewModel {
     }
 
     func loadRecentSearches() -> [String] {
-        return Array(realm.objects(SearchHistory.self).sorted(byKeyPath: "date", ascending: false).map { $0.query })
+        if !cachedRecentSearches.isEmpty {
+            return cachedRecentSearches
+        }
+
+        let recentSearches = Array(realm.objects(SearchHistory.self).sorted(byKeyPath: "date", ascending: false).map { $0.query })
+        cachedRecentSearches = recentSearches
+        return recentSearches
     }
 
     func saveSearchHistory(query: String) {
         do {
             try realm.write {
-                if loadRecentSearches().count >= 20 {
+                if let existingHistory = realm.objects(SearchHistory.self).filter("query == %@", query).first {
+                    realm.delete(existingHistory)
+                }
+
+                if realm.objects(SearchHistory.self).count >= 20 {
                     if let oldestSearch = realm.objects(SearchHistory.self).sorted(byKeyPath: "date", ascending: true).first {
                         realm.delete(oldestSearch)
                     }
                 }
+
                 realm.add(SearchHistory(query: query))
             }
             print("검색 이력 저장 완료: \(query)")
+
+            // 캐시 업데이트
+            cachedRecentSearches.removeAll(where: { $0 == query })
+            cachedRecentSearches.insert(query, at: 0)
+
             updateRecentSearches?()
         } catch {
             print("Realm 쓰기 오류: \(error)")
@@ -49,10 +70,18 @@ class SearchRecentViewModel {
                 realm.delete(historyToDelete)
             }
             print("삭제된 검색 이력: \(query)")
+
+            // 캐시에서 삭제
+            cachedRecentSearches.removeAll(where: { $0 == query })
+
             updateRecentSearches?()
         } catch {
             print("Realm 쓰기 오류: \(error)")
             handleError?(error)
         }
+    }
+
+    func selectRecentSearch(query: String) {
+        didSelectRecentSearch?(query)
     }
 }
