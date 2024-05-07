@@ -1,16 +1,12 @@
 import UIKit
 import SnapKit
 
-protocol RecentSearchesViewDelegate: AnyObject {
-    func didSelectRecentSearch(query: String)
-    func didDeleteRecentSearch(query: String)
-}
-
-class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource, RecentSearchCellDelegate {
-
+class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource {
     var tableView: UITableView!
     var searchRecentViewModel: SearchRecentViewModel!
-    weak var delegate: RecentSearchesViewDelegate?
+
+    var didSelectRecentSearch: ((String) -> Void)?
+    var didDeleteRecentSearch: ((String) -> Void)?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -62,7 +58,10 @@ class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource, Re
             return UITableViewCell()
         }
         cell.configure(with: recentSearches[indexPath.row])
-        cell.delegate = self
+        cell.deleteButtonTapped = { [weak self] in
+            guard let self = self else { return }
+            self.didDeleteRecentSearch?(recentSearches[indexPath.row])
+        }
         return cell
     }
 
@@ -70,14 +69,9 @@ class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource, Re
         let recentSearches = searchRecentViewModel.loadRecentSearches()
         if !recentSearches.isEmpty {
             let recentSearch = recentSearches[indexPath.row]
-            delegate?.didSelectRecentSearch(query: recentSearch)
+            didSelectRecentSearch?(recentSearch)
         }
         tableView.deselectRow(at: indexPath, animated: true)
-    }
-
-    func didDeleteRecentSearch(query: String) {
-        searchRecentViewModel.deleteSearchHistory(query: query)
-        updateSearchHistoryViews()
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -87,7 +81,6 @@ class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource, Re
         headerLabel.font = UIFont.boldSystemFont(ofSize: 18)
         headerLabel.textColor = .black
         headerView.addSubview(headerLabel)
-
         headerLabel.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.leading.equalToSuperview().offset(20)
@@ -97,5 +90,9 @@ class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource, Re
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 40
+    }
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 44
     }
 }

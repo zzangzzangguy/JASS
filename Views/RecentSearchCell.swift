@@ -1,9 +1,5 @@
 import UIKit
 
-protocol RecentSearchCellDelegate: AnyObject {
-    func didDeleteRecentSearch(query: String)
-}
-
 class RecentSearchCell: UITableViewCell {
     static let reuseIdentifier = "RecentSearchCell"
 
@@ -20,7 +16,7 @@ class RecentSearchCell: UITableViewCell {
         return button
     }()
 
-    weak var delegate: RecentSearchCellDelegate?
+    var deleteButtonTapped: (() -> Void)?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -46,15 +42,14 @@ class RecentSearchCell: UITableViewCell {
             make.width.height.equalTo(24)
         }
 
-        deleteButton.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
+        deleteButton.addTarget(self, action: #selector(deleteButtonTapped(_:)), for: .touchUpInside)
     }
 
     func configure(with query: String) {
         queryLabel.text = query
     }
 
-    @objc func deleteButtonTapped() {
-        guard let query = queryLabel.text else { return }
-        delegate?.didDeleteRecentSearch(query: query)
+    @objc func deleteButtonTapped(_ sender: UIButton) {
+        deleteButtonTapped?()
     }
 }
