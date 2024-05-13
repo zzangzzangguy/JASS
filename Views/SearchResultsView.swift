@@ -9,11 +9,12 @@ class SearchResultsView: UIView {
         $0.rowHeight = 100
     }
 
-    var viewModel: PlaceSearchViewModel?
+    var viewModel: SearchResultsViewModel?
     weak var delegate: SearchResultsViewDelegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setupBindings()
         setupViews()
     }
 
@@ -26,13 +27,20 @@ class SearchResultsView: UIView {
         tableView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-
         tableView.dataSource = self
         tableView.delegate = self
     }
 
+    private func setupBindings() {
+        viewModel?.updateSearchResults = { [weak self] in
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
+        }
+    }
+
     func update(with places: [Place]) {
-        viewModel?.searchResults = places
+        viewModel?.loadSearchResults(with: places)
         tableView.reloadData()
     }
 }
@@ -44,11 +52,13 @@ extension SearchResultsView: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultCell", for: indexPath) as! SearchResultCell
+
         if let place = viewModel?.searchResults[indexPath.row] {
             let currentLocation = LocationManager.shared.getCurrentLocation()
             cell.configure(with: place, currentLocation: currentLocation)
             cell.delegate = self
         }
+
         return cell
     }
 }
@@ -63,23 +73,35 @@ extension SearchResultsView: UITableViewDelegate {
 extension SearchResultsView: SearchResultCellDelegate {
     func didTapFavoriteButton(for cell: SearchResultCell) {
         guard let indexPath = tableView.indexPath(for: cell),
-              let place = viewModel?.searchResults[indexPath.row] else { return }
-
-        if FavoritesManager.shared.isFavorite(placeID: place.place_id) {
-            FavoritesManager.shared.removeFavorite(placeID: place.place_id)
-        } else {
-            FavoritesManager.shared.addFavorite(placeID: place.place_id)
+              let place = viewModel?.searchResults[indexPath.row] else {
+            return
         }
 
-        delegate?.didTapFavoriteButton(for: place)
+        let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
+        viewModel?.updateFavoriteStatus(for: place)
+
+        cell.updateFavoriteButton(isFavorite: !isFavorite)
+
+        delegate?.showToastForFavorite(place: place, isAdded: !isFavorite)
     }
 }
 
 protocol SearchResultsViewDelegate: AnyObject {
     func didSelectPlace(_ place: Place)
-    func didTapFavoriteButton(for place: Place)
+    func showToastForFavorite(place: Place, isAdded: Bool)
+
+
 }
 
-protocol SearchResultCellDelegate: AnyObject {
-    func didTapFavoriteButton(for cell: SearchResultCell)
+
+extension SearchResultsView {
+    func indexPath(for cell: UITableViewCell) -> IndexPath? {
+        return tableView.indexPath(for: cell)
+    }
+
+    func reloadRowAtIndexPath(_ indexPath: IndexPath) {
+        DispatchQueue.main.async {
+            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+    }
 }

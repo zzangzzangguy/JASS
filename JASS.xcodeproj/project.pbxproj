@@ -18,6 +18,12 @@
 		4EA179CF2B5BB241006A1D51 /* UIIconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */; };
 		4EA179D12B662512006A1D51 /* MapView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D02B662512006A1D51 /* MapView+Extension.swift */; };
 		4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D22B6837EA006A1D51 /* Filter.swift */; };
+		4ECA89DC2BF0BE24006C6DEC /* SearchResultsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ECA89DB2BF0BE24006C6DEC /* SearchResultsViewModel.swift */; };
+		4ECA89DE2BF0DBA7006C6DEC /* FavoritePlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ECA89DD2BF0DBA7006C6DEC /* FavoritePlace.swift */; };
+		4ECA89E02BF11978006C6DEC /* ToastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ECA89DF2BF11978006C6DEC /* ToastManager.swift */; };
+		4EDB89822BEA9F8A001C558E /* FavoritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDB89812BEA9F8A001C558E /* FavoritesViewController.swift */; };
+		4EDB89862BEAA118001C558E /* FavoritePlaceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDB89852BEAA118001C558E /* FavoritePlaceCell.swift */; };
+		4EDB89892BEAA6C0001C558E /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 4EDB89882BEAA6C0001C558E /* Toast */; };
 		4EF0BE222BCCE6350076074E /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF0BE212BCCE6350076074E /* Then */; };
 		4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */; };
 		4EF9312C2B1C912E00E5794B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9312B2B1C912E00E5794B /* AppDelegate.swift */; };
@@ -79,6 +85,11 @@
 		4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIIconImage.swift; sourceTree = SOURCE_ROOT; };
 		4EA179D02B662512006A1D51 /* MapView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Extension.swift"; sourceTree = "<group>"; };
 		4EA179D22B6837EA006A1D51 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
+		4ECA89DB2BF0BE24006C6DEC /* SearchResultsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsViewModel.swift; sourceTree = "<group>"; };
+		4ECA89DD2BF0DBA7006C6DEC /* FavoritePlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FavoritePlace.swift; path = "/Users/ganghoseong/JASS/Extension+/FavoritePlace.swift"; sourceTree = "<absolute>"; };
+		4ECA89DF2BF11978006C6DEC /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastManager.swift; sourceTree = "<group>"; };
+		4EDB89812BEA9F8A001C558E /* FavoritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewController.swift; sourceTree = "<group>"; };
+		4EDB89852BEAA118001C558E /* FavoritePlaceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePlaceCell.swift; sourceTree = "<group>"; };
 		4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymDetailViewController.swift; sourceTree = "<group>"; };
 		4EF0BE252BCD2D750076074E /* GooglePlaces.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GooglePlaces.xcframework; path = Pods/GooglePlaces/Frameworks/GooglePlaces.xcframework; sourceTree = "<group>"; };
 		4EF931282B1C912E00E5794B /* JASS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JASS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -121,6 +132,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EDB89892BEAA6C0001C558E /* Toast in Frameworks */,
 				4E9966C92BE12858002E3763 /* SDWebImage in Frameworks */,
 				4EF0BE222BCCE6350076074E /* Then in Frameworks */,
 				4E9966CC2BE12CB1002E3763 /* Kingfisher in Frameworks */,
@@ -164,6 +176,8 @@
 		4EA179CD2B5BB234006A1D51 /* Extension+ */ = {
 			isa = PBXGroup;
 			children = (
+				4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */,
+				4ECA89DF2BF11978006C6DEC /* ToastManager.swift */,
 				4E9966CD2BE141BF002E3763 /* LocationManager.swift */,
 				4E9966CF2BE141D9002E3763 /* FavoriteManager.swift */,
 				4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */,
@@ -181,6 +195,7 @@
 				4EF9316E2B21C3A300E5794B /* SearchViewController.swift */,
 				4EF931852B3AE3CA00E5794B /* TabBarController.swift */,
 				4EF931912B46CB5E00E5794B /* MainViewController.swift */,
+				4EDB89812BEA9F8A001C558E /* FavoritesViewController.swift */,
 				4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */,
 			);
 			path = Controller;
@@ -249,6 +264,7 @@
 			children = (
 				4EF931612B218AFC00E5794B /* GooglePlaceService.swift */,
 				4EA179D22B6837EA006A1D51 /* Filter.swift */,
+				4ECA89DD2BF0DBA7006C6DEC /* FavoritePlace.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -265,6 +281,7 @@
 		4EF9318D2B3EA06E00E5794B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4EDB89852BEAA118001C558E /* FavoritePlaceCell.swift */,
 				4EF9317F2B31918200E5794B /* SearchResultsView.swift */,
 				4EF9317D2B29DB7800E5794B /* SearchResultsCell.swift */,
 				4EF9317B2B29DB6400E5794B /* RecentSearchView.swift */,
@@ -280,7 +297,7 @@
 				4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */,
 				4EF931812B336EEB00E5794B /* SearchRecentViewModel.swift */,
 				4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */,
-				4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */,
+				4ECA89DB2BF0BE24006C6DEC /* SearchResultsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -324,6 +341,7 @@
 				4EF0BE212BCCE6350076074E /* Then */,
 				4E9966C82BE12858002E3763 /* SDWebImage */,
 				4E9966CB2BE12CB1002E3763 /* Kingfisher */,
+				4EDB89882BEAA6C0001C558E /* Toast */,
 			);
 			productName = JASS;
 			productReference = 4EF931282B1C912E00E5794B /* JASS.app */;
@@ -407,6 +425,7 @@
 				4EF0BE202BCCE6350076074E /* XCRemoteSwiftPackageReference "Then" */,
 				4E9966C72BE12857002E3763 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				4E9966CA2BE12CB1002E3763 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				4EDB89872BEAA6C0001C558E /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 			);
 			productRefGroup = 4EF931292B1C912E00E5794B /* Products */;
 			projectDirPath = "";
@@ -589,7 +608,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				4EF9312C2B1C912E00E5794B /* AppDelegate.swift in Sources */,
+				4EDB89822BEA9F8A001C558E /* FavoritesViewController.swift in Sources */,
 				4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */,
+				4EDB89862BEAA118001C558E /* FavoritePlaceCell.swift in Sources */,
 				4EF9317C2B29DB6400E5794B /* RecentSearchView.swift in Sources */,
 				4E9966D02BE141D9002E3763 /* FavoriteManager.swift in Sources */,
 				4EA179CF2B5BB241006A1D51 /* UIIconImage.swift in Sources */,
@@ -597,13 +618,16 @@
 				4EF931842B3370A600E5794B /* SearchHistory.swift in Sources */,
 				4EF9316F2B21C3A300E5794B /* SearchViewController.swift in Sources */,
 				4EF9316D2B21C32D00E5794B /* MapViewController.swift in Sources */,
+				4ECA89DC2BF0BE24006C6DEC /* SearchResultsViewModel.swift in Sources */,
 				4EF931882B3B426D00E5794B /* RecentPlacesViewModel.swift in Sources */,
+				4ECA89DE2BF0DBA7006C6DEC /* FavoritePlace.swift in Sources */,
 				4EF931922B46CB5E00E5794B /* MainViewController.swift in Sources */,
 				4EF931822B336EEB00E5794B /* SearchRecentViewModel.swift in Sources */,
 				4E9966CE2BE141BF002E3763 /* LocationManager.swift in Sources */,
 				4EF9318A2B3D5FEC00E5794B /* RecentSearchCell.swift in Sources */,
 				4EF931622B218AFC00E5794B /* GooglePlaceService.swift in Sources */,
 				4EF9317E2B29DB7800E5794B /* SearchResultsCell.swift in Sources */,
+				4ECA89E02BF11978006C6DEC /* ToastManager.swift in Sources */,
 				4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */,
 				4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */,
 				4EA179D12B662512006A1D51 /* MapView+Extension.swift in Sources */,
@@ -972,6 +996,14 @@
 				minimumVersion = 7.11.0;
 			};
 		};
+		4EDB89872BEAA6C0001C558E /* XCRemoteSwiftPackageReference "Toast-Swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scalessec/Toast-Swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.1;
+			};
+		};
 		4EF0BE202BCCE6350076074E /* XCRemoteSwiftPackageReference "Then" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/devxoul/Then.git";
@@ -1008,6 +1040,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4E9966CA2BE12CB1002E3763 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		4EDB89882BEAA6C0001C558E /* Toast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4EDB89872BEAA6C0001C558E /* XCRemoteSwiftPackageReference "Toast-Swift" */;
+			productName = Toast;
 		};
 		4EF0BE212BCCE6350076074E /* Then */ = {
 			isa = XCSwiftPackageProductDependency;

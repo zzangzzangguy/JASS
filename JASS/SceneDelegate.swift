@@ -30,10 +30,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             image: UIImage(systemName: "map"),
             selectedImage: UIImage(systemName: "map.fill")
         )
+
+        let favoritesViewController = FavoritesViewController()
+        favoritesViewController.tabBarItem = UITabBarItem(
+            title: "즐겨찾기",
+            image: UIImage(systemName: "heart"),
+            selectedImage: UIImage(systemName: "heart.fill")
+        )
+
         UITabBar.appearance().backgroundColor = UIColor.systemBackground
 
-        tabBarController.viewControllers = [mainViewController, mapViewController].map { UINavigationController(rootViewController: $0) }
-
+        tabBarController.viewControllers = [UINavigationController(rootViewController: mainViewController),
+                                                 UINavigationController(rootViewController: mapViewController),
+                                                 UINavigationController(rootViewController: favoritesViewController)]
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()

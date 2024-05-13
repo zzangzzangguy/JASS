@@ -23,7 +23,6 @@ class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource {
         tableView.dataSource = self
         tableView.separatorStyle = .none
         addSubview(tableView)
-
         tableView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
@@ -34,7 +33,6 @@ class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource {
     func updateSearchHistoryViews() {
         let recentSearches = searchRecentViewModel.loadRecentSearches()
         tableView.reloadData()
-
         if recentSearches.isEmpty {
             let noDataLabel = UILabel()
             noDataLabel.text = "최근 검색어가 없습니다."
@@ -72,6 +70,13 @@ class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource {
             didSelectRecentSearch?(recentSearch)
         }
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let recentSearches = searchRecentViewModel.loadRecentSearches()
+            let query = recentSearches[indexPath.row]
+            searchRecentViewModel.deleteSearchHistory(query: query)
+        }
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

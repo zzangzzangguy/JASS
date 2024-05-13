@@ -1,7 +1,6 @@
 import Foundation
 import Moya
 import GoogleMaps
-import CoreLocation
 
 struct SearchResults: Codable {
   let results: [Place]
@@ -102,7 +101,7 @@ class PlaceSearchViewModel {
       }
   }
 
-  func fetchPlacePhoto(reference: String, maxWidth: Int, completion: @escaping (URL?) -> Void) {  // 추가: fetchPlacePhoto 메서드 추가
+  func fetchPlacePhoto(reference: String, maxWidth: Int, completion: @escaping (URL?) -> Void) {  
       provider.request(.photo(reference: reference, maxWidth: maxWidth)) { result in
           switch result {
           case .success(let response):
