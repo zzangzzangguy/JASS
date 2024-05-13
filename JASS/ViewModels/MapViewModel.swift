@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import GoogleMaps
-import CoreLocation
 
 class MapViewModel {
     var mapView: GMSMapView
@@ -51,11 +50,12 @@ class MapViewModel {
             print("마커 추가: \(place.name), 주소: \(place.formatted_address ?? "정보 없음")")
         }
 
-        if filteredPlaces.isEmpty {
+        if places.isEmpty {
             print("필터링된 장소가 없습니다. 선택된 카테고리: \(selectedCategories)")
         } else {
             print("필터링된 장소 수: \(filteredPlaces.count)")
             clusterManager.addPlaces(filteredPlaces)
         }
     }
+    
 }

@@ -4,6 +4,10 @@ import Kingfisher
 import GoogleMaps
 import GooglePlaces
 
+protocol SearchResultCellDelegate: AnyObject {
+    func didTapFavoriteButton(for cell: SearchResultCell)
+}
+
 class SearchResultCell: UITableViewCell {
     static let reuseIdentifier = "SearchResultCell"
 
@@ -37,7 +41,6 @@ class SearchResultCell: UITableViewCell {
 
     weak var delegate: SearchResultCellDelegate?
     var place: Place?
-    
 
     private let loadingIndicator = UIActivityIndicatorView(style: .medium)
 
@@ -113,7 +116,6 @@ class SearchResultCell: UITableViewCell {
             loadingIndicator.stopAnimating()
         }
 
-
         let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
         favoriteButton.tintColor = isFavorite ? .red : .gray
     }
@@ -126,6 +128,7 @@ class SearchResultCell: UITableViewCell {
             loadingIndicator.stopAnimating()
         }
     }
+
     private func loadImageForMetadata(place: Place, photo: Photo) {
         let maxWidth = Int(placeImageView.bounds.size.width)
         GMSPlacesClient.shared().lookUpPhotos(forPlaceID: place.place_id) { [weak self] (photoMetadataList, error) in
@@ -158,14 +161,13 @@ class SearchResultCell: UITableViewCell {
     }
 
     @objc private func favoriteButtonTapped() {
-           guard let place = place else { return }
+        delegate?.didTapFavoriteButton(for: self)
+    }
 
-           if FavoritesManager.shared.isFavorite(placeID: place.place_id) {
-               FavoritesManager.shared.removeFavorite(placeID: place.place_id)
-               favoriteButton.setImage(UIImage(systemName: "heart"), for: .normal)
-           } else {
-               FavoritesManager.shared.addFavorite(placeID: place.place_id)
-               favoriteButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-           }
-       }
-   }
+    func updateFavoriteButton(isFavorite: Bool) {
+        let heartImage = isFavorite ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
+        let tintColor: UIColor = isFavorite ? .red : .gray
+        favoriteButton.setImage(heartImage, for: .normal)
+        favoriteButton.tintColor = tintColor
+    }
+}
