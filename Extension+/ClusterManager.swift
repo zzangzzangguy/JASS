@@ -3,10 +3,10 @@ import GoogleMapsUtils
 
 protocol ClusterManagerDelegate: AnyObject {
     func clusterManager(_ clusterManager: ClusterManager, didSelectPlace place: Place)
-}
-
-struct ClusterPlace {
-    var coordinate: CLLocationCoordinate2D
+    func searchPlacesInBounds(_ bounds: GMSCoordinateBounds, types: [String], completion: @escaping ([Place]) -> Void)
+    func selectedFilters() -> Set<String>
+    func showNoResultsMessage()
+//    func hideNoResultsMessage()
 }
 
 class CustomClusterItem: NSObject, GMUClusterItem {
@@ -28,28 +28,41 @@ class ClusterManager: NSObject {
         self.mapView = mapView
         let iconGenerator = GMUDefaultClusterRenderer(mapView: mapView, clusterIconGenerator: GMUDefaultClusterIconGenerator())
         let algorithm = GMUNonHierarchicalDistanceBasedAlgorithm()
-        
         self.clusterManager = GMUClusterManager(map: mapView, algorithm: algorithm, renderer: iconGenerator)
         super.init()
-        self.clusterManager.setDelegate(self, mapDelegate: nil)
+        self.clusterManager.setDelegate(self, mapDelegate: self)
     }
 
     func addPlaces(_ places: [Place]) {
         clusterManager.clearItems()
         let items = places.map { CustomClusterItem(place: $0) }
-        for item in items {
-            clusterManager.add(item)
-        }
+        clusterManager.add(items)
         clusterManager.cluster()
-        print("클러스터 아이템 추가 완료")
+    }
+
+    func updateMarkersWithSelectedFilters() {
+        let visibleRegion = mapView.projection.visibleRegion()
+        let bounds = GMSCoordinateBounds(region: visibleRegion)
+
+        let selectedTypes = Array(delegate?.selectedFilters() ?? [])
+        delegate?.searchPlacesInBounds(bounds, types: selectedTypes) { [weak self] places in
+            guard let self = self else { return }
+
+            self.addPlaces(places)
+
+            if places.isEmpty {
+                self.delegate?.showNoResultsMessage()
+            } else {
+//                self.delegate?.hideNoResultsMessage()
+            }
+        }
     }
 }
 
 extension ClusterManager: GMUClusterManagerDelegate {
     func clusterManager(_ clusterManager: GMUClusterManager, didTap clusterItem: GMUClusterItem) -> Bool {
         if let item = clusterItem as? CustomClusterItem {
-            let place = item.place
-            delegate?.clusterManager(self, didSelectPlace: place)
+            delegate?.clusterManager(self, didSelectPlace: item.place)
             return true
         }
         return false
@@ -59,5 +72,11 @@ extension ClusterManager: GMUClusterManagerDelegate {
         let newCamera = GMSCameraPosition.camera(withTarget: cluster.position, zoom: mapView.camera.zoom + 1)
         mapView.animate(to: newCamera)
         return true
+    }
+}
+
+extension ClusterManager: GMSMapViewDelegate {
+    func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
+        updateMarkersWithSelectedFilters()
     }
 }
