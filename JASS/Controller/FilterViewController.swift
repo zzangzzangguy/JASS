@@ -139,7 +139,6 @@ class FilterViewController: UIViewController {
     }
 }
 
-// UICollectionViewDataSource 프로토콜 준수
 extension FilterViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return categories.count
@@ -156,7 +155,6 @@ extension FilterViewController: UICollectionViewDataSource {
     }
 }
 
-// UICollectionViewDelegate 프로토콜 준수
 extension FilterViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let category = categories[indexPath.item]
@@ -169,7 +167,6 @@ extension FilterViewController: UICollectionViewDelegate {
     }
 }
 
-// UICollectionViewDelegateFlowLayout 프로토콜 준수
 extension FilterViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let numberOfColumns: CGFloat = 2

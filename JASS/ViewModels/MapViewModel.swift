@@ -16,10 +16,10 @@ class MapViewModel {
         }
     }
 
-    init(mapView: GMSMapView, placeSearchViewModel: PlaceSearchViewModel) {
+    init(mapView: GMSMapView, placeSearchViewModel: PlaceSearchViewModel, navigationController: UINavigationController?) {
         self.mapView = mapView
         self.placeSearchViewModel = placeSearchViewModel
-        self.clusterManager = ClusterManager(mapView: mapView)
+        self.clusterManager = ClusterManager(mapView: mapView, navigationController: navigationController)
     }
 
     func filterPlaces() {
