@@ -6,14 +6,14 @@ class SearchResultsViewModel {
 
     private let favoritesManager: FavoritesManager
     private let notificationCenter = NotificationCenter.default
-    private weak var mapViewController: MapViewController?
+    private weak var viewController: UIViewController?
 
     var searchResults: [Place] = []
     var updateSearchResults: (() -> Void)?
 
-    init(favoritesManager: FavoritesManager, mapViewController: MapViewController? = nil) {
+    init(favoritesManager: FavoritesManager, viewController: UIViewController? = nil) {
         self.favoritesManager = favoritesManager
-        self.mapViewController = mapViewController
+        self.viewController = viewController
 
         notificationCenter.addObserver(self, selector: #selector(favoritesDidChange(_:)), name: .favoritesDidChange, object: nil)
     }
@@ -30,8 +30,8 @@ class SearchResultsViewModel {
         let isFavorite = favoritesManager.isFavorite(placeID: place.place_id)
 
         DispatchQueue.main.async {
-            if let mapViewController = self.mapViewController {
-                ToastManager.showToastForFavorite(place: place, isAdded: !isFavorite, in: mapViewController)
+            if let viewController = self.viewController {
+                ToastManager.showToastForFavorite(place: place, isAdded: !isFavorite, in: viewController)
             }
         }
     }

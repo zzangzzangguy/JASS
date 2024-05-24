@@ -1,6 +1,4 @@
 import UIKit
-import GoogleMaps
-import GooglePlaces
 import SnapKit
 import Toast
 
@@ -16,59 +14,54 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-//        setupMapView()
         setupSearchViewModels()
-        //        mapView.delegate = self
     }
 
     private func setupUI() {
-//        setupFilterButtons()
+        setupFilterButtons()
         setupRecentSearchesView()
         setupSearchResultsView()
     }
 
+    private func setupFilterButtons() {
+        filterContainerView = UIView()
+        view.addSubview(filterContainerView)
+        filterContainerView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(50)
+        }
 
+        let filterStackView = UIStackView()
+        filterStackView.axis = .horizontal
+        filterStackView.distribution = .fillEqually
+        filterStackView.spacing = 10
+        filterContainerView.addSubview(filterStackView)
+        filterStackView.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(10)
+        }
 
-//    private func setupFilterButtons() {
-//        filterContainerView = UIView()
-//        view.addSubview(filterContainerView)
-//        filterContainerView.snp.makeConstraints {
-//            $0.leading.trailing.equalToSuperview()
-//            $0.height.equalTo(50)
-//        }
-//
-//        let filterStackView = UIStackView()
-//        filterStackView.axis = .horizontal
-//        filterStackView.distribution = .fillEqually
-//        filterStackView.spacing = 10
-//        filterContainerView.addSubview(filterStackView)
-//        filterStackView.snp.makeConstraints {
-//            $0.edges.equalToSuperview().inset(10)
-//        }
-//
-//        filterButton = UIButton(type: .system)
-//        filterButton.setTitle("카테고리 필터", for: .normal)
-//        filterButton.setImage(UIImage(systemName: "slider.horizontal.3"), for: .normal)
-//        filterContainerView.isHidden = false
-//        filterStackView.addArrangedSubview(filterButton)
-//    }
+        filterButton = UIButton(type: .system)
+        filterButton.setTitle("카테고리 필터", for: .normal)
+        filterButton.setImage(UIImage(systemName: "slider.horizontal.3"), for: .normal)
+        filterButton.addTarget(self, action: #selector(showFilterView), for: .touchUpInside)
+        filterStackView.addArrangedSubview(filterButton)
+    }
+
+    @objc private func showFilterView() {
+        // 필터 뷰를 표시하는 로직 추가
+    }
 
     private func setupRecentSearchesView() {
         recentSearchesView = RecentSearchesView()
         recentSearchesView.searchRecentViewModel = searchRecentViewModel
         recentSearchesView.didSelectRecentSearch = { [weak self] query in
             guard let self = self else { return }
-//            self.searchBar.text = query
-            self.placeSearchViewModel.searchPlace(input: query) { places in
-                DispatchQueue.main.async {
-                    self.searchResultsView.update(with: places)
-                    self.showSearchResultsView()
-                }
-            }
+            self.searchPlace(query)
         }
         view.addSubview(recentSearchesView)
         recentSearchesView.snp.makeConstraints {
-//            $0.top.equalTo(searchBar.snp.bottom)
+            $0.top.equalTo(filterContainerView.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
         recentSearchesView.isHidden = false
@@ -81,7 +74,6 @@ class SearchViewController: UIViewController {
                 self.searchResultsView.update(with: places)
                 self.searchResultsView.isHidden = false
                 self.recentSearchesView.isHidden = true
-                //                self.mapView.isHidden = true
                 self.filterContainerView.isHidden = true
             }
         }
@@ -89,7 +81,7 @@ class SearchViewController: UIViewController {
 
     private func setupSearchResultsView() {
         searchResultsView = SearchResultsView()
-//        searchResultsView.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, searchViewController: self)
+        searchResultsView.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: self)
         searchResultsView.delegate = self
         view.addSubview(searchResultsView)
         searchResultsView.snp.makeConstraints {
@@ -98,7 +90,6 @@ class SearchViewController: UIViewController {
         }
         searchResultsView.isHidden = true
     }
-
 
     private func setupSearchViewModels() {
         setupPlaceSearchViewModel()
@@ -117,24 +108,15 @@ class SearchViewController: UIViewController {
     private func setupSearchRecentViewModel() {
         searchRecentViewModel.didSelectRecentSearch = { [weak self] query in
             guard let self = self else { return }
-            self.placeSearchViewModel.searchPlace(input: query) { places in
-                DispatchQueue.main.async {
-                    self.searchResultsView.update(with: places)
-                    self.showSearchResultsView()
-                }
-            }
+            self.searchPlace(query)
         }
     }
-
 
     private func showSearchResultsView() {
         recentSearchesView.isHidden = true
         searchResultsView.isHidden = false
-        //        mapView.isHidden = true
         filterContainerView.isHidden = true
     }
-
-
 }
 
 extension SearchViewController: UISearchBarDelegate {
