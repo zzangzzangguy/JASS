@@ -1,5 +1,6 @@
 import UIKit
 import SnapKit
+import Then
 import Kingfisher
 import GoogleMaps
 import GooglePlaces
@@ -9,6 +10,7 @@ protocol SearchResultCellDelegate: AnyObject {
 }
 
 class SearchResultCell: UITableViewCell {
+    var placeSearchViewModel: PlaceSearchViewModel?
     static let reuseIdentifier = "SearchResultCell"
 
     private let placeImageView = UIImageView().then {
@@ -98,15 +100,24 @@ class SearchResultCell: UITableViewCell {
     }
 
     func configure(with place: Place, currentLocation: CLLocationCoordinate2D?) {
+        self.place = place
         nameLabel.text = place.name
         addressLabel.text = place.formatted_address
+        distanceLabel.text = place.distanceText ?? "거리 정보 없음"
 
-        if let currentLocation = currentLocation {
-            let distance = GMSGeometryDistance(currentLocation, place.coordinate) / 1000
-            distanceLabel.text = String(format: "%.1f km", distance)
-        } else {
-            distanceLabel.text = "거리 정보 없음"
-        }
+        print("셀 구성: 이름: \(place.name), 주소: \(place.formatted_address ?? "주소 정보 없음"), 거리: \(place.distanceText ?? "거리 정보 없음")")
+
+//        if let currentLocation = currentLocation {
+//            let originLocation = CLLocationCoordinate2D(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
+//            placeSearchViewModel?.calculateDistances(from: originLocation, to: place.coordinate) { [weak self] distance in
+//                DispatchQueue.main.async {
+//                    self?.distanceLabel.text = distance ?? "거리 정보 없음"
+//                    print("거리 정보 업데이트: \(distance ?? "거리 정보 없음")")
+//                }
+//            }
+//        } else {
+//            distanceLabel.text = "거리 정보 없음"
+//        }
 
         if let photoMetadatas = place.photos {
             loadingIndicator.startAnimating()
@@ -120,6 +131,7 @@ class SearchResultCell: UITableViewCell {
         favoriteButton.tintColor = isFavorite ? .red : .gray
     }
 
+
     private func loadFirstPhotoForPlace(_ place: Place, photoMetadatas: [Photo]) {
         if let firstPhotoMetadata = photoMetadatas.first {
             loadImageForMetadata(place: place, photo: firstPhotoMetadata)
@@ -131,7 +143,7 @@ class SearchResultCell: UITableViewCell {
 
     private func loadImageForMetadata(place: Place, photo: Photo) {
         let maxWidth = Int(placeImageView.bounds.size.width)
-        GMSPlacesClient.shared().lookUpPhotos(forPlaceID: place.place_id) { [weak self] (photoMetadataList, error) in
+        GMSPlacesClient.shared().lookUpPhotos(forPlaceID: place.place_id) { [weak self] (photoMetadataList: GMSPlacePhotoMetadataList?, error: Error?) in
             guard let self = self else { return }
 
             self.loadingIndicator.stopAnimating()
@@ -147,7 +159,7 @@ class SearchResultCell: UITableViewCell {
                 return
             }
 
-            GMSPlacesClient.shared().loadPlacePhoto(photoMetadata, constrainedTo: CGSize(width: maxWidth, height: maxWidth), scale: UIScreen.main.scale) { [weak self] (photo, error) in
+            GMSPlacesClient.shared().loadPlacePhoto(photoMetadata, constrainedTo: CGSize(width: maxWidth, height: maxWidth), scale: UIScreen.main.scale) { [weak self] (photo: UIImage?, error: Error?) in
                 guard let self = self else { return }
 
                 if let error = error {

@@ -12,7 +12,8 @@ class MapViewModel {
     var currentLocation: CLLocation? {
         didSet {
             guard let currentLocation = currentLocation else { return }
-//            searchGymsNearCurrentLocation(currentLocation)
+            print("현재 위치 설정됨: \(currentLocation.coordinate)")
+            calculateDistances()
         }
     }
 
@@ -22,6 +23,31 @@ class MapViewModel {
         self.clusterManager = ClusterManager(mapView: mapView, navigationController: navigationController)
     }
 
+    func calculateDistances() {
+        guard let currentLocation = currentLocation else { return }
+        let group = DispatchGroup()
+
+        for (index, place) in places.enumerated() {
+            group.enter()
+            placeSearchViewModel.calculateDistances(from: currentLocation.coordinate, to: place.coordinate) { [weak self] distance in
+                defer {
+                    group.leave()
+                }
+
+                if let distance = distance {
+                    self?.places[index].distanceText = distance
+                } else {
+                    print("거리 계산 실패")
+                    self?.places[index].distanceText = "거리 정보 없음"
+                }
+            }
+        }
+
+        group.notify(queue: .main) { [weak self] in
+            self?.filterPlaces()
+            self?.updateMapMarkers()
+        }
+    }
     func filterPlaces() {
         if selectedCategories.isEmpty {
             filteredPlaces = places
@@ -37,17 +63,20 @@ class MapViewModel {
         updateMapMarkers()
     }
 
-
     func updateMapMarkers() {
         mapView.clear()
 
         for place in filteredPlaces {
             let marker = GMSMarker(position: place.coordinate)
             marker.title = place.name
-            marker.snippet = place.formatted_address ?? "주소 정보 없음"
-            marker.userData = place // 마커에 Place 객체 할당
+            let snippet = """
+                \(place.formatted_address ?? "주소 정보 없음")
+                거리: \(place.distanceText ?? "거리 정보 없음")
+            """
+            marker.snippet = snippet
+            marker.userData = place
             marker.map = mapView
-            print("마커 추가: \(place.name), 주소: \(place.formatted_address ?? "정보 없음")")
+            print("마커 추가: \(place.name), 주소: \(place.formatted_address ?? "정보 없음") 거리: \(place.distanceText ?? "거리 정보 없음")")
         }
 
         if places.isEmpty {
@@ -57,5 +86,4 @@ class MapViewModel {
             clusterManager.addPlaces(filteredPlaces)
         }
     }
-    
 }

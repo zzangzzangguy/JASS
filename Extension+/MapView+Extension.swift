@@ -22,7 +22,7 @@ extension GMSMapView {
         marker.map = self
     }
 
-    func animateToLocation(_ location: CLLocationCoordinate2D, zoomLevel: Float = 15.0) {
+    func animateToLocation(_ location: CLLocationCoordinate2D, zoomLevel: Float = 13.0) {
         let camera = GMSCameraPosition.camera(withLatitude: location.latitude, longitude: location.longitude, zoom: zoomLevel)
         self.animate(to: camera)
     }
