@@ -48,7 +48,6 @@
 		4EF931802B31918200E5794B /* SearchResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9317F2B31918200E5794B /* SearchResultsView.swift */; };
 		4EF931822B336EEB00E5794B /* SearchRecentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931812B336EEB00E5794B /* SearchRecentViewModel.swift */; };
 		4EF931842B3370A600E5794B /* SearchHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931832B3370A600E5794B /* SearchHistory.swift */; };
-		4EF931862B3AE3CA00E5794B /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931852B3AE3CA00E5794B /* TabBarController.swift */; };
 		4EF931882B3B426D00E5794B /* RecentPlacesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */; };
 		4EF9318A2B3D5FEC00E5794B /* RecentSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931892B3D5FEB00E5794B /* RecentSearchCell.swift */; };
 		4EF931922B46CB5E00E5794B /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931912B46CB5E00E5794B /* MainViewController.swift */; };
@@ -115,7 +114,6 @@
 		4EF9317F2B31918200E5794B /* SearchResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsView.swift; sourceTree = "<group>"; };
 		4EF931812B336EEB00E5794B /* SearchRecentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRecentViewModel.swift; sourceTree = "<group>"; };
 		4EF931832B3370A600E5794B /* SearchHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistory.swift; sourceTree = "<group>"; };
-		4EF931852B3AE3CA00E5794B /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlacesViewModel.swift; sourceTree = "<group>"; };
 		4EF931892B3D5FEB00E5794B /* RecentSearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchCell.swift; sourceTree = "<group>"; };
 		4EF931912B46CB5E00E5794B /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -193,7 +191,6 @@
 				4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */,
 				4EF931702B284D1700E5794B /* SearchViewControllerDelegate.swift */,
 				4EF9316E2B21C3A300E5794B /* SearchViewController.swift */,
-				4EF931852B3AE3CA00E5794B /* TabBarController.swift */,
 				4EF931912B46CB5E00E5794B /* MainViewController.swift */,
 				4EDB89812BEA9F8A001C558E /* FavoritesViewController.swift */,
 				4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */,
@@ -635,7 +632,6 @@
 				4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */,
 				4EF931802B31918200E5794B /* SearchResultsView.swift in Sources */,
 				4EF9312E2B1C912E00E5794B /* SceneDelegate.swift in Sources */,
-				4EF931862B3AE3CA00E5794B /* TabBarController.swift in Sources */,
 				4EF9316B2B21C04600E5794B /* PlaceSearchViewModel.swift in Sources */,
 				4EF931692B21C00300E5794B /* Place.swift in Sources */,
 			);
@@ -814,6 +810,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9A69549U7C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = JASS/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -842,6 +839,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9A69549U7C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = JASS/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

@@ -58,7 +58,9 @@ class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource {
         cell.configure(with: recentSearches[indexPath.row])
         cell.deleteButtonTapped = { [weak self] in
             guard let self = self else { return }
-            self.didDeleteRecentSearch?(recentSearches[indexPath.row])
+            let query = recentSearches[indexPath.row]
+            self.searchRecentViewModel.deleteSearchHistory(query: query)
+            self.updateSearchHistoryViews()
         }
         return cell
     }
@@ -71,11 +73,13 @@ class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource {
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
+
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let recentSearches = searchRecentViewModel.loadRecentSearches()
             let query = recentSearches[indexPath.row]
             searchRecentViewModel.deleteSearchHistory(query: query)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
         }
     }
 

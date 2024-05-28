@@ -82,6 +82,7 @@ class SearchViewController: UIViewController {
     private func setupSearchResultsView() {
         searchResultsView = SearchResultsView()
         searchResultsView.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: self)
+        searchResultsView.placeSearchViewModel = placeSearchViewModel 
         searchResultsView.delegate = self
         view.addSubview(searchResultsView)
         searchResultsView.snp.makeConstraints {

@@ -48,6 +48,11 @@ class ClusterManager: NSObject {
         let bounds = GMSCoordinateBounds(region: visibleRegion)
         let query = delegate?.selectedFilters().joined(separator: " ") ?? ""
 
+        guard !query.isEmpty else {
+               print("선택된 필터가 없습니다. 마커를 업데이트하지 않습니다.")
+               return
+           }
+
         delegate?.searchPlacesInBounds(bounds, query: query) { [weak self] places in
             guard let self = self else { return }
             self.addPlaces(places)
@@ -62,7 +67,6 @@ extension ClusterManager: GMUClusterManagerDelegate {
     func clusterManager(_ clusterManager: GMUClusterManager, didTap clusterItem: GMUClusterItem) -> Bool {
         if let item = clusterItem as? CustomClusterItem {
             DispatchQueue.main.async { [weak self] in
-                // 안전하게 navigationController 참조를 확인
                 guard let self = self, let navigationController = self.navigationController else {
                     print("NavigationController를 찾을 수 없습니다.")
                     return

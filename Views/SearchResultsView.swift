@@ -2,6 +2,7 @@ import UIKit
 import SnapKit
 import Then
 import Kingfisher
+import CoreLocation
 
 class SearchResultsView: UIView {
     private let tableView = UITableView().then {
@@ -9,6 +10,7 @@ class SearchResultsView: UIView {
         $0.rowHeight = 100
     }
 
+    var placeSearchViewModel: PlaceSearchViewModel?
     var viewModel: SearchResultsViewModel?
     weak var delegate: SearchResultsViewDelegate?
 
@@ -55,53 +57,59 @@ extension SearchResultsView: UITableViewDataSource {
 
         if let place = viewModel?.searchResults[indexPath.row] {
             let currentLocation = LocationManager.shared.getCurrentLocation()
+            cell.placeSearchViewModel = placeSearchViewModel
             cell.configure(with: place, currentLocation: currentLocation)
             cell.delegate = self
-        }
 
+            if let currentLocation = currentLocation {
+                placeSearchViewModel?.calculateDistances(from: currentLocation, to: place.coordinate) { [weak cell] distance in
+                    DispatchQueue.main.async {
+                        cell?.distanceLabel.text = distance ?? "거리 정보 없음"
+                        print("거리 정보 업데이트: \(distance ?? "거리 정보 없음")")
+                    }
+                }
+            }
+        }
         return cell
     }
 }
+            extension SearchResultsView: UITableViewDelegate {
+                func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+                    guard let place = viewModel?.searchResults[indexPath.row] else { return }
 
-extension SearchResultsView: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let place = viewModel?.searchResults[indexPath.row] else { return }
-        delegate?.didSelectPlace(place)
-    }
-}
+                    delegate?.didSelectPlace(place)
+                }
+            }
 
-extension SearchResultsView: SearchResultCellDelegate {
-    func didTapFavoriteButton(for cell: SearchResultCell) {
-        guard let indexPath = tableView.indexPath(for: cell),
-              let place = viewModel?.searchResults[indexPath.row] else {
-            return
-        }
+            extension SearchResultsView: SearchResultCellDelegate {
+                func didTapFavoriteButton(for cell: SearchResultCell) {
+                    guard let indexPath = tableView.indexPath(for: cell),
+                          let place = viewModel?.searchResults[indexPath.row] else {
+                        return
+                    }
 
-        let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
-        viewModel?.updateFavoriteStatus(for: place)
+                    let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
+                    viewModel?.updateFavoriteStatus(for: place)
 
-        cell.updateFavoriteButton(isFavorite: !isFavorite)
+                    cell.updateFavoriteButton(isFavorite: !isFavorite)
 
-        delegate?.showToastForFavorite(place: place, isAdded: !isFavorite)
-    }
-}
+                    delegate?.showToastForFavorite(place: place, isAdded: !isFavorite)
+                }
+            }
 
-protocol SearchResultsViewDelegate: AnyObject {
-    func didSelectPlace(_ place: Place)
-    func showToastForFavorite(place: Place, isAdded: Bool)
+            protocol SearchResultsViewDelegate: AnyObject {
+                func didSelectPlace(_ place: Place)
+                func showToastForFavorite(place: Place, isAdded: Bool)
+            }
 
+            extension SearchResultsView {
+                func indexPath(for cell: UITableViewCell) -> IndexPath? {
+                    return tableView.indexPath(for: cell)
+                }
 
-}
-
-
-extension SearchResultsView {
-    func indexPath(for cell: UITableViewCell) -> IndexPath? {
-        return tableView.indexPath(for: cell)
-    }
-
-    func reloadRowAtIndexPath(_ indexPath: IndexPath) {
-        DispatchQueue.main.async {
-            self.tableView.reloadRows(at: [indexPath], with: .automatic)
-        }
-    }
-}
+                func reloadRowAtIndexPath(_ indexPath: IndexPath) {
+                    DispatchQueue.main.async {
+                        self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                    }
+                }
+            }
