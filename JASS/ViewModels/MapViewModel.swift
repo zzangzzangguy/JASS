@@ -60,7 +60,7 @@ class MapViewModel {
             }
         }
         print("필터링 후 장소 수: \(filteredPlaces.count)")
-        updateMapMarkers()
+//        updateMapMarkers()
     }
 
     func updateMapMarkers() {

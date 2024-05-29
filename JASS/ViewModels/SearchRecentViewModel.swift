@@ -6,10 +6,8 @@ class SearchRecentViewModel {
     var updateRecentSearches: (() -> Void)?
     var handleError: ((Error) -> Void)?
 
-    // 최근 검색어 캐시 추가
     private var cachedRecentSearches: [String] = []
 
-    // 이전 코드에서는 없었던 프로퍼티 추가
     var didSelectRecentSearch: ((String) -> Void)?
 
     init() {

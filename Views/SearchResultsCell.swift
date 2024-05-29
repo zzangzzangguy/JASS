@@ -107,18 +107,6 @@ class SearchResultCell: UITableViewCell {
 
         print("셀 구성: 이름: \(place.name), 주소: \(place.formatted_address ?? "주소 정보 없음"), 거리: \(place.distanceText ?? "거리 정보 없음")")
 
-//        if let currentLocation = currentLocation {
-//            let originLocation = CLLocationCoordinate2D(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
-//            placeSearchViewModel?.calculateDistances(from: originLocation, to: place.coordinate) { [weak self] distance in
-//                DispatchQueue.main.async {
-//                    self?.distanceLabel.text = distance ?? "거리 정보 없음"
-//                    print("거리 정보 업데이트: \(distance ?? "거리 정보 없음")")
-//                }
-//            }
-//        } else {
-//            distanceLabel.text = "거리 정보 없음"
-//        }
-
         if let photoMetadatas = place.photos {
             loadingIndicator.startAnimating()
             loadFirstPhotoForPlace(place, photoMetadatas: photoMetadatas)

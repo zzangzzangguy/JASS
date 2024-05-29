@@ -83,7 +83,7 @@ class SearchViewController: UIViewController {
         searchResultsView = SearchResultsView()
         searchResultsView.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: self)
         searchResultsView.placeSearchViewModel = placeSearchViewModel 
-        searchResultsView.delegate = self
+//        searchResultsView.delegate = self
         view.addSubview(searchResultsView)
         searchResultsView.snp.makeConstraints {
             $0.top.equalTo(filterContainerView.snp.bottom)
@@ -158,13 +158,13 @@ extension SearchViewController: SearchResultCellDelegate {
     }
 }
 
-extension SearchViewController: SearchResultsViewDelegate {
-    func didSelectPlace(_ place: Place) {
-        let gymDetailVC = GymDetailViewController(place: place)
-        navigationController?.pushViewController(gymDetailVC, animated: true)
-    }
-
-    func showToastForFavorite(place: Place, isAdded: Bool) {
-        ToastManager.showToastForFavorite(place: place, isAdded: isAdded, in: self)
-    }
-}
+//extension SearchViewController: SearchResultsViewDelegate {
+//    func didSelectPlace(_ place: Place) {
+//        let gymDetailVC = GymDetailViewController(place: place)
+//        navigationController?.pushViewController(gymDetailVC, animated: true)
+//    }
+//
+//    func showToastForFavorite(place: Place, isAdded: Bool) {
+//        ToastManager.showToastForFavorite(place: place, isAdded: isAdded, in: self)
+//    }
+//}
