@@ -193,8 +193,28 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     private func searchPlace(_ query: String) {
         placeSearchViewModel.searchPlace(input: query) { [weak self] places in
             guard let self = self else { return }
-            self.searchResultsView.update(with: places)
-            self.showSearchResultsView()
+
+            self.viewModel.places = places
+
+            if let currentLocation = self.locationManager.location?.coordinate {
+                let group = DispatchGroup()
+
+                for (index, place) in self.viewModel.places.enumerated() {
+                    group.enter()
+                    self.placeSearchViewModel.calculateDistances(from: currentLocation, to: place.coordinate) { distance in
+                        self.viewModel.places[index].distanceText = distance
+                        group.leave()
+                    }
+                }
+
+                group.notify(queue: .main) {
+                    self.searchResultsView.update(with: self.viewModel.places)
+                    self.showSearchResultsView()
+                }
+            } else {
+                self.searchResultsView.update(with: places)
+                self.showSearchResultsView()
+            }
         }
     }
 
@@ -300,6 +320,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
                 self.viewModel.places = places
                 self.viewModel.filterPlaces()
                 self.hideLoadingIndicator()
+                self.searchController.searchBar.resignFirstResponder()  
 
                 if let currentLocation = self.locationManager.location?.coordinate {
                     let group = DispatchGroup()
@@ -332,8 +353,20 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     }
 
     func didSelectPlace(_ place: Place) {
-        
+
         searchRecentViewModel.saveSearchHistory(query: place.name)
+        mapView.clear()
+
+        let marker = GMSMarker(position: place.coordinate)
+            marker.title = place.name
+            let snippet = """
+                \(place.formatted_address ?? "주소 정보 없음")
+                거리: \(place.distanceText ?? "거리 정보 없음")
+            """
+            marker.snippet = snippet
+            marker.userData = place
+            marker.map = mapView
+
 
         let camera = GMSCameraPosition.camera(withLatitude: place.geometry.location.lat, longitude: place.geometry.location.lng, zoom: 13.0)
         viewModel.mapView.camera = camera
@@ -396,25 +429,25 @@ extension MapViewController: GMSMapViewDelegate {
         updateZoomButtonsState()
         clusterManager.updateMarkersWithSelectedFilters()
     }
-
-    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
-        guard let place = marker.userData as? Place else {
-            print("오류: 마커의 userData가 올바르게 설정되지 않았습니다.")
-            return false
-        }
-
-        print("마커 클릭됨: \(place.name)")
-        if let navigationController = navigationController {
-            let gymDetailVC = GymDetailViewController(place: place)
-            navigationController.pushViewController(gymDetailVC, animated: true)
-        } else {
-            print("오류: Navigation controller가 nil입니다.")
-        }
-
-        return true
-    }
+    
+    //    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
+    //        guard let place = marker.userData as? Place else {
+    //            print("오류: 마커의 userData가 올바르게 설정되지 않았습니다.")
+    //            return false
+    //        }
+    //
+    //        print("마커 클릭됨: \(place.name)")
+    //        if let navigationController = navigationController {
+    //            let gymDetailVC = GymDetailViewController(place: place)
+    //            navigationController.pushViewController(gymDetailVC, animated: true)
+    //        } else {
+    //            print("오류: Navigation controller가 nil입니다.")
+    //        }
+    //
+    //        return true
+    //    }
+    //}
 }
-
 extension MapViewController: FilterViewDelegate {
     func filterView(_ filterView: FilterViewController, didSelectCategories categories: [String]) {
         viewModel.selectedCategories = Set(categories)
@@ -426,7 +459,6 @@ extension MapViewController: FilterViewDelegate {
         placeSearchViewModel.searchPlace(input: query) { [weak self] places in
             guard let self = self else { return }
             self.hideLoadingIndicator()
-
             self.viewModel.places = places
             self.viewModel.filterPlaces()
             self.updateClusteringWithSelectedCategories()

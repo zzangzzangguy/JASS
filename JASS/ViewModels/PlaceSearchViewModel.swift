@@ -65,6 +65,7 @@ class PlaceSearchViewModel {
             case .success(let response):
                 do {
                     var searchResults = try JSONDecoder().decode(SearchResults.self, from: response.data)
+                    
                     completion(searchResults.results)
                     
                 } catch {
