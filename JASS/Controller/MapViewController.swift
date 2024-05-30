@@ -48,6 +48,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
                 self?.recentSearchesView.updateSearchHistoryViews()
             }
         }
+
+//        updateAppearance()
     }
 
     private func applyFilter(filter: String) {
@@ -76,7 +78,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         filterButton.layer.borderColor = UIColor.lightGray.cgColor
         filterButton.addTarget(self, action: #selector(showFilterView), for: .touchUpInside)
 
-        filterContainerView.backgroundColor = .white
+        filterContainerView.backgroundColor = UIColor.white
         view.addSubview(filterContainerView)
         filterContainerView.addSubview(filterButton)
         filterContainerView.snp.makeConstraints {
@@ -316,11 +318,10 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 
             placeSearchViewModel.searchPlace(input: searchText) { [weak self] places in
                 guard let self = self else { return }
-                
+
                 self.viewModel.places = places
                 self.viewModel.filterPlaces()
                 self.hideLoadingIndicator()
-                self.searchController.searchBar.resignFirstResponder()  
 
                 if let currentLocation = self.locationManager.location?.coordinate {
                     let group = DispatchGroup()
@@ -355,17 +356,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     func didSelectPlace(_ place: Place) {
 
         searchRecentViewModel.saveSearchHistory(query: place.name)
-        mapView.clear()
-
-        let marker = GMSMarker(position: place.coordinate)
-            marker.title = place.name
-            let snippet = """
-                \(place.formatted_address ?? "주소 정보 없음")
-                거리: \(place.distanceText ?? "거리 정보 없음")
-            """
-            marker.snippet = snippet
-            marker.userData = place
-            marker.map = mapView
+        viewModel.places = [place]
+        viewModel.updateSelectedPlaceMarker(for: place )
 
 
         let camera = GMSCameraPosition.camera(withLatitude: place.geometry.location.lat, longitude: place.geometry.location.lng, zoom: 13.0)
@@ -422,6 +414,35 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     func hideLoadingIndicator() {
         loadingIndicator.stopAnimating()
     }
+
+//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+//        super.traitCollectionDidChange(previousTraitCollection)
+//        updateAppearance()
+//    }
+
+//    private func updateAppearance() {
+//        if traitCollection.userInterfaceStyle == .dark {
+//            // 다크 모드일 때 UI 설정
+//            view.backgroundColor = .black
+//            searchController.searchBar.barStyle = .black
+//            filterContainerView.backgroundColor = .black
+//            filterButton.setTitleColor(.white, for: .normal)
+//            filterButton.layer.borderColor = UIColor.white.cgColor
+//            searchResultsView.backgroundColor = .black
+//            recentSearchesView.backgroundColor = .black
+//            // 추가로 필요한 다크 모드 설정 추가
+//        } else {
+//            // 라이트 모드일 때 UI 설정
+//            view.backgroundColor = .white
+//            searchController.searchBar.barStyle = .default
+//            filterContainerView.backgroundColor = .white
+//            filterButton.setTitleColor(.black, for: .normal)
+//            filterButton.layer.borderColor = UIColor.lightGray.cgColor
+//            searchResultsView.backgroundColor = .white
+//            recentSearchesView.backgroundColor = .white
+//            // 추가로 필요한 라이트 모드 설정 추가
+//        }
+//    }
 }
 
 extension MapViewController: GMSMapViewDelegate {
@@ -429,25 +450,25 @@ extension MapViewController: GMSMapViewDelegate {
         updateZoomButtonsState()
         clusterManager.updateMarkersWithSelectedFilters()
     }
-    
-    //    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
-    //        guard let place = marker.userData as? Place else {
-    //            print("오류: 마커의 userData가 올바르게 설정되지 않았습니다.")
-    //            return false
-    //        }
-    //
-    //        print("마커 클릭됨: \(place.name)")
-    //        if let navigationController = navigationController {
-    //            let gymDetailVC = GymDetailViewController(place: place)
-    //            navigationController.pushViewController(gymDetailVC, animated: true)
-    //        } else {
-    //            print("오류: Navigation controller가 nil입니다.")
-    //        }
-    //
-    //        return true
-    //    }
-    //}
+
+    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
+        guard let place = marker.userData as? Place else {
+            print("오류: 마커의 userData가 올바르게 설정되지 않았습니다.")
+            return false
+        }
+
+        print("마커 클릭됨: \(place.name)")
+        if let navigationController = navigationController {
+            let gymDetailVC = GymDetailViewController(place: place)
+            navigationController.pushViewController(gymDetailVC, animated: true)
+        } else {
+            print("오류: Navigation controller가 nil입니다.")
+        }
+
+        return true
+    }
 }
+
 extension MapViewController: FilterViewDelegate {
     func filterView(_ filterView: FilterViewController, didSelectCategories categories: [String]) {
         viewModel.selectedCategories = Set(categories)

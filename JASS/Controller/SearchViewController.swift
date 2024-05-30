@@ -10,12 +10,21 @@ class SearchViewController: UIViewController {
     private var placeSearchViewModel = PlaceSearchViewModel()
     private var searchRecentViewModel = SearchRecentViewModel()
     private var searchTask: DispatchWorkItem?
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupSearchViewModels()
+        //키보드 이벤트
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
+    override func viewWillDisappear(_ animated: Bool) {
+           super.viewWillDisappear(animated)
+           NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+           NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+       }
 
     private func setupUI() {
         setupFilterButtons()
@@ -44,13 +53,37 @@ class SearchViewController: UIViewController {
         filterButton = UIButton(type: .system)
         filterButton.setTitle("카테고리 필터", for: .normal)
         filterButton.setImage(UIImage(systemName: "slider.horizontal.3"), for: .normal)
-        filterButton.addTarget(self, action: #selector(showFilterView), for: .touchUpInside)
+//        filterButton.addTarget(self, action: #selector(showFilterView), for: .touchUpInside)
         filterStackView.addArrangedSubview(filterButton)
     }
 
-    @objc private func showFilterView() {
-        // 필터 뷰를 표시하는 로직 추가
-    }
+    @objc private func keyboardWillShow(_ notification: Notification) {
+           guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+               return
+           }
+
+           let keyboardHeight = keyboardFrame.height
+
+           recentSearchesView.snp.updateConstraints {
+               $0.bottom.equalToSuperview().inset(keyboardHeight)
+           }
+
+           // 애니메이션과 함께 뷰 이동
+           UIView.animate(withDuration: 0.3) {
+               self.view.layoutIfNeeded()
+           }
+       }
+
+       @objc private func keyboardWillHide(_ notification: Notification) {
+           recentSearchesView.snp.updateConstraints {
+               $0.bottom.equalToSuperview()
+           }
+
+           UIView.animate(withDuration: 0.3) {
+               self.view.layoutIfNeeded()
+           }
+       }
+
 
     private func setupRecentSearchesView() {
         recentSearchesView = RecentSearchesView()
@@ -82,8 +115,8 @@ class SearchViewController: UIViewController {
     private func setupSearchResultsView() {
         searchResultsView = SearchResultsView()
         searchResultsView.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: self)
-        searchResultsView.placeSearchViewModel = placeSearchViewModel 
-//        searchResultsView.delegate = self
+        searchResultsView.placeSearchViewModel = placeSearchViewModel
+        //        searchResultsView.delegate = self
         view.addSubview(searchResultsView)
         searchResultsView.snp.makeConstraints {
             $0.top.equalTo(filterContainerView.snp.bottom)
@@ -158,13 +191,3 @@ extension SearchViewController: SearchResultCellDelegate {
     }
 }
 
-//extension SearchViewController: SearchResultsViewDelegate {
-//    func didSelectPlace(_ place: Place) {
-//        let gymDetailVC = GymDetailViewController(place: place)
-//        navigationController?.pushViewController(gymDetailVC, animated: true)
-//    }
-//
-//    func showToastForFavorite(place: Place, isAdded: Bool) {
-//        ToastManager.showToastForFavorite(place: place, isAdded: isAdded, in: self)
-//    }
-//}

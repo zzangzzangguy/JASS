@@ -34,5 +34,12 @@ class FavoritesManager {
     func isFavorite(placeID: String) -> Bool {
         return realm.objects(FavoritePlace.self).filter("placeID == %@", placeID).count > 0
     }
-}
 
+    func toggleFavorite(place: Place) {
+        if isFavorite(placeID: place.place_id) {
+            removeFavorite(place: place)
+        } else {
+            addFavorite(place: place)
+        }
+    }
+}

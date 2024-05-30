@@ -28,7 +28,7 @@ class SearchResultCell: UITableViewCell {
     let addressLabel = UILabel().then {
         $0.font = UIFont.systemFont(ofSize: 14)
         $0.textColor = .gray
-        $0.numberOfLines = 0
+        $0.numberOfLines = 2
     }
 
     let distanceLabel = UILabel().then {
@@ -72,7 +72,7 @@ class SearchResultCell: UITableViewCell {
         nameLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(16)
             make.leading.equalTo(placeImageView.snp.trailing).offset(10)
-            make.trailing.equalToSuperview().inset(20)
+            make.trailing.equalTo(favoriteButton.snp.leading).offset(-10)
         }
 
         addressLabel.snp.makeConstraints { make in
@@ -85,11 +85,13 @@ class SearchResultCell: UITableViewCell {
             make.top.equalTo(addressLabel.snp.bottom).offset(5)
             make.leading.equalTo(nameLabel.snp.leading)
             make.trailing.equalTo(nameLabel.snp.trailing)
+            make.bottom.lessThanOrEqualToSuperview().inset(16)
         }
 
         favoriteButton.snp.makeConstraints { make in
             make.centerY.equalTo(placeImageView.snp.centerY)
             make.trailing.equalToSuperview().inset(20)
+            make.width.height.equalTo(24)
         }
 
         loadingIndicator.snp.makeConstraints { make in
