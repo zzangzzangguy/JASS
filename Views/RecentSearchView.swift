@@ -88,7 +88,7 @@ class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource {
         let headerLabel = UILabel()
         headerLabel.text = "최근 검색어"
         headerLabel.font = UIFont.boldSystemFont(ofSize: 18)
-        headerLabel.textColor = .black
+        headerLabel.textColor = UIColor.label
         headerView.addSubview(headerLabel)
         headerLabel.snp.makeConstraints {
             $0.centerY.equalToSuperview()

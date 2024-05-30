@@ -7,12 +7,14 @@ import CoreLocation
 class SearchResultsView: UIView {
     private let tableView = UITableView().then {
         $0.register(SearchResultCell.self, forCellReuseIdentifier: "SearchResultCell")
-        $0.rowHeight = 100
+        $0.rowHeight = 120
+        $0.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)  // 탭바 공간 확보를 위해 인셋 추가
     }
 
     var placeSearchViewModel: PlaceSearchViewModel?
     var viewModel: SearchResultsViewModel?
     weak var delegate: SearchResultsViewDelegate?
+    var mapViewModel: MapViewModel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -73,43 +75,49 @@ extension SearchResultsView: UITableViewDataSource {
         return cell
     }
 }
-            extension SearchResultsView: UITableViewDelegate {
-                func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-                    guard let place = viewModel?.searchResults[indexPath.row] else { return }
 
-                    delegate?.didSelectPlace(place)
-                }
-            }
+extension SearchResultsView: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let place = viewModel?.searchResults[indexPath.row] else { return }
+        guard let selectedPlace = viewModel?.searchResults[indexPath.row] else {
+            print("선택한 장소가 검색 결과 목록에 없습니다.")
+            return
+        }
 
-            extension SearchResultsView: SearchResultCellDelegate {
-                func didTapFavoriteButton(for cell: SearchResultCell) {
-                    guard let indexPath = tableView.indexPath(for: cell),
-                          let place = viewModel?.searchResults[indexPath.row] else {
-                        return
-                    }
+        mapViewModel?.updateSelectedPlaceMarker(for: selectedPlace)
+        delegate?.didSelectPlace(place)
+    }
+}
 
-                    let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
-                    viewModel?.updateFavoriteStatus(for: place)
+extension SearchResultsView: SearchResultCellDelegate {
+    func didTapFavoriteButton(for cell: SearchResultCell) {
+        guard let indexPath = tableView.indexPath(for: cell),
+              let place = viewModel?.searchResults[indexPath.row] else {
+            return
+        }
 
-                    cell.updateFavoriteButton(isFavorite: !isFavorite)
+        let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
+        viewModel?.updateFavoriteStatus(for: place)
 
-                    delegate?.showToastForFavorite(place: place, isAdded: !isFavorite)
-                }
-            }
+        cell.updateFavoriteButton(isFavorite: !isFavorite)
 
-            protocol SearchResultsViewDelegate: AnyObject {
-                func didSelectPlace(_ place: Place)
-                func showToastForFavorite(place: Place, isAdded: Bool)
-            }
+        delegate?.showToastForFavorite(place: place, isAdded: !isFavorite)
+    }
+}
 
-            extension SearchResultsView {
-                func indexPath(for cell: UITableViewCell) -> IndexPath? {
-                    return tableView.indexPath(for: cell)
-                }
+protocol SearchResultsViewDelegate: AnyObject {
+    func didSelectPlace(_ place: Place)
+    func showToastForFavorite(place: Place, isAdded: Bool)
+}
 
-                func reloadRowAtIndexPath(_ indexPath: IndexPath) {
-                    DispatchQueue.main.async {
-                        self.tableView.reloadRows(at: [indexPath], with: .automatic)
-                    }
-                }
-            }
+extension SearchResultsView {
+    func indexPath(for cell: UITableViewCell) -> IndexPath? {
+        return tableView.indexPath(for: cell)
+    }
+
+    func reloadRowAtIndexPath(_ indexPath: IndexPath) {
+        DispatchQueue.main.async {
+            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+    }
+}

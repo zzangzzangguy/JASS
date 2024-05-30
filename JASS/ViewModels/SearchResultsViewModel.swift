@@ -7,6 +7,7 @@ class SearchResultsViewModel {
     private let favoritesManager: FavoritesManager
     private let notificationCenter = NotificationCenter.default
     private weak var viewController: UIViewController?
+    
 
     var searchResults: [Place] = []
     var updateSearchResults: (() -> Void)?

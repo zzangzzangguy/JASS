@@ -11,7 +11,9 @@ class FilterCollectionViewCell: UICollectionViewCell {
     static let identifier = "FilterCollectionViewCell"
 
     private lazy var nameLabel: UILabel = {
+        
         let label = UILabel()
+        label.textColor = .black
         label.textAlignment = .center
         return label
     }()
@@ -67,7 +69,7 @@ class FilterViewController: UIViewController {
 
     private let applyButton = UIButton().then {
         $0.setTitle("적용하기", for: .normal)
-        $0.backgroundColor = .blue
+        $0.backgroundColor = .systemBlue
         $0.setTitleColor(.white, for: .normal)
         $0.layer.cornerRadius = 10
     }

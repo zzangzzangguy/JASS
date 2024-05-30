@@ -48,6 +48,7 @@ class MapViewModel {
             self?.updateMapMarkers()
         }
     }
+
     func filterPlaces() {
         if selectedCategories.isEmpty {
             filteredPlaces = places
@@ -60,7 +61,6 @@ class MapViewModel {
             }
         }
         print("필터링 후 장소 수: \(filteredPlaces.count)")
-//        updateMapMarkers()
     }
 
     func updateMapMarkers() {
@@ -79,11 +79,31 @@ class MapViewModel {
             print("마커 추가: \(place.name), 주소: \(place.formatted_address ?? "정보 없음") 거리: \(place.distanceText ?? "거리 정보 없음")")
         }
 
-        if places.isEmpty {
+        if filteredPlaces.isEmpty {
             print("필터링된 장소가 없습니다. 선택된 카테고리: \(selectedCategories)")
         } else {
             print("필터링된 장소 수: \(filteredPlaces.count)")
             clusterManager.addPlaces(filteredPlaces)
         }
+    }
+
+    func updateSelectedPlaceMarker(for place: Place) {
+        mapView.clear()  // 기존 마커 제거
+
+        let marker = GMSMarker(position: place.coordinate)
+        marker.title = place.name
+        let snippet = """
+            \(place.formatted_address ?? "주소 정보 없음")
+            거리: \(place.distanceText ?? "거리 정보 없음")
+        """
+        marker.snippet = snippet
+        marker.userData = place
+        marker.map = mapView
+
+        // 선택한 장소로 맵 이동
+        mapView.animate(toLocation: place.coordinate)
+        mapView.animate(toZoom: 15) // 적절한 줌 레벨 설정
+
+        print("선택한 장소 마커 추가: \(place.name), 주소: \(place.formatted_address ?? "정보 없음")")
     }
 }
