@@ -3,16 +3,15 @@ import GooglePlaces
 import Then
 import SnapKit
 
-class GymDetailViewController: UIViewController {
+class GymDetailViewController: UIViewController, UIScrollViewDelegate {
 
     // MARK: - Properties
     var gym: Place?
     var scrollView: UIScrollView!
-    var contentView: UIView!
     var pageControl: UIPageControl!
     var images: [UIImage] = []
 
-    init(place: Place) { // 초기화 메소드 추가
+    init(place: Place) {
         gym = place
         super.init(nibName: nil, bundle: nil)
     }
@@ -50,11 +49,6 @@ class GymDetailViewController: UIViewController {
         $0.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
     }
 
-    private let imageView = UIImageView().then {
-        $0.contentMode = .scaleAspectFill
-        $0.clipsToBounds = true
-    }
-
     private let loadingIndicator = UIActivityIndicatorView(style: .medium)
 
     // MARK: - Lifecycle
@@ -72,67 +66,60 @@ class GymDetailViewController: UIViewController {
         view.backgroundColor = .white
 
         setupScrollView()
-        setupImageView()
-        setupFavoriteButton()
+        setupPageControl()
         setupDetails()
         setupLoadingIndicator()
-        showNoImageIcon()
     }
 
     private func setupScrollView() {
         scrollView = UIScrollView()
+        scrollView.delegate = self
+        scrollView.isPagingEnabled = true
+        scrollView.showsHorizontalScrollIndicator = false
         view.addSubview(scrollView)
+
         scrollView.snp.makeConstraints {
-            $0.edges.equalTo(view.safeAreaLayoutGuide)
-        }
-
-        contentView = UIView()
-        scrollView.addSubview(contentView)
-        contentView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-            $0.width.equalToSuperview()
-        }
-    }
-
-    private func setupImageView() {
-        contentView.addSubview(imageView)
-        imageView.snp.makeConstraints {
-            $0.top.equalToSuperview()
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(15)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(300)
         }
     }
 
-    private func setupFavoriteButton() {
-        contentView.addSubview(favoriteButton)
-        favoriteButton.snp.makeConstraints {
-            $0.top.equalTo(imageView.snp.top).offset(10)
-            $0.trailing.equalTo(imageView.snp.trailing).offset(-10)
+    private func setupPageControl() {
+        pageControl = UIPageControl()
+        pageControl.pageIndicatorTintColor = UIColor.lightGray
+        pageControl.currentPageIndicatorTintColor = UIColor.red
+        view.addSubview(pageControl)
+
+        pageControl.snp.makeConstraints {
+            $0.top.equalTo(scrollView.snp.bottom)
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(20)
         }
     }
 
     private func setupDetails() {
-        let detailsStackView = UIStackView(arrangedSubviews: [nameLabel, addressLabel, phoneLabel, openingHoursLabel])
+        let detailsStackView = UIStackView(arrangedSubviews: [nameLabel, addressLabel, phoneLabel, openingHoursLabel, favoriteButton])
         detailsStackView.axis = .vertical
         detailsStackView.spacing = 10
         detailsStackView.alignment = .leading
 
-        contentView.addSubview(detailsStackView)
+        view.addSubview(detailsStackView)
         detailsStackView.snp.makeConstraints {
-            $0.top.equalTo(imageView.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(20)
-            $0.bottom.equalToSuperview().offset(-20) // 마지막에 스크롤뷰의 끝까지 공간을 확보합니다.
+            $0.top.equalTo(pageControl.snp.bottom).offset(20)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
         }
         nameLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         addressLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         phoneLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         openingHoursLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        favoriteButton.setContentHuggingPriority(.defaultLow, for: .vertical)
     }
 
     private func setupLoadingIndicator() {
-        contentView.addSubview(loadingIndicator)
+        view.addSubview(loadingIndicator)
         loadingIndicator.snp.makeConstraints {
-            $0.center.equalTo(imageView)
+            $0.center.equalToSuperview()
         }
     }
 
@@ -177,7 +164,7 @@ class GymDetailViewController: UIViewController {
             openingHoursLabel.text = "등록된 영업시간 정보가 없습니다"
         }
 
-        updateFavoriteButton()
+        updateFavoriteButton(showToast: false) // 초기 로드 시 토스트 메시지를 표시하지 않음
     }
 
     private func fetchPlacePhotos() {
@@ -196,13 +183,16 @@ class GymDetailViewController: UIViewController {
                 return
             }
 
-            guard let photos = photoMetadataList?.results else {
+            guard let photos = photoMetadataList?.results, !photos.isEmpty else {
                 self.showNoImageIcon()
                 return
             }
 
-            if let firstPhotoMetadata = photos.first {
-                self.loadImageForMetadata(photoMetadata: firstPhotoMetadata)
+            self.pageControl.numberOfPages = photos.count
+            self.pageControl.currentPage = 0
+
+            for photoMetadata in photos {
+                self.loadImageForMetadata(photoMetadata: photoMetadata)
             }
         }
     }
@@ -228,7 +218,7 @@ class GymDetailViewController: UIViewController {
             $0.addArrangedSubview(label)
         }
 
-        contentView.addSubview(stackView)
+        scrollView.addSubview(stackView)
 
         stackView.snp.makeConstraints {
             $0.center.equalToSuperview()
@@ -246,56 +236,72 @@ class GymDetailViewController: UIViewController {
 
             if let photo = photo {
                 DispatchQueue.main.async {
-                    self.imageView.image = photo
+                    self.addImageToScrollView(photo: photo)
                 }
             }
         })
     }
 
-    @objc private func toggleFavorite() {
-        guard let gym = gym else { return }
-        let isFavorite = FavoritesManager.shared.isFavorite(placeID: gym.place_id)
+    private func addImageToScrollView(photo: UIImage) {
+        let imageView = UIImageView(image: photo)
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
 
-        if isFavorite {
-            FavoritesManager.shared.removeFavorite(place: gym)
-            showToast(message: "즐겨찾기에서 제거되었습니다.")
-        } else {
-            FavoritesManager.shared.addFavorite(place: gym)
-            showToast(message: "즐겨찾기에 추가되었습니다.")
-        }
+        let xPosition = self.scrollView.bounds.width * CGFloat(images.count)
+        imageView.frame = CGRect(x: xPosition, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height)
 
-        updateFavoriteButton()
+        scrollView.addSubview(imageView)
+        scrollView.contentSize.width = self.scrollView.bounds.width * CGFloat(images.count + 1)
+        images.append(photo)
     }
 
-    private func updateFavoriteButton() {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let pageIndex = round(scrollView.contentOffset.x / view.bounds.width)
+        pageControl.currentPage = Int(pageIndex)
+    }
+
+    @objc private func toggleFavorite() {
+        guard let gym = gym else { return }
+        FavoritesManager.shared.toggleFavorite(place: gym)
+        updateFavoriteButton(showToast: true) // 버튼 클릭 시에는 토스트 메시지를 표시함
+    }
+
+    private func updateFavoriteButton(showToast: Bool) {
         guard let gym = gym else { return }
         let isFavorite = FavoritesManager.shared.isFavorite(placeID: gym.place_id)
         let heartImage = isFavorite ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
         let tintColor: UIColor = isFavorite ? .red : .gray
         favoriteButton.setImage(heartImage, for: .normal)
         favoriteButton.tintColor = tintColor
+
+        // 토스트 메시지 추가
+        if showToast {
+            showToastForFavorite(isFavorite: isFavorite)
+        }
     }
 
-    private func showToast(message: String) {
+    private func showToastForFavorite(isFavorite: Bool) {
+        let message = isFavorite ? "즐겨찾기에 추가되었습니다" : "즐겨찾기에서 제거되었습니다"
         let toastLabel = UILabel().then {
             $0.backgroundColor = UIColor.black.withAlphaComponent(0.6)
             $0.textColor = UIColor.white
-            $0.font = UIFont.systemFont(ofSize: 14.0)
             $0.textAlignment = .center
+            $0.font = UIFont.systemFont(ofSize: 14)
             $0.text = message
             $0.alpha = 1.0
             $0.layer.cornerRadius = 10
             $0.clipsToBounds = true
         }
 
-        self.view.addSubview(toastLabel)
+        view.addSubview(toastLabel)
         toastLabel.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(50)
-            $0.bottom.equalToSuperview().inset(100)
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalToSuperview().offset(-100)
+            $0.width.equalTo(200)
             $0.height.equalTo(35)
         }
 
-        UIView.animate(withDuration: 4.0, delay: 0.1, options: .curveEaseOut, animations: {
+        UIView.animate(withDuration: 2.0, delay: 0.1, options: .curveEaseOut, animations: {
             toastLabel.alpha = 0.0
         }, completion: { _ in
             toastLabel.removeFromSuperview()

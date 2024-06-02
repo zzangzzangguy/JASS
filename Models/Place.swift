@@ -47,28 +47,6 @@ struct Photo: Codable {  // 추가: Photo 구조체 추가
         case photoReference = "photo_reference"
     }
 }
-//struct DistanceMatrixResponse: Codable {
-//    struct Row: Codable {
-//        struct Element: Codable {
-//            struct Distance: Codable {
-//                let text: String
-//                let value: Int
-//            }
-//            struct Duration: Codable {
-//                let text: String
-//                let value: Int
-//            }
-//            let distance: Distance
-//            let duration: Duration
-//            let status: String
-//        }
-//        let elements: [Element]
-//    }
-//    let destination_addresses: [String]
-//    let origin_addresses: [String]
-//    let rows: [Row]
-//    let status: String
-//}
 struct DistanceMatrixResponse: Codable {
     let destinationAddresses: [String]
     let originAddresses: [String]
@@ -95,5 +73,14 @@ struct DistanceMatrixResponse: Codable {
                 let value: Int
             }
         }
+    }
+}
+extension Place: Hashable {
+    static func == (lhs: Place, rhs: Place) -> Bool {
+        return lhs.place_id == rhs.place_id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(place_id)
     }
 }

@@ -21,6 +21,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     var clusterManager: ClusterManager!
     let locationManager = CLLocationManager()
 
+    private var selectedCategory: String?
+
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
     private var filterView: FilterViewController?
 
@@ -52,9 +54,9 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 //        updateAppearance()
     }
 
-    private func applyFilter(filter: String) {
+    private func applyFilter(filter: String, category: String) {
         showLoadingIndicator()
-        placeSearchViewModel.searchPlace(input: filter) { [weak self] places in
+        placeSearchViewModel.searchPlace(input: filter, category: category) { [weak self] places in
             guard let self = self else { return }
             self.hideLoadingIndicator()
             self.viewModel.places = places
@@ -193,7 +195,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     }
 
     private func searchPlace(_ query: String) {
-        placeSearchViewModel.searchPlace(input: query) { [weak self] places in
+        guard let category = selectedCategory else { return }
+        placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
             guard let self = self else { return }
 
             self.viewModel.places = places
@@ -216,6 +219,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
             } else {
                 self.searchResultsView.update(with: places)
                 self.showSearchResultsView()
+//                mapView.clear()
+
             }
         }
     }
@@ -270,8 +275,12 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 
     private func updateZoomButtonsState() {
         let currentZoom = mapView.camera.zoom
-        zoomInButton.isEnabled = currentZoom < mapView.maxZoom
-        zoomOutButton.isEnabled = currentZoom > mapView.minZoom
+        let minZoomLevel: Float = 13.0
+        let maxZoomLevel: Float = 20.0
+
+        zoomInButton.isEnabled = currentZoom < maxZoomLevel
+        zoomOutButton.isEnabled = currentZoom > minZoomLevel
+
         zoomInButton.backgroundColor = zoomInButton.isEnabled ? .systemBlue : .lightGray
         zoomOutButton.backgroundColor = zoomOutButton.isEnabled ? .systemBlue : .lightGray
     }
@@ -301,7 +310,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         searchTask?.cancel()
         let task = DispatchWorkItem { [weak self] in
             guard let self = self else { return }
-            self.placeSearchViewModel.searchPlace(input: searchText) { places in
+            guard let category = self.selectedCategory else { return }
+            self.placeSearchViewModel.searchPlace(input: searchText, category: category) { places in
                 self.searchResultsView.isHidden = places.isEmpty
                 self.recentSearchesView.isHidden = !places.isEmpty
                 self.filterContainerView.isHidden = !places.isEmpty
@@ -315,8 +325,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         if let searchText = searchBar.text, !searchText.isEmpty {
             searchRecentViewModel.saveSearchHistory(query: searchText)
             showLoadingIndicator()
-
-            placeSearchViewModel.searchPlace(input: searchText) { [weak self] places in
+            guard let category = selectedCategory else { return }
+            placeSearchViewModel.searchPlace(input: searchText, category: category) { [weak self] places in
                 guard let self = self else { return }
 
                 self.viewModel.places = places
@@ -345,7 +355,6 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
             }
         }
     }
-
 
     private func showSearchResultsView() {
         recentSearchesView.isHidden = true
@@ -415,34 +424,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         loadingIndicator.stopAnimating()
     }
 
-//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-//        super.traitCollectionDidChange(previousTraitCollection)
-//        updateAppearance()
-//    }
 
-//    private func updateAppearance() {
-//        if traitCollection.userInterfaceStyle == .dark {
-//            // 다크 모드일 때 UI 설정
-//            view.backgroundColor = .black
-//            searchController.searchBar.barStyle = .black
-//            filterContainerView.backgroundColor = .black
-//            filterButton.setTitleColor(.white, for: .normal)
-//            filterButton.layer.borderColor = UIColor.white.cgColor
-//            searchResultsView.backgroundColor = .black
-//            recentSearchesView.backgroundColor = .black
-//            // 추가로 필요한 다크 모드 설정 추가
-//        } else {
-//            // 라이트 모드일 때 UI 설정
-//            view.backgroundColor = .white
-//            searchController.searchBar.barStyle = .default
-//            filterContainerView.backgroundColor = .white
-//            filterButton.setTitleColor(.black, for: .normal)
-//            filterButton.layer.borderColor = UIColor.lightGray.cgColor
-//            searchResultsView.backgroundColor = .white
-//            recentSearchesView.backgroundColor = .white
-//            // 추가로 필요한 라이트 모드 설정 추가
-//        }
-//    }
 }
 
 extension MapViewController: GMSMapViewDelegate {
@@ -477,7 +459,9 @@ extension MapViewController: FilterViewDelegate {
         print("선택된 카테고리 쿼리: \(query)")
 
         showLoadingIndicator()
-        placeSearchViewModel.searchPlace(input: query) { [weak self] places in
+        selectedCategory = categories.first
+        guard let category = selectedCategory else { return }
+        placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
             guard let self = self else { return }
             self.hideLoadingIndicator()
             self.viewModel.places = places
