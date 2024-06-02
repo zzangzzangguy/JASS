@@ -11,6 +11,7 @@ class SearchViewController: UIViewController {
     private var searchRecentViewModel = SearchRecentViewModel()
     private var searchTask: DispatchWorkItem?
     private var selectedCategory: String?
+    private let defaultCategory = "헬스"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,7 +55,7 @@ class SearchViewController: UIViewController {
         filterButton = UIButton(type: .system)
         filterButton.setTitle("카테고리 필터", for: .normal)
         filterButton.setImage(UIImage(systemName: "slider.horizontal.3"), for: .normal)
-//        filterButton.addTarget(self, action: #selector(showFilterView), for: .touchUpInside)
+        //        filterButton.addTarget(self, action: #selector(showFilterView), for: .touchUpInside)
         filterStackView.addArrangedSubview(filterButton)
     }
 
@@ -101,7 +102,8 @@ class SearchViewController: UIViewController {
     }
 
     private func searchPlace(_ query: String) {
-        guard let category = selectedCategory else { return }
+        let category = selectedCategory ?? defaultCategory
+        print("searchPlace - query: \(query), category: \(category)") // 로그 추가
         placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
             guard let self = self else { return }
             DispatchQueue.main.async {
@@ -109,6 +111,7 @@ class SearchViewController: UIViewController {
                 self.searchResultsView.isHidden = false
                 self.recentSearchesView.isHidden = true
                 self.filterContainerView.isHidden = true
+                print("searchPlace - results: \(places)") // 로그 추가
             }
         }
     }
@@ -162,7 +165,8 @@ extension SearchViewController: UISearchBarDelegate {
         searchTask?.cancel()
         searchTask = DispatchWorkItem { [weak self] in
             guard let self = self else { return }
-            guard let category = self.selectedCategory else { return }
+            let category = self.selectedCategory ?? self.defaultCategory
+            print("searchBar - query: \(updatedText), category: \(category)") // 로그 추가
             self.placeSearchViewModel.searchPlace(input: updatedText, category: category) { places in
                 DispatchQueue.main.async {
                     self.searchResultsView.update(with: places)
@@ -178,7 +182,8 @@ extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let searchText = searchBar.text, !searchText.isEmpty {
             searchRecentViewModel.saveSearchHistory(query: searchText)
-            guard let category = selectedCategory else { return }
+            let category = selectedCategory ?? defaultCategory
+            print("searchBarSearchButtonClicked - query: \(searchText), category: \(category)") // 로그 추가
             placeSearchViewModel.searchPlace(input: searchText, category: category) { [weak self] places in
                 guard let self = self else { return }
                 DispatchQueue.main.async {
