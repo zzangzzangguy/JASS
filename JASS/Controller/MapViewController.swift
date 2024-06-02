@@ -22,7 +22,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     let locationManager = CLLocationManager()
 
     private var selectedCategory: String?
-
+    private let defaultCategory = "헬스"
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
     private var filterView: FilterViewController?
 
@@ -195,7 +195,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     }
 
     private func searchPlace(_ query: String) {
-        guard let category = selectedCategory else { return }
+        let category = selectedCategory ?? defaultCategory
         placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
             guard let self = self else { return }
 
@@ -310,7 +310,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         searchTask?.cancel()
         let task = DispatchWorkItem { [weak self] in
             guard let self = self else { return }
-            guard let category = self.selectedCategory else { return }
+            let category = self.selectedCategory ?? self.defaultCategory
             self.placeSearchViewModel.searchPlace(input: searchText, category: category) { places in
                 self.searchResultsView.isHidden = places.isEmpty
                 self.recentSearchesView.isHidden = !places.isEmpty
@@ -325,7 +325,9 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         if let searchText = searchBar.text, !searchText.isEmpty {
             searchRecentViewModel.saveSearchHistory(query: searchText)
             showLoadingIndicator()
-            guard let category = selectedCategory else { return }
+            let category = selectedCategory ?? defaultCategory
+            print("searchBarSearchButton 실행 - query: \(searchText), category: \(category)") // 로그 추가
+
             placeSearchViewModel.searchPlace(input: searchText, category: category) { [weak self] places in
                 guard let self = self else { return }
 
@@ -453,7 +455,7 @@ extension MapViewController: GMSMapViewDelegate {
 
 extension MapViewController: FilterViewDelegate {
     func filterView(_ filterView: FilterViewController, didSelectCategories categories: [String]) {
-        viewModel.selectedCategories = Set(categories)
+        viewModel.selectedCategories = categories.isEmpty ? [defaultCategory] : Set(categories)
 
         let query = categories.joined(separator: " ")
         print("선택된 카테고리 쿼리: \(query)")
