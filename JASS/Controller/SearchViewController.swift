@@ -10,7 +10,7 @@ class SearchViewController: UIViewController {
     private var placeSearchViewModel = PlaceSearchViewModel()
     private var searchRecentViewModel = SearchRecentViewModel()
     private var searchTask: DispatchWorkItem?
-    
+    private var selectedCategory: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,11 +20,12 @@ class SearchViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
+
     override func viewWillDisappear(_ animated: Bool) {
-           super.viewWillDisappear(animated)
-           NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-           NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-       }
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
 
     private func setupUI() {
         setupFilterButtons()
@@ -58,32 +59,31 @@ class SearchViewController: UIViewController {
     }
 
     @objc private func keyboardWillShow(_ notification: Notification) {
-           guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
-               return
-           }
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+            return
+        }
 
-           let keyboardHeight = keyboardFrame.height
+        let keyboardHeight = keyboardFrame.height
 
-           recentSearchesView.snp.updateConstraints {
-               $0.bottom.equalToSuperview().inset(keyboardHeight)
-           }
+        recentSearchesView.snp.updateConstraints {
+            $0.bottom.equalToSuperview().inset(keyboardHeight)
+        }
 
-           // 애니메이션과 함께 뷰 이동
-           UIView.animate(withDuration: 0.3) {
-               self.view.layoutIfNeeded()
-           }
-       }
+        // 애니메이션과 함께 뷰 이동
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
 
-       @objc private func keyboardWillHide(_ notification: Notification) {
-           recentSearchesView.snp.updateConstraints {
-               $0.bottom.equalToSuperview()
-           }
+    @objc private func keyboardWillHide(_ notification: Notification) {
+        recentSearchesView.snp.updateConstraints {
+            $0.bottom.equalToSuperview()
+        }
 
-           UIView.animate(withDuration: 0.3) {
-               self.view.layoutIfNeeded()
-           }
-       }
-
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
 
     private func setupRecentSearchesView() {
         recentSearchesView = RecentSearchesView()
@@ -101,7 +101,8 @@ class SearchViewController: UIViewController {
     }
 
     private func searchPlace(_ query: String) {
-        placeSearchViewModel.searchPlace(input: query) { [weak self] places in
+        guard let category = selectedCategory else { return }
+        placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.searchResultsView.update(with: places)
@@ -160,9 +161,11 @@ extension SearchViewController: UISearchBarDelegate {
 
         searchTask?.cancel()
         searchTask = DispatchWorkItem { [weak self] in
-            self?.placeSearchViewModel.searchPlace(input: updatedText) { places in
+            guard let self = self else { return }
+            guard let category = self.selectedCategory else { return }
+            self.placeSearchViewModel.searchPlace(input: updatedText, category: category) { places in
                 DispatchQueue.main.async {
-                    self?.searchResultsView.update(with: places)
+                    self.searchResultsView.update(with: places)
                 }
             }
         }
@@ -170,6 +173,20 @@ extension SearchViewController: UISearchBarDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: searchTask!)
 
         return true
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let searchText = searchBar.text, !searchText.isEmpty {
+            searchRecentViewModel.saveSearchHistory(query: searchText)
+            guard let category = selectedCategory else { return }
+            placeSearchViewModel.searchPlace(input: searchText, category: category) { [weak self] places in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    self.searchResultsView.update(with: places)
+                    self.showSearchResultsView()
+                }
+            }
+        }
     }
 }
 
@@ -190,4 +207,3 @@ extension SearchViewController: SearchResultCellDelegate {
         }
     }
 }
-

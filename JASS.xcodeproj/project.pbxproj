@@ -16,7 +16,6 @@
 		4E9966CE2BE141BF002E3763 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9966CD2BE141BF002E3763 /* LocationManager.swift */; };
 		4E9966D02BE141D9002E3763 /* FavoriteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9966CF2BE141D9002E3763 /* FavoriteManager.swift */; };
 		4EA179CF2B5BB241006A1D51 /* UIIconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */; };
-		4EA179D12B662512006A1D51 /* MapView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D02B662512006A1D51 /* MapView+Extension.swift */; };
 		4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D22B6837EA006A1D51 /* Filter.swift */; };
 		4ECA89DC2BF0BE24006C6DEC /* SearchResultsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ECA89DB2BF0BE24006C6DEC /* SearchResultsViewModel.swift */; };
 		4ECA89DE2BF0DBA7006C6DEC /* FavoritePlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ECA89DD2BF0DBA7006C6DEC /* FavoritePlace.swift */; };
@@ -82,7 +81,6 @@
 		4E9966CD2BE141BF002E3763 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		4E9966CF2BE141D9002E3763 /* FavoriteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteManager.swift; sourceTree = "<group>"; };
 		4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIIconImage.swift; sourceTree = SOURCE_ROOT; };
-		4EA179D02B662512006A1D51 /* MapView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Extension.swift"; sourceTree = "<group>"; };
 		4EA179D22B6837EA006A1D51 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
 		4ECA89DB2BF0BE24006C6DEC /* SearchResultsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsViewModel.swift; sourceTree = "<group>"; };
 		4ECA89DD2BF0DBA7006C6DEC /* FavoritePlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FavoritePlace.swift; path = "/Users/ganghoseong/JASS/Extension+/FavoritePlace.swift"; sourceTree = "<absolute>"; };
@@ -179,7 +177,6 @@
 				4E9966CD2BE141BF002E3763 /* LocationManager.swift */,
 				4E9966CF2BE141D9002E3763 /* FavoriteManager.swift */,
 				4EA179CE2B5BB241006A1D51 /* UIIconImage.swift */,
-				4EA179D02B662512006A1D51 /* MapView+Extension.swift */,
 			);
 			path = "Extension+";
 			sourceTree = "<group>";
@@ -627,7 +624,6 @@
 				4ECA89E02BF11978006C6DEC /* ToastManager.swift in Sources */,
 				4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */,
 				4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */,
-				4EA179D12B662512006A1D51 /* MapView+Extension.swift in Sources */,
 				4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */,
 				4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */,
 				4EF931802B31918200E5794B /* SearchResultsView.swift in Sources */,

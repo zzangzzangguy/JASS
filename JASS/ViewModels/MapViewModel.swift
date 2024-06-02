@@ -1,6 +1,6 @@
-import Foundation
-import UIKit
 import GoogleMaps
+import GoogleMapsUtils
+import UIKit
 
 class MapViewModel {
     var mapView: GMSMapView
@@ -54,10 +54,8 @@ class MapViewModel {
             filteredPlaces = places
         } else {
             filteredPlaces = places.filter { place in
-                guard let types = place.types, !types.isEmpty else {
-                    return false
-                }
-                return types.contains(where: selectedCategories.contains)
+                guard let types = place.types else { return false }
+                return !Set(types).isDisjoint(with: selectedCategories)
             }
         }
         print("필터링 후 장소 수: \(filteredPlaces.count)")
@@ -67,16 +65,10 @@ class MapViewModel {
         mapView.clear()
 
         for place in filteredPlaces {
-            let marker = GMSMarker(position: place.coordinate)
-            marker.title = place.name
-            let snippet = """
+            clusterManager.addCustomMarker(at: place.coordinate, title: place.name, snippet: """
                 \(place.formatted_address ?? "주소 정보 없음")
                 거리: \(place.distanceText ?? "거리 정보 없음")
-            """
-            marker.snippet = snippet
-            marker.userData = place
-            marker.map = mapView
-            print("마커 추가: \(place.name), 주소: \(place.formatted_address ?? "정보 없음") 거리: \(place.distanceText ?? "거리 정보 없음")")
+            """)
         }
 
         if filteredPlaces.isEmpty {
@@ -88,22 +80,35 @@ class MapViewModel {
     }
 
     func updateSelectedPlaceMarker(for place: Place) {
+        // 필터로 추가된 마커 제거
+        filteredPlaces.removeAll()
+
         mapView.clear()  // 기존 마커 제거
 
-        let marker = GMSMarker(position: place.coordinate)
-        marker.title = place.name
-        let snippet = """
+        clusterManager.addCustomMarker(at: place.coordinate, title: place.name, snippet: """
             \(place.formatted_address ?? "주소 정보 없음")
             거리: \(place.distanceText ?? "거리 정보 없음")
-        """
-        marker.snippet = snippet
-        marker.userData = place
-        marker.map = mapView
+        """)
 
         // 선택한 장소로 맵 이동
         mapView.animate(toLocation: place.coordinate)
         mapView.animate(toZoom: 15) // 적절한 줌 레벨 설정
 
         print("선택한 장소 마커 추가: \(place.name), 주소: \(place.formatted_address ?? "정보 없음")")
+    }
+
+    func updateMarkersWithSearchResults(_ places: [Place]) {
+        // 기존 필터 마커 제거
+        filteredPlaces.removeAll()
+        mapView.clear()
+
+        for place in places {
+            clusterManager.addCustomMarker(at: place.coordinate, title: place.name, snippet: """
+                \(place.formatted_address ?? "주소 정보 없음")
+                거리: \(place.distanceText ?? "거리 정보 없음")
+            """)
+        }
+
+        clusterManager.addPlaces(places)
     }
 }

@@ -14,6 +14,16 @@ class PlaceSearchViewModel {
     var updateSearchResults: (() -> Void)?
     var showError: ((String) -> Void)?
 
+
+    private let categoriesToTypes: [String: String] = [
+          "헬스": "gym",
+          "필라테스": "gym",
+          "복싱": "gym",
+          "크로스핏": "gym",
+          "골프": "golf_course",
+          "수영": "gym",
+          "클라이밍": "gym"
+      ]
     func searchPlacesInBounds(_ bounds: GMSCoordinateBounds, query: String, completion: @escaping ([Place]) -> Void) {
         guard !query.isEmpty else {
             print("검색어가 비어있습니다. 마커를 업데이트하지 않습니다.")
@@ -52,32 +62,32 @@ class PlaceSearchViewModel {
         }
     }
 
-    func searchPlace(input: String, completion: @escaping ([Place]) -> Void) {
-        guard !input.isEmpty else {
-            completion([])
-            return
-        }
+    // 쿼리 입력시
+    //-> 인데 ? 필터 적용하기 눌렀을때도 호출되네 머노 
+    func searchPlace(input: String, category: String, completion: @escaping ([Place]) -> Void) {
+            guard let type = categoriesToTypes[category], !input.isEmpty else {
+                completion([])
+                return
+            }
 
-        print("searchPlace 검색 : \(input)")
+            print("searchPlace 검색 : \(input), 카테고리 : \(category)")
 
-        provider.request(.textSearch(parameters: ["query": input])) { result in
-            switch result {
-            case .success(let response):
-                do {
-                    var searchResults = try JSONDecoder().decode(SearchResults.self, from: response.data)
-                    
-                    completion(searchResults.results)
-                    
-                } catch {
-                    print("JSON 디코딩 오류: \(error)")
+            provider.request(.textSearch(parameters: ["query": input, "type": type])) { result in
+                switch result {
+                case .success(let response):
+                    do {
+                        let searchResults = try JSONDecoder().decode(SearchResults.self, from: response.data)
+                        completion(searchResults.results)
+                    } catch {
+                        print("JSON 디코딩 오류: \(error)")
+                        completion([])
+                    }
+                case .failure(let error):
+                    print("API 요청 실패: \(error)")
                     completion([])
                 }
-            case .failure(let error):
-                print("API 요청 실패: \(error)")
-                completion([])
             }
         }
-    }
 
     func fetchPlacePhoto(reference: String, maxWidth: Int, completion: @escaping (URL?) -> Void) {
         provider.request(.photo(reference: reference, maxWidth: maxWidth)) { result in
