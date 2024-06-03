@@ -61,8 +61,11 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
             self.hideLoadingIndicator()
             self.viewModel.places = places
             self.viewModel.filterPlaces()
-            self.updateClusteringWithSelectedCategories()
+//            self.updateClusteringWithSelectedCategories()
             self.updateMapMarkers()
+            if places.isEmpty {
+                       self.showToast("필터링된 장소가 없습니다.")
+                   }
         }
     }
 
@@ -196,6 +199,9 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 
     private func searchPlace(_ query: String) {
         let category = selectedCategory ?? defaultCategory
+        if selectedCategory == nil {
+                showToast("필터가 적용되지 않았습니다. 기본 카테고리로 검색합니다.")
+            }
         placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
             guard let self = self else { return }
 
@@ -261,16 +267,18 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         let currentZoom = mapView.camera.zoom
         if currentZoom < mapView.maxZoom {
             mapView.animate(toZoom: currentZoom + 1)
+            updateZoomButtonsState()
+
         }
-        updateZoomButtonsState()
     }
 
     @objc private func zoomOut() {
         let currentZoom = mapView.camera.zoom
         if currentZoom > mapView.minZoom {
             mapView.animate(toZoom: currentZoom - 1)
+            updateZoomButtonsState()
+
         }
-        updateZoomButtonsState()
     }
 
     private func updateZoomButtonsState() {
@@ -287,6 +295,14 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 
     func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
         updateZoomButtonsState()
+        updateZoomButtonsState()
+           if selectedCategory == nil {
+               showToast("선택된 필터가 없습니다. 필터를 확인해주세요.")
+           }
+           clusterManager.updateMarkersWithSelectedFilters()
+           if viewModel.filteredPlaces.isEmpty {
+               showToast("현재 화면에 표시된 장소가 없습니다.")
+           }
         showMarkersToast()
         clusterManager.updateMarkersWithSelectedFilters()
 
@@ -326,6 +342,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
             searchRecentViewModel.saveSearchHistory(query: searchText)
             showLoadingIndicator()
             let category = selectedCategory ?? defaultCategory
+            
             print("searchBarSearchButton 실행 - query: \(searchText), category: \(category)") // 로그 추가
 
             placeSearchViewModel.searchPlace(input: searchText, category: category) { [weak self] places in
@@ -404,7 +421,9 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         } else {
             recentSearchesView.isHidden = true
         }
+
     }
+
 
     func handleSearchResults(_ places: [Place]) {
         viewModel.places = places
@@ -468,25 +487,28 @@ extension MapViewController: FilterViewDelegate {
             self.hideLoadingIndicator()
             self.viewModel.places = places
             self.viewModel.filterPlaces()
-            self.updateClusteringWithSelectedCategories()
+            clusterManager.updateMarkersWithSelectedFilters()
             self.updateMapMarkers()
+
+            if places.isEmpty {
+                self.showToast("필터링된 장소가 없습니다.")
+            }
         }
 
         dismiss(animated: true, completion: nil)
     }
-
-    private func updateClusteringWithSelectedCategories() {
-        let filteredPlaces = viewModel.places.filter { place in
-            guard let types = place.types else { return false }
-            return !Set(types).isDisjoint(with: Set(viewModel.selectedCategories))
-        }
-
-        if filteredPlaces.isEmpty {
-            print("필터링된 장소가 없습니다.")
-        } else {
-            clusterManager.addPlaces(viewModel.places)
-        }
-    }
+//    private func updateClusteringWithSelectedCategories() {
+//        let filteredPlaces = viewModel.places.filter { place in
+//            guard let types = place.types else { return false }
+//            return !Set(types).isDisjoint(with: Set(viewModel.selectedCategories))
+//        }
+//
+//        if filteredPlaces.isEmpty {
+//            showToast("필터링된 장소가 없습니다.")
+//        } else {
+//            clusterManager.addPlaces(viewModel.places)
+//        }
+//    }
 
     func filterViewDidCancel(_ filterView: FilterViewController) {
         dismiss(animated: true, completion: nil)

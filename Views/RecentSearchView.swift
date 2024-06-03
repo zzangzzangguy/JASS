@@ -70,8 +70,26 @@ class RecentSearchesView: UIView, UITableViewDelegate, UITableViewDataSource {
         if !recentSearches.isEmpty {
             let recentSearch = recentSearches[indexPath.row]
             didSelectRecentSearch?(recentSearch)
+
+            // 키보드 내리기
+            if let searchBar = (self.superview?.next as? UISearchController)?.searchBar {
+                searchBar.resignFirstResponder()
+            } else if let parentVC = self.findViewController(), let searchBar = parentVC.navigationItem.searchController?.searchBar {
+                searchBar.resignFirstResponder()
+            }
         }
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+
+    private func findViewController() -> UIViewController? {
+        var nextResponder: UIResponder? = self
+        repeat {
+            nextResponder = nextResponder?.next
+            if let viewController = nextResponder as? UIViewController {
+                return viewController
+            }
+        } while nextResponder != nil
+        return nil
     }
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
