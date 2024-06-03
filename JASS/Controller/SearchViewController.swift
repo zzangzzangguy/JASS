@@ -92,6 +92,7 @@ class SearchViewController: UIViewController {
         recentSearchesView.didSelectRecentSearch = { [weak self] query in
             guard let self = self else { return }
             self.searchPlace(query)
+            
         }
         view.addSubview(recentSearchesView)
         recentSearchesView.snp.makeConstraints {
@@ -166,7 +167,7 @@ extension SearchViewController: UISearchBarDelegate {
         searchTask = DispatchWorkItem { [weak self] in
             guard let self = self else { return }
             let category = self.selectedCategory ?? self.defaultCategory
-            print("searchBar - query: \(updatedText), category: \(category)") // 로그 추가
+            print("searchBar - query: \(updatedText), category: \(category)") 
             self.placeSearchViewModel.searchPlace(input: updatedText, category: category) { places in
                 DispatchQueue.main.async {
                     self.searchResultsView.update(with: places)

@@ -79,7 +79,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         view.addSubview(scrollView)
 
         scrollView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(15)
+            $0.top.equalTo(view.safeAreaLayoutGuide)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(300)
         }
@@ -106,8 +106,10 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
 
         view.addSubview(detailsStackView)
         detailsStackView.snp.makeConstraints {
-            $0.top.equalTo(pageControl.snp.bottom).offset(20)
+            $0.top.equalTo(pageControl.snp.bottom).offset(0)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide) // SearchController와 맞닿도록 수정
+
         }
         nameLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         addressLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
