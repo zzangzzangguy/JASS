@@ -27,13 +27,17 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
     init(mapView: GMSMapView, navigationController: UINavigationController?) {
         self.mapView = mapView
         self.navigationController = navigationController
+
         let iconGenerator = GMUDefaultClusterIconGenerator()
-        let renderer = GMUDefaultClusterRenderer(mapView: mapView, clusterIconGenerator: iconGenerator)
-        let algorithm = GMUNonHierarchicalDistanceBasedAlgorithm()
+        let renderer = CustomClusterRenderer(mapView: mapView, clusterIconGenerator: iconGenerator)
+        let algorithm = GMUNonHierarchicalDistanceBasedAlgorithm(clusterDistancePoints: 100)!
+
         self.clusterManager = GMUClusterManager(map: mapView, algorithm: algorithm, renderer: renderer)
+
         super.init()
+
         self.clusterManager.setDelegate(self, mapDelegate: self)
-        renderer.delegate = self // 클러스터 렌더러의 delegate를 설정
+        renderer.delegate = self // 클러스터 렌더러의 delegate를 설정합니다.
     }
 
     func addPlaces(_ places: [Place]) {
@@ -64,7 +68,7 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
         let selectedCategories = delegate?.selectedFilters() ?? []
 
         guard !selectedCategories.isEmpty else {
-            mapView.makeToast("선택된 필터가 없습니다. 필터른 선택해주세ㅇ.")
+            mapView.makeToast("선택된 필터가 없습니다. 필터를 선택해주세요.")
             return
         }
 
@@ -88,8 +92,6 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
             }
         }
     }
-
-  
 
     func clusterManager(_ clusterManager: GMUClusterManager, didTap clusterItem: GMUClusterItem) -> Bool {
         if let item = clusterItem as? CustomClusterItem {
@@ -148,14 +150,7 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
         label.centerXAnchor.constraint(equalTo: ovalView.centerXAnchor).isActive = true
         label.centerYAnchor.constraint(equalTo: ovalView.centerYAnchor).isActive = true
 
-        // 텍스트가 보이지 않는 문제 해결을 위해 레이블의 프레임을 강제로 설정
         label.frame = CGRect(x: padding, y: padding / 2, width: label.intrinsicContentSize.width, height: label.intrinsicContentSize.height)
-
-        // 그림자 효과 추가
-        ovalView.layer.shadowColor = UIColor.black.cgColor
-        ovalView.layer.shadowOpacity = 0.5
-        ovalView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        ovalView.layer.shadowRadius = 2
 
         UIGraphicsBeginImageContextWithOptions(ovalView.bounds.size, false, UIScreen.main.scale)
         ovalView.layer.render(in: UIGraphicsGetCurrentContext()!)
@@ -168,7 +163,4 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
     func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
         updateMarkersWithSelectedFilters()
     }
-
-
-
 }

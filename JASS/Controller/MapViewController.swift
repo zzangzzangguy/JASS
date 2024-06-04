@@ -21,6 +21,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     var clusterManager: ClusterManager!
     let locationManager = CLLocationManager()
 
+
     private var selectedCategory: String?
     private let defaultCategory = "헬스"
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
@@ -110,6 +111,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         mapView = GMSMapView()
         mapView.isMyLocationEnabled = true
         mapView.settings.myLocationButton = true
+        
         mapView.delegate = self
         view.addSubview(mapView)
         mapView.snp.makeConstraints {
@@ -122,6 +124,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         let minZoomLevel: Float = 13.0
         let maxZoomLevel: Float = 20.0
         mapView.setMinZoom(minZoomLevel, maxZoom: maxZoomLevel)
+        print("현재 줌레벨\(mapView.camera.zoom)")
     }
 
     private func setupSearchViews() {
@@ -237,10 +240,6 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         button.tintColor = .white
         button.backgroundColor = .blue
         button.layer.cornerRadius = 20
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowOffset = CGSize(width: 0, height: 2)
-        button.layer.shadowOpacity = 0.5
-        button.layer.shadowRadius = 2
         button.addTarget(self, action: action, for: .touchUpInside)
         view.addSubview(button)
     }
@@ -250,15 +249,15 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         configureZoomButton(button: zoomOutButton, systemName: "minus.magnifyingglass", action: #selector(zoomOut))
 
         zoomInButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(100)
-            $0.width.height.equalTo(40)
-        }
-        zoomOutButton.snp.makeConstraints {
-            $0.trailing.equalTo(zoomInButton.snp.trailing)
-            $0.bottom.equalTo(zoomInButton.snp.top).offset(-15)
-            $0.width.height.equalTo(40)
-        }
+                $0.leading.equalToSuperview().inset(20)
+                $0.centerY.equalToSuperview().offset(-30)
+                $0.width.height.equalTo(40)
+            }
+            zoomOutButton.snp.makeConstraints {
+                $0.leading.equalTo(zoomInButton.snp.leading)
+                $0.top.equalTo(zoomInButton.snp.bottom).offset(15)
+                $0.width.height.equalTo(40)
+            }
 
         updateZoomButtonsState()
     }
@@ -268,6 +267,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         if currentZoom < mapView.maxZoom {
             mapView.animate(toZoom: currentZoom + 1)
             updateZoomButtonsState()
+            print("줌레벨:\(mapView.camera.zoom)")
 
         }
     }
@@ -277,6 +277,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         if currentZoom > mapView.minZoom {
             mapView.animate(toZoom: currentZoom - 1)
             updateZoomButtonsState()
+            print("줌레벨:\(mapView.camera.zoom)")
+
 
         }
     }
@@ -294,7 +296,6 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     }
 
     func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
-        updateZoomButtonsState()
         updateZoomButtonsState()
            if selectedCategory == nil {
                showToast("선택된 필터가 없습니다. 필터를 확인해주세요.")
@@ -373,6 +374,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
                 }
             }
         }
+        
     }
 
     private func showSearchResultsView() {
@@ -452,6 +454,8 @@ extension MapViewController: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
         updateZoomButtonsState()
         clusterManager.updateMarkersWithSelectedFilters()
+        print("현재 줌레벨: \(mapView.camera.zoom)")
+
     }
 
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
@@ -497,19 +501,6 @@ extension MapViewController: FilterViewDelegate {
 
         dismiss(animated: true, completion: nil)
     }
-//    private func updateClusteringWithSelectedCategories() {
-//        let filteredPlaces = viewModel.places.filter { place in
-//            guard let types = place.types else { return false }
-//            return !Set(types).isDisjoint(with: Set(viewModel.selectedCategories))
-//        }
-//
-//        if filteredPlaces.isEmpty {
-//            showToast("필터링된 장소가 없습니다.")
-//        } else {
-//            clusterManager.addPlaces(viewModel.places)
-//        }
-//    }
-
     func filterViewDidCancel(_ filterView: FilterViewController) {
         dismiss(animated: true, completion: nil)
     }
