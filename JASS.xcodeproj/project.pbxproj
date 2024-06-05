@@ -169,6 +169,33 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4E7CB9642C0F3D5D00F5F3D7 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				4EF9315B2B1DC92900E5794B /* Secrets.xcconfig */,
+				4EF9312D2B1C912E00E5794B /* SceneDelegate.swift */,
+				4EF9312B2B1C912E00E5794B /* AppDelegate.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		4E7CB9672C0F3D8700F5F3D7 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				4EA17A022B7B743C006A1D51 /* Controller */,
+				4EF9318E2B3EA0AA00E5794B /* ViewModels */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		4E7CB9682C0F3DC200F5F3D7 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				4EF9318C2B3EA05700E5794B /* Entities */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
 		4EA179CD2B5BB234006A1D51 /* Extension+ */ = {
 			isa = PBXGroup;
 			children = (
@@ -202,8 +229,7 @@
 				4EF9318B2B3E9A2C00E5794B /* Service */,
 				4EA179CD2B5BB234006A1D51 /* Extension+ */,
 				4EF9318D2B3EA06E00E5794B /* Views */,
-				4EF9315B2B1DC92900E5794B /* Secrets.xcconfig */,
-				4EF9318C2B3EA05700E5794B /* Models */,
+				4E7CB9682C0F3DC200F5F3D7 /* Domain */,
 				4EF931412B1C913000E5794B /* JASSTests */,
 				4EF9314B2B1C913000E5794B /* JASSUITests */,
 				4EF931292B1C912E00E5794B /* Products */,
@@ -225,10 +251,8 @@
 		4EF9312A2B1C912E00E5794B /* JASS */ = {
 			isa = PBXGroup;
 			children = (
-				4EF9318E2B3EA0AA00E5794B /* ViewModels */,
-				4EF9312B2B1C912E00E5794B /* AppDelegate.swift */,
-				4EF9312D2B1C912E00E5794B /* SceneDelegate.swift */,
-				4EA17A022B7B743C006A1D51 /* Controller */,
+				4E7CB9642C0F3D5D00F5F3D7 /* Core */,
+				4E7CB9672C0F3D8700F5F3D7 /* Presentation */,
 				4EF931342B1C913000E5794B /* Assets.xcassets */,
 				4EF931362B1C913000E5794B /* LaunchScreen.storyboard */,
 				4EF931392B1C913000E5794B /* Info.plist */,
@@ -263,13 +287,13 @@
 			path = Service;
 			sourceTree = "<group>";
 		};
-		4EF9318C2B3EA05700E5794B /* Models */ = {
+		4EF9318C2B3EA05700E5794B /* Entities */ = {
 			isa = PBXGroup;
 			children = (
 				4EF931832B3370A600E5794B /* SearchHistory.swift */,
 				4EF931682B21C00300E5794B /* Place.swift */,
 			);
-			path = Models;
+			path = Entities;
 			sourceTree = "<group>";
 		};
 		4EF9318D2B3EA06E00E5794B /* Views */ = {
@@ -420,6 +444,7 @@
 				4E9966C72BE12857002E3763 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				4E9966CA2BE12CB1002E3763 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				4EDB89872BEAA6C0001C558E /* XCRemoteSwiftPackageReference "Toast-Swift" */,
+				4E7CB9692C0F81AF00F5F3D7 /* XCRemoteSwiftPackageReference "RxSwift" */,
 			);
 			productRefGroup = 4EF931292B1C912E00E5794B /* Products */;
 			projectDirPath = "";
@@ -978,6 +1003,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		4E7CB9692C0F81AF00F5F3D7 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.7.1;
+			};
+		};
 		4E9966C72BE12857002E3763 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
