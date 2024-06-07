@@ -11,6 +11,7 @@ struct Place: Codable {
     let openingHours: String?
     let photos: [Photo]?
     var distanceText: String? 
+    
 
     var isGym: Bool {
         guard let types = types else { return false }

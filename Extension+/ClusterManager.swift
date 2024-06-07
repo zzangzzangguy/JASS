@@ -18,6 +18,42 @@ class CustomClusterItem: NSObject, GMUClusterItem {
     }
 }
 
+class CustomClusterRenderer: GMUDefaultClusterRenderer {
+    override func shouldRender(as cluster: GMUCluster, atZoom zoom: Float) -> Bool {
+        // 줌 레벨에 따라 클러스터링 반경을 조정
+        return zoom < 15.0
+    }
+
+    func renderClusterMarker(_ marker: GMSMarker) {
+        if let cluster = marker.userData as? GMUCluster {
+            let count = cluster.count
+            marker.icon = createClusterIcon(count: Int(count))
+        }
+    }
+
+    private func createClusterIcon(count: Int) -> UIImage? {
+        let diameter = CGFloat(40 + (count * 2))
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: diameter, height: diameter))
+        return renderer.image { context in
+            UIColor.red.setFill()
+            context.cgContext.fillEllipse(in: CGRect(origin: .zero, size: CGSize(width: diameter, height: diameter)))
+            let attributes: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.boldSystemFont(ofSize: 20)
+            ]
+            let text = "\(count)"
+            let textSize = text.size(withAttributes: attributes)
+            let textRect = CGRect(
+                x: (diameter - textSize.width) / 2,
+                y: (diameter - textSize.height) / 2,
+                width: textSize.width,
+                height: textSize.height
+            )
+            text.draw(in: textRect, withAttributes: attributes)
+        }
+    }
+}
+
 class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDelegate, GMSMapViewDelegate {
     let mapView: GMSMapView
     let clusterManager: GMUClusterManager
@@ -37,7 +73,7 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
         super.init()
 
         self.clusterManager.setDelegate(self, mapDelegate: self)
-        renderer.delegate = self // 클러스터 렌더러의 delegate를 설정합니다.
+        renderer.delegate = self
     }
 
     func addPlaces(_ places: [Place]) {
@@ -50,15 +86,15 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
     func addCustomMarker(at location: CLLocationCoordinate2D, title: String? = nil, snippet: String? = nil) -> GMSMarker {
         let marker = GMSMarker()
         marker.position = location
+
         marker.title = title
         marker.snippet = snippet
 
-        // 사용자 정의 마커 아이콘 설정
         if let title = title, let markerIcon = createMarkerIcon(with: title) {
             marker.icon = markerIcon
         }
 
-        marker.map = mapView // 수정된 부분
+        marker.map = mapView
         return marker
     }
 
@@ -85,7 +121,7 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
 
         group.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
-            let uniquePlaces = Array(Set(allPlaces)) // 중복 제거
+            let uniquePlaces = Array(Set(allPlaces))
             self.addPlaces(uniquePlaces)
             if uniquePlaces.isEmpty {
                 self.delegate?.showNoResultsMessage()

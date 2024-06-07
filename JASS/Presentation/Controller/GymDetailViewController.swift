@@ -57,7 +57,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         print("Gym Data: \(String(describing: gym))")
 
         setupUI()
-        fetchPlaceDetails() // 장소 세부정보 가져오기
+        fetchPlaceDetails()
         fetchPlacePhotos()
     }
 
@@ -108,7 +108,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         detailsStackView.snp.makeConstraints {
             $0.top.equalTo(pageControl.snp.bottom).offset(0)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide) // SearchController와 맞닿도록 수정
+            $0.bottom.equalTo(view.safeAreaLayoutGuide)
 
         }
         nameLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
@@ -265,7 +265,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     @objc private func toggleFavorite() {
         guard let gym = gym else { return }
         FavoritesManager.shared.toggleFavorite(place: gym)
-        updateFavoriteButton(showToast: true) // 버튼 클릭 시에는 토스트 메시지를 표시함
+        updateFavoriteButton(showToast: true)
     }
 
     private func updateFavoriteButton(showToast: Bool) {
@@ -276,7 +276,6 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         favoriteButton.setImage(heartImage, for: .normal)
         favoriteButton.tintColor = tintColor
 
-        // 토스트 메시지 추가
         if showToast {
             showToastForFavorite(isFavorite: isFavorite)
         }

@@ -80,27 +80,26 @@ class MapViewModel {
     }
 
     func updateSelectedPlaceMarker(for place: Place) {
-        // 필터로 추가된 마커 제거
         filteredPlaces.removeAll()
+        mapView.clear()
 
-        mapView.clear()  // 기존 마커 제거
+        let marker = clusterManager.addCustomMarker(at: place.coordinate, title: place.name, snippet: """
+             \(place.formatted_address ?? "주소 정보 없음")
+             거리: \(place.distanceText ?? "거리 정보 없음")
+         """)
+         marker.userData = place  // 여기서 userData 설정
 
-        clusterManager.addCustomMarker(at: place.coordinate, title: place.name, snippet: """
-            \(place.formatted_address ?? "주소 정보 없음")
-            거리: \(place.distanceText ?? "거리 정보 없음")
-        """)
-
-        // 선택한 장소로 맵 이동
         mapView.animate(toLocation: place.coordinate)
-        mapView.animate(toZoom: 15) // 적절한 줌 레벨 설정
+        mapView.animate(toZoom: 15)
 
         print("선택한 장소 마커 추가: \(place.name), 주소: \(place.formatted_address ?? "정보 없음")")
     }
 
     func updateMarkersWithSearchResults(_ places: [Place]) {
-        // 기존 필터 마커 제거
         filteredPlaces.removeAll()
         mapView.clear()
+        clusterManager.addPlaces(filteredPlaces)
+
 
         for place in places {
             clusterManager.addCustomMarker(at: place.coordinate, title: place.name, snippet: """

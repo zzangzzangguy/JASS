@@ -7,6 +7,9 @@ target 'JASS' do
  pod 'Moya'
  pod 'Kingfisher'
  pod 'Google-Maps-iOS-Utils'
+ pod 'RxSwift'
+ pod 'Moya/RxSwift'
+ pod 'RxCocoa'
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
