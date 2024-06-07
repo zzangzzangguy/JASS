@@ -12,6 +12,11 @@
 		4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */; };
 		4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */; };
 		4E7AEF242C0E393C00BFDB67 /* CustomClusterRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7AEF232C0E393C00BFDB67 /* CustomClusterRenderer.swift */; };
+		4E7CB96B2C10139E00F5F3D7 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96A2C10139E00F5F3D7 /* RxCocoa */; };
+		4E7CB96D2C10139E00F5F3D7 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96C2C10139E00F5F3D7 /* RxRelay */; };
+		4E7CB96F2C10139E00F5F3D7 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96E2C10139E00F5F3D7 /* RxSwift */; };
+		4E7CB9722C11AA9700F5F3D7 /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB9712C11AA9700F5F3D7 /* Moya */; };
+		4E7CB9742C11AA9700F5F3D7 /* RxMoya in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB9732C11AA9700F5F3D7 /* RxMoya */; };
 		4E9966C92BE12858002E3763 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 4E9966C82BE12858002E3763 /* SDWebImage */; };
 		4E9966CC2BE12CB1002E3763 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4E9966CB2BE12CB1002E3763 /* Kingfisher */; };
 		4E9966CE2BE141BF002E3763 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9966CD2BE141BF002E3763 /* LocationManager.swift */; };
@@ -128,6 +133,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E7CB9742C11AA9700F5F3D7 /* RxMoya in Frameworks */,
+				4E7CB96D2C10139E00F5F3D7 /* RxRelay in Frameworks */,
+				4E7CB96B2C10139E00F5F3D7 /* RxCocoa in Frameworks */,
+				4E7CB9722C11AA9700F5F3D7 /* Moya in Frameworks */,
 				4EDB89892BEAA6C0001C558E /* Toast in Frameworks */,
 				4E9966C92BE12858002E3763 /* SDWebImage in Frameworks */,
 				4EF0BE222BCCE6350076074E /* Then in Frameworks */,
@@ -136,6 +145,7 @@
 				4EF931762B294E3700E5794B /* Realm in Frameworks */,
 				83EF4D61803A49947903D872 /* Pods_JASS.framework in Frameworks */,
 				4EF931652B218B3800E5794B /* SnapKit in Frameworks */,
+				4E7CB96F2C10139E00F5F3D7 /* RxSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -360,6 +370,11 @@
 				4E9966C82BE12858002E3763 /* SDWebImage */,
 				4E9966CB2BE12CB1002E3763 /* Kingfisher */,
 				4EDB89882BEAA6C0001C558E /* Toast */,
+				4E7CB96A2C10139E00F5F3D7 /* RxCocoa */,
+				4E7CB96C2C10139E00F5F3D7 /* RxRelay */,
+				4E7CB96E2C10139E00F5F3D7 /* RxSwift */,
+				4E7CB9712C11AA9700F5F3D7 /* Moya */,
+				4E7CB9732C11AA9700F5F3D7 /* RxMoya */,
 			);
 			productName = JASS;
 			productReference = 4EF931282B1C912E00E5794B /* JASS.app */;
@@ -445,6 +460,7 @@
 				4E9966CA2BE12CB1002E3763 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				4EDB89872BEAA6C0001C558E /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 				4E7CB9692C0F81AF00F5F3D7 /* XCRemoteSwiftPackageReference "RxSwift" */,
+				4E7CB9702C11AA9700F5F3D7 /* XCRemoteSwiftPackageReference "Moya" */,
 			);
 			productRefGroup = 4EF931292B1C912E00E5794B /* Products */;
 			projectDirPath = "";
@@ -1011,6 +1027,14 @@
 				minimumVersion = 6.7.1;
 			};
 		};
+		4E7CB9702C11AA9700F5F3D7 /* XCRemoteSwiftPackageReference "Moya" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Moya/Moya.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 15.0.3;
+			};
+		};
 		4E9966C72BE12857002E3763 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
@@ -1062,6 +1086,31 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4E7CB96A2C10139E00F5F3D7 /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E7CB9692C0F81AF00F5F3D7 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		4E7CB96C2C10139E00F5F3D7 /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E7CB9692C0F81AF00F5F3D7 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
+		};
+		4E7CB96E2C10139E00F5F3D7 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E7CB9692C0F81AF00F5F3D7 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		4E7CB9712C11AA9700F5F3D7 /* Moya */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E7CB9702C11AA9700F5F3D7 /* XCRemoteSwiftPackageReference "Moya" */;
+			productName = Moya;
+		};
+		4E7CB9732C11AA9700F5F3D7 /* RxMoya */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E7CB9702C11AA9700F5F3D7 /* XCRemoteSwiftPackageReference "Moya" */;
+			productName = RxMoya;
+		};
 		4E9966C82BE12858002E3763 /* SDWebImage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 4E9966C72BE12857002E3763 /* XCRemoteSwiftPackageReference "SDWebImage" */;

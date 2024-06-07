@@ -139,7 +139,6 @@ class SearchResultCell: UITableViewCell {
             self.loadingIndicator.stopAnimating()
 
             if let error = error {
-                print("Error loading photo: \(error.localizedDescription)")
                 self.placeImageView.image = UIImage(named: "defaultImage")
                 return
             }
@@ -153,7 +152,6 @@ class SearchResultCell: UITableViewCell {
                 guard let self = self else { return }
 
                 if let error = error {
-                    print("Error loading photo: \(error.localizedDescription)")
                     self.placeImageView.image = UIImage(named: "defaultImage")
                 } else if let photo = photo {
                     self.placeImageView.image = photo

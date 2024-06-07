@@ -52,7 +52,6 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
             }
         }
 
-//        updateAppearance()
     }
 
     private func applyFilter(filter: String, category: String) {
@@ -62,7 +61,6 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
             self.hideLoadingIndicator()
             self.viewModel.places = places
             self.viewModel.filterPlaces()
-//            self.updateClusteringWithSelectedCategories()
             self.updateMapMarkers()
             if places.isEmpty {
                        self.showToast("필터링된 장소가 없습니다.")
@@ -228,7 +226,6 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
             } else {
                 self.searchResultsView.update(with: places)
                 self.showSearchResultsView()
-//                mapView.clear()
 
             }
         }
@@ -534,6 +531,7 @@ extension MapViewController: ClusterManagerDelegate {
 }
 
 extension MapViewController: SearchResultsViewDelegate {
+    
     func showToastForFavorite(place: Place, isAdded: Bool) {
         let message = isAdded ? "즐겨찾기에 추가되었습니다." : "즐겨찾기에서 제거되었습니다."
         view.makeToast(message)
