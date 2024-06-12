@@ -38,6 +38,7 @@ extension FavoritesViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: FavoritePlaceCell.reuseIdentifier, for: indexPath) as! FavoritePlaceCell
         let place = favoritesManager.getFavorites()[indexPath.row]
         cell.configure(with: place)
+        
         cell.delegate = self
         return cell
     }

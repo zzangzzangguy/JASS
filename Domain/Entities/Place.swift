@@ -1,5 +1,7 @@
 import Foundation
 import GooglePlaces
+import CoreLocation
+
 
 struct Place: Codable {
     let name: String
@@ -10,8 +12,8 @@ struct Place: Codable {
     let phoneNumber: String?
     let openingHours: String?
     let photos: [Photo]?
-    var distanceText: String? 
-    
+    var distanceText: String?
+    var reviews: [Review]?
 
     var isGym: Bool {
         guard let types = types else { return false }
@@ -26,7 +28,6 @@ struct Place: Codable {
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: geometry.location.lat, longitude: geometry.location.lng)
     }
-
     struct Geometry: Codable {
         let location: Location
     }
@@ -37,7 +38,7 @@ struct Place: Codable {
     }
 }
 
-struct Photo: Codable {  // 추가: Photo 구조체 추가
+struct Photo: Codable {
     let height: Int
     let width: Int
     let photoReference: String
@@ -48,6 +49,32 @@ struct Photo: Codable {  // 추가: Photo 구조체 추가
         case photoReference = "photo_reference"
     }
 }
+
+struct PlaceDetailsResponse: Codable {
+    let result: Place
+}
+
+struct Review: Codable {
+    let authorName: String
+    let authorUrl: String?
+    let language: String?
+    let profilePhotoUrl: String?
+    let rating: Int?
+    let relativeTimeDescription: String?
+    let text: String?
+    let time: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case authorName = "author_name"
+        case authorUrl = "author_url"
+        case language
+        case profilePhotoUrl = "profile_photo_url"
+        case relativeTimeDescription = "relative_time_description"
+        case text, rating, time
+        
+    }
+}
+
 struct DistanceMatrixResponse: Codable {
     let destinationAddresses: [String]
     let originAddresses: [String]
@@ -76,6 +103,7 @@ struct DistanceMatrixResponse: Codable {
         }
     }
 }
+
 extension Place: Hashable {
     static func == (lhs: Place, rhs: Place) -> Bool {
         return lhs.place_id == rhs.place_id

@@ -28,6 +28,7 @@ class MapViewModel {
         let group = DispatchGroup()
 
         for (index, place) in places.enumerated() {
+
             group.enter()
             placeSearchViewModel.calculateDistances(from: currentLocation.coordinate, to: place.coordinate) { [weak self] distance in
                 defer {
@@ -84,10 +85,10 @@ class MapViewModel {
         mapView.clear()
 
         let marker = clusterManager.addCustomMarker(at: place.coordinate, title: place.name, snippet: """
-             \(place.formatted_address ?? "주소 정보 없음")
-             거리: \(place.distanceText ?? "거리 정보 없음")
-         """)
-         marker.userData = place  // 여기서 userData 설정
+            \(place.formatted_address ?? "주소 정보 없음")
+            거리: \(place.distanceText ?? "거리 정보 없음")
+        """)
+        marker.userData = place
 
         mapView.animate(toLocation: place.coordinate)
         mapView.animate(toZoom: 15)
@@ -99,7 +100,6 @@ class MapViewModel {
         filteredPlaces.removeAll()
         mapView.clear()
         clusterManager.addPlaces(filteredPlaces)
-
 
         for place in places {
             clusterManager.addCustomMarker(at: place.coordinate, title: place.name, snippet: """

@@ -7,6 +7,7 @@ import GooglePlaces
 
 protocol SearchResultCellDelegate: AnyObject {
     func didTapFavoriteButton(for cell: SearchResultCell)
+    func didUpdateDistance(for cell: SearchResultCell, distanceText: String?)
 }
 
 class SearchResultCell: UITableViewCell {
@@ -16,7 +17,7 @@ class SearchResultCell: UITableViewCell {
     private let placeImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.layer.cornerRadius = 40
+        $0.layer.cornerRadius = 10
         $0.backgroundColor = .lightGray
     }
 
@@ -41,6 +42,15 @@ class SearchResultCell: UITableViewCell {
         $0.tintColor = .gray
     }
 
+    let reviewsLabel = UILabel().then {
+        $0.font = UIFont.systemFont(ofSize: 12)
+        $0.textColor = .darkGray
+        $0.numberOfLines = 0
+        $0.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
+        $0.numberOfLines = 2
+
+    }
+
     weak var delegate: SearchResultCellDelegate?
     var place: Place?
 
@@ -61,12 +71,13 @@ class SearchResultCell: UITableViewCell {
         contentView.addSubview(addressLabel)
         contentView.addSubview(distanceLabel)
         contentView.addSubview(favoriteButton)
+        contentView.addSubview(reviewsLabel)
         contentView.addSubview(loadingIndicator)
 
         placeImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(80)
+            make.width.height.equalTo(100)
         }
 
         nameLabel.snp.makeConstraints { make in
@@ -85,13 +96,19 @@ class SearchResultCell: UITableViewCell {
             make.top.equalTo(addressLabel.snp.bottom).offset(5)
             make.leading.equalTo(nameLabel.snp.leading)
             make.trailing.equalTo(nameLabel.snp.trailing)
-            make.bottom.lessThanOrEqualToSuperview().inset(16)
         }
 
         favoriteButton.snp.makeConstraints { make in
             make.centerY.equalTo(placeImageView.snp.centerY)
             make.trailing.equalToSuperview().inset(20)
             make.width.height.equalTo(24)
+        }
+
+        reviewsLabel.snp.makeConstraints { make in
+            make.top.equalTo(distanceLabel.snp.bottom).offset(8)
+            make.leading.equalTo(nameLabel.snp.leading)
+            make.trailing.equalToSuperview().inset(16)
+            make.bottom.lessThanOrEqualToSuperview().inset(16)
         }
 
         loadingIndicator.snp.makeConstraints { make in
@@ -105,10 +122,29 @@ class SearchResultCell: UITableViewCell {
         self.place = place
         nameLabel.text = place.name
         addressLabel.text = place.formatted_address
-        distanceLabel.text = place.distanceText ?? "거리 정보 없음"
+        reviewsLabel.text = place.reviews?.compactMap { $0.text }.joined(separator: "\n\n") ?? "리뷰 없음"
+//        distanceLabel.text = place.distanceText ?? "계산 중..." // 초기 텍스트 설정
 
-        print("셀 구성: 이름: \(place.name), 주소: \(place.formatted_address ?? "주소 정보 없음"), 거리: \(place.distanceText ?? "거리 정보 없음")")
 
+        print("셀 구성: 이름: \(place.name), 주소: \(place.formatted_address ?? "주소 정보 없음"), 거리: \(place.distanceText ?? "거리 정보 없음"), 리뷰: \(reviewsLabel.text ?? "리뷰 없음")")
+
+        if let currentLocation = currentLocation {
+            placeSearchViewModel?.calculateDistances(from: currentLocation, to: place.coordinate) { [weak self] distanceText in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    self.placeSearchViewModel?.updateDistanceText(for: place.place_id, distanceText: distanceText)
+                    self.place?.distanceText = distanceText
+                }
+            }
+            if place.reviews == nil {
+                placeSearchViewModel?.fetchPlaceDetails(placeID: place.place_id) { [weak self] detailedPlace in
+                    guard let self = self else { return }
+                    DispatchQueue.main.async {
+                        self.reviewsLabel.text = detailedPlace?.reviews?.compactMap { $0.text }.joined(separator: "\n\n") ?? "리뷰 없음"
+                    }
+                }
+            }
+        }
         if let photoMetadatas = place.photos {
             loadingIndicator.startAnimating()
             loadFirstPhotoForPlace(place, photoMetadatas: photoMetadatas)
@@ -120,7 +156,9 @@ class SearchResultCell: UITableViewCell {
         let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
         favoriteButton.tintColor = isFavorite ? .red : .gray
     }
-
+    func updateDistanceText(_ distanceText: String?) {
+        distanceLabel.text = distanceText ?? "거리 정보 없음"
+    }
 
     private func loadFirstPhotoForPlace(_ place: Place, photoMetadatas: [Photo]) {
         if let firstPhotoMetadata = photoMetadatas.first {
@@ -129,6 +167,7 @@ class SearchResultCell: UITableViewCell {
             placeImageView.image = UIImage(named: "defaultImage")
             loadingIndicator.stopAnimating()
         }
+
     }
 
     private func loadImageForMetadata(place: Place, photo: Photo) {
