@@ -1,8 +1,6 @@
 import Moya
 import GoogleMaps
 
-
-
 enum GooglePlacesAPI {
     case placeSearch(input: String)
     case searchInBounds(parameters: [String: Any])
@@ -10,7 +8,7 @@ enum GooglePlacesAPI {
     case textSearch(parameters: [String: Any])
     case photo(reference: String, maxWidth: Int)
     case distanceMatrix(origins: String, destinations: String, mode: String, key: String)
-
+    case details(placeID: String)
 }
 
 extension GooglePlacesAPI: TargetType {
@@ -37,6 +35,8 @@ extension GooglePlacesAPI: TargetType {
             return "/photo"
         case .distanceMatrix:
             return "/distancematrix/json"
+        case .details:
+            return "/details/json"
         }
     }
 
@@ -58,7 +58,12 @@ extension GooglePlacesAPI: TargetType {
                 "key": Bundle.apiKey
             ]
             return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
-        case .searchInBounds(let parameters):
+        case .details(let placeID):
+                    return .requestParameters(parameters: [
+                        "place_id": placeID,
+                        "fields": "place_id,reviews,name,geometry,formatted_address",
+                        "key": Bundle.apiKey
+                    ], encoding: URLEncoding.queryString)        case .searchInBounds(let parameters):
             var newParameters = parameters
             newParameters["key"] = Bundle.apiKey
             return .requestParameters(parameters: newParameters, encoding: URLEncoding.queryString)
@@ -82,7 +87,7 @@ extension GooglePlacesAPI: TargetType {
 extension Bundle {
     static var apiKey: String {
         guard let apiKey = Bundle.main.infoDictionary?["API_KEY"] as? String else {
-            fatalError("API_KEY not found in .xcconfig file")
+            fatalError("api key 찿을수없음")
         }
         return apiKey
     }

@@ -11,7 +11,7 @@
 		4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */; };
 		4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */; };
 		4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */; };
-		4E7AEF242C0E393C00BFDB67 /* CustomClusterRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7AEF232C0E393C00BFDB67 /* CustomClusterRenderer.swift */; };
+		4E52D97B2C19AE0D0007494A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E52D97A2C19AE0D0007494A /* SearchViewController.swift */; };
 		4E7CB96B2C10139E00F5F3D7 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96A2C10139E00F5F3D7 /* RxCocoa */; };
 		4E7CB96D2C10139E00F5F3D7 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96C2C10139E00F5F3D7 /* RxRelay */; };
 		4E7CB96F2C10139E00F5F3D7 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96E2C10139E00F5F3D7 /* RxSwift */; };
@@ -43,13 +43,11 @@
 		4EF931692B21C00300E5794B /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931682B21C00300E5794B /* Place.swift */; };
 		4EF9316B2B21C04600E5794B /* PlaceSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9316A2B21C04600E5794B /* PlaceSearchViewModel.swift */; };
 		4EF9316D2B21C32D00E5794B /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9316C2B21C32D00E5794B /* MapViewController.swift */; };
-		4EF9316F2B21C3A300E5794B /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9316E2B21C3A300E5794B /* SearchViewController.swift */; };
-		4EF931712B284D1700E5794B /* SearchViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931702B284D1700E5794B /* SearchViewControllerDelegate.swift */; };
 		4EF931762B294E3700E5794B /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF931752B294E3700E5794B /* Realm */; };
 		4EF931782B294E3700E5794B /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF931772B294E3700E5794B /* RealmSwift */; };
-		4EF9317C2B29DB6400E5794B /* RecentSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9317B2B29DB6400E5794B /* RecentSearchView.swift */; };
+		4EF9317C2B29DB6400E5794B /* RecentSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9317B2B29DB6400E5794B /* RecentSearchViewController.swift */; };
 		4EF9317E2B29DB7800E5794B /* SearchResultsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9317D2B29DB7800E5794B /* SearchResultsCell.swift */; };
-		4EF931802B31918200E5794B /* SearchResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9317F2B31918200E5794B /* SearchResultsView.swift */; };
+		4EF931802B31918200E5794B /* SearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9317F2B31918200E5794B /* SearchResultsViewController.swift */; };
 		4EF931822B336EEB00E5794B /* SearchRecentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931812B336EEB00E5794B /* SearchRecentViewModel.swift */; };
 		4EF931842B3370A600E5794B /* SearchHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931832B3370A600E5794B /* SearchHistory.swift */; };
 		4EF931882B3B426D00E5794B /* RecentPlacesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */; };
@@ -83,7 +81,7 @@
 		4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
 		4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterManager.swift; sourceTree = "<group>"; };
-		4E7AEF232C0E393C00BFDB67 /* CustomClusterRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomClusterRenderer.swift; sourceTree = "<group>"; };
+		4E52D97A2C19AE0D0007494A /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		4E9966CD2BE141BF002E3763 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		4E9966CF2BE141D9002E3763 /* FavoriteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteManager.swift; sourceTree = "<group>"; };
 		4EA179D22B6837EA006A1D51 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
@@ -110,11 +108,9 @@
 		4EF931682B21C00300E5794B /* Place.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
 		4EF9316A2B21C04600E5794B /* PlaceSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceSearchViewModel.swift; sourceTree = "<group>"; };
 		4EF9316C2B21C32D00E5794B /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
-		4EF9316E2B21C3A300E5794B /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
-		4EF931702B284D1700E5794B /* SearchViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewControllerDelegate.swift; sourceTree = "<group>"; };
-		4EF9317B2B29DB6400E5794B /* RecentSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchView.swift; sourceTree = "<group>"; };
+		4EF9317B2B29DB6400E5794B /* RecentSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchViewController.swift; sourceTree = "<group>"; };
 		4EF9317D2B29DB7800E5794B /* SearchResultsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsCell.swift; sourceTree = "<group>"; };
-		4EF9317F2B31918200E5794B /* SearchResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsView.swift; sourceTree = "<group>"; };
+		4EF9317F2B31918200E5794B /* SearchResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsViewController.swift; sourceTree = "<group>"; };
 		4EF931812B336EEB00E5794B /* SearchRecentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRecentViewModel.swift; sourceTree = "<group>"; };
 		4EF931832B3370A600E5794B /* SearchHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistory.swift; sourceTree = "<group>"; };
 		4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlacesViewModel.swift; sourceTree = "<group>"; };
@@ -210,7 +206,6 @@
 			isa = PBXGroup;
 			children = (
 				4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */,
-				4E7AEF232C0E393C00BFDB67 /* CustomClusterRenderer.swift */,
 				4ECA89DF2BF11978006C6DEC /* ToastManager.swift */,
 				4E9966CD2BE141BF002E3763 /* LocationManager.swift */,
 				4E9966CF2BE141D9002E3763 /* FavoriteManager.swift */,
@@ -223,11 +218,12 @@
 			children = (
 				4EF9316C2B21C32D00E5794B /* MapViewController.swift */,
 				4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */,
-				4EF931702B284D1700E5794B /* SearchViewControllerDelegate.swift */,
-				4EF9316E2B21C3A300E5794B /* SearchViewController.swift */,
 				4EF931912B46CB5E00E5794B /* MainViewController.swift */,
 				4EDB89812BEA9F8A001C558E /* FavoritesViewController.swift */,
 				4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */,
+				4EF9317F2B31918200E5794B /* SearchResultsViewController.swift */,
+				4EF9317B2B29DB6400E5794B /* RecentSearchViewController.swift */,
+				4E52D97A2C19AE0D0007494A /* SearchViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -310,9 +306,7 @@
 			isa = PBXGroup;
 			children = (
 				4EDB89852BEAA118001C558E /* FavoritePlaceCell.swift */,
-				4EF9317F2B31918200E5794B /* SearchResultsView.swift */,
 				4EF9317D2B29DB7800E5794B /* SearchResultsCell.swift */,
-				4EF9317B2B29DB6400E5794B /* RecentSearchView.swift */,
 				4EF931892B3D5FEB00E5794B /* RecentSearchCell.swift */,
 			);
 			path = Views;
@@ -642,16 +636,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4E7AEF242C0E393C00BFDB67 /* CustomClusterRenderer.swift in Sources */,
 				4EF9312C2B1C912E00E5794B /* AppDelegate.swift in Sources */,
 				4EDB89822BEA9F8A001C558E /* FavoritesViewController.swift in Sources */,
 				4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */,
+				4E52D97B2C19AE0D0007494A /* SearchViewController.swift in Sources */,
 				4EDB89862BEAA118001C558E /* FavoritePlaceCell.swift in Sources */,
-				4EF9317C2B29DB6400E5794B /* RecentSearchView.swift in Sources */,
+				4EF9317C2B29DB6400E5794B /* RecentSearchViewController.swift in Sources */,
 				4E9966D02BE141D9002E3763 /* FavoriteManager.swift in Sources */,
-				4EF931712B284D1700E5794B /* SearchViewControllerDelegate.swift in Sources */,
 				4EF931842B3370A600E5794B /* SearchHistory.swift in Sources */,
-				4EF9316F2B21C3A300E5794B /* SearchViewController.swift in Sources */,
 				4EF9316D2B21C32D00E5794B /* MapViewController.swift in Sources */,
 				4ECA89DC2BF0BE24006C6DEC /* SearchResultsViewModel.swift in Sources */,
 				4EF931882B3B426D00E5794B /* RecentPlacesViewModel.swift in Sources */,
@@ -667,7 +659,7 @@
 				4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */,
 				4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */,
 				4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */,
-				4EF931802B31918200E5794B /* SearchResultsView.swift in Sources */,
+				4EF931802B31918200E5794B /* SearchResultsViewController.swift in Sources */,
 				4EF9312E2B1C912E00E5794B /* SceneDelegate.swift in Sources */,
 				4EF9316B2B21C04600E5794B /* PlaceSearchViewModel.swift in Sources */,
 				4EF931692B21C00300E5794B /* Place.swift in Sources */,

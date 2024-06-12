@@ -54,7 +54,6 @@ class PlaceSearchViewModel {
                 print("HTTP 상태 코드: \(response.statusCode)")
                 do {
                     let searchResults = try JSONDecoder().decode(SearchResults.self, from: response.data)
-                    print("API 응답 데이터: \(searchResults)")
                     completion(searchResults.results)
                 } catch {
                     print("JSON 디코딩 오류: \(error)")
@@ -146,4 +145,39 @@ class PlaceSearchViewModel {
             }
         }
     }
+
+    func fetchPlaceDetails(placeID: String, completion: @escaping (Place?) -> Void) {
+        print("fetchPlaceDetails 호출됨: \(placeID)")
+
+        provider.request(.details(placeID: placeID)) { result in
+            switch result {
+            case .success(let response):
+                do {
+                    let json = try JSONSerialization.jsonObject(with: response.data, options: .mutableContainers)
+                    let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+                    if let jsonString = String(data: jsonData, encoding: .utf8) {
+                        print("Place Details API Response JSON: \(jsonString)")
+                    }
+
+                    let placeDetailsResponse = try JSONDecoder().decode(PlaceDetailsResponse.self, from: response.data)
+                    completion(placeDetailsResponse.result)
+                } catch {
+                    print("JSON 디코딩 오류: \(error)")
+                    completion(nil)
+                }
+            case .failure(let error):
+                print("API 요청 실패: \(error)")
+                completion(nil)
+            }
+        }
+    }
+    func updateDistanceText(for placeID: String, distanceText: String?) {
+        if let index = searchResults.firstIndex(where: { $0.place_id == placeID }) {
+            searchResults[index].distanceText = distanceText
+            updateSearchResults?()
+        } else {
+            print("PlaceID \(placeID) not found in searchResults")  // 로그 추가
+        }
+    }
 }
+

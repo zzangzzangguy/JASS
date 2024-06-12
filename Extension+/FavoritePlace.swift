@@ -1,10 +1,3 @@
-//
-//  FavoritePlace.swift
-//  
-//
-//  Created by 김기현 on 5/12/24.
-//
-
 import Foundation
 import RealmSwift
 
@@ -35,7 +28,6 @@ class FavoritePlace: Object {
         )
     }
 }
-
 extension Notification.Name {
     static let favoritesDidChange = Notification.Name("FavoritesDidChange")
 }

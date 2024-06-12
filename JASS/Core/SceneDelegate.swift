@@ -26,12 +26,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             selectedImage: UIImage(systemName: "house.fill")
         )
 
-        let mapViewController = MapViewController()
-        mapViewController.tabBarItem = UITabBarItem(
-            title: "매장 지도",
-            image: UIImage(systemName: "map"),
-            selectedImage: UIImage(systemName: "map.fill")
-        )
+//        let mapViewController = MapViewController()
+//        mapViewController.tabBarItem = UITabBarItem(
+//            title: "매장 지도",
+//            image: UIImage(systemName: "map"),
+//            selectedImage: UIImage(systemName: "map.fill")
+//        )
 
         let favoritesViewController = FavoritesViewController()
         favoritesViewController.tabBarItem = UITabBarItem(
@@ -43,7 +43,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         UITabBar.appearance().backgroundColor = UIColor.systemBackground
 
         tabBarController.viewControllers = [UINavigationController(rootViewController: mainViewController),
-                                                 UINavigationController(rootViewController: mapViewController),
+//                                                 UINavigationController(rootViewController: mapViewController),
                                                  UINavigationController(rootViewController: favoritesViewController)]
 
         window = UIWindow(windowScene: windowScene)

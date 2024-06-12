@@ -1,211 +1,101 @@
 import UIKit
-import SnapKit
-import Toast
+import RealmSwift
 
-class SearchViewController: UIViewController {
-    private var filterContainerView: UIView!
-    private var filterButton: UIButton!
-    private var recentSearchesView: RecentSearchesView!
-    private var searchResultsView: SearchResultsView!
-    private var placeSearchViewModel = PlaceSearchViewModel()
-    private var searchRecentViewModel = SearchRecentViewModel()
-    private var searchTask: DispatchWorkItem?
-    private var selectedCategory: String?
-    private let defaultCategory = "헬스"
+class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource {
+
+    let searchBar = UISearchBar().then {
+        $0.placeholder = "어떤 운동을 찾고 계신가요?"
+    }
+    let recommendedKeywords = ["헬스", "요가", "크로스핏", "복싱", "필라테스", "G.X", "주짓수", "골프", "수영"]
+    var recentSearches: [String] = []
+    var tableView: UITableView!
+    var searchRecentViewModel = SearchRecentViewModel()
+
+    let segmentedControl = UISegmentedControl(items: ["추천 검색어", "최근 검색어"])
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupSearchViewModels()
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        loadRecentSearches()
     }
 
     private func setupUI() {
-        setupFilterButtons()
-        setupRecentSearchesView()
-        setupSearchResultsView()
-    }
+        view.backgroundColor = .white
 
-    private func setupFilterButtons() {
-        filterContainerView = UIView()
-        view.addSubview(filterContainerView)
-        filterContainerView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(50)
+        searchBar.delegate = self
+        view.addSubview(searchBar)
+        searchBar.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(10)
+            make.leading.trailing.equalToSuperview().inset(20)
         }
 
-        let filterStackView = UIStackView()
-        filterStackView.axis = .horizontal
-        filterStackView.distribution = .fillEqually
-        filterStackView.spacing = 10
-        filterContainerView.addSubview(filterStackView)
-        filterStackView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(10)
+        segmentedControl.selectedSegmentIndex = 0
+        segmentedControl.addTarget(self, action: #selector(segmentChanged), for: .valueChanged)
+        view.addSubview(segmentedControl)
+        segmentedControl.snp.makeConstraints { make in
+            make.top.equalTo(searchBar.snp.bottom).offset(10)
+            make.leading.trailing.equalToSuperview().inset(20)
         }
 
-        filterButton = UIButton(type: .system)
-        filterButton.setTitle("카테고리 필터", for: .normal)
-        filterButton.setImage(UIImage(systemName: "slider.horizontal.3"), for: .normal)
-        filterStackView.addArrangedSubview(filterButton)
-    }
-
-    @objc private func keyboardWillShow(_ notification: Notification) {
-        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
-            return
-        }
-
-        let keyboardHeight = keyboardFrame.height
-
-        recentSearchesView.snp.updateConstraints {
-            $0.bottom.equalToSuperview().inset(keyboardHeight)
-        }
-
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
+        tableView = UITableView()
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        view.addSubview(tableView)
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(segmentedControl.snp.bottom).offset(10)
+            make.leading.trailing.bottom.equalToSuperview()
         }
     }
 
-    @objc private func keyboardWillHide(_ notification: Notification) {
-        recentSearchesView.snp.updateConstraints {
-            $0.bottom.equalToSuperview()
-        }
-
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
+    @objc private func segmentChanged() {
+        tableView.reloadData()
     }
 
-    private func setupRecentSearchesView() {
-        recentSearchesView = RecentSearchesView()
-        recentSearchesView.searchRecentViewModel = searchRecentViewModel
-        recentSearchesView.didSelectRecentSearch = { [weak self] query in
-            guard let self = self else { return }
-            self.searchPlace(query)
-            
-        }
-        view.addSubview(recentSearchesView)
-        recentSearchesView.snp.makeConstraints {
-            $0.top.equalTo(filterContainerView.snp.bottom)
-            $0.leading.trailing.bottom.equalToSuperview()
-        }
-        recentSearchesView.isHidden = false
+    private func loadRecentSearches() {
+        recentSearches = searchRecentViewModel.loadRecentSearches()
     }
 
-    private func searchPlace(_ query: String) {
-        let category = selectedCategory ?? defaultCategory
-        print("searchPlace - query: \(query), category: \(category)")
-        placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                self.searchResultsView.update(with: places)
-                self.searchResultsView.isHidden = false
-                self.recentSearchesView.isHidden = true
-                self.filterContainerView.isHidden = true
-                print("searchPlace - results: \(places)")
-            }
-        }
+    // MARK: - UITableViewDataSource & UITableViewDelegate
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
     }
 
-    private func setupSearchResultsView() {
-        searchResultsView = SearchResultsView()
-        searchResultsView.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: self)
-        searchResultsView.placeSearchViewModel = placeSearchViewModel
-        view.addSubview(searchResultsView)
-        searchResultsView.snp.makeConstraints {
-            $0.top.equalTo(filterContainerView.snp.bottom)
-            $0.leading.trailing.bottom.equalToSuperview()
-        }
-        searchResultsView.isHidden = true
-    }
-
-    private func setupSearchViewModels() {
-        setupPlaceSearchViewModel()
-        setupSearchRecentViewModel()
-    }
-
-    private func setupPlaceSearchViewModel() {
-        placeSearchViewModel.updateSearchResults = { [weak self] in
-            DispatchQueue.main.async {
-                self?.searchResultsView.update(with: self?.placeSearchViewModel.searchResults ?? [])
-                self?.showSearchResultsView()
-            }
-        }
-    }
-
-    private func setupSearchRecentViewModel() {
-        searchRecentViewModel.didSelectRecentSearch = { [weak self] query in
-            guard let self = self else { return }
-            self.searchPlace(query)
-        }
-    }
-
-    private func showSearchResultsView() {
-        recentSearchesView.isHidden = true
-        searchResultsView.isHidden = false
-        filterContainerView.isHidden = true
-    }
-}
-
-extension SearchViewController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        let currentText = searchBar.text ?? ""
-        let updatedText = (currentText as NSString).replacingCharacters(in: range, with: text)
-
-        searchTask?.cancel()
-        searchTask = DispatchWorkItem { [weak self] in
-            guard let self = self else { return }
-            let category = self.selectedCategory ?? self.defaultCategory
-            print("searchBar - query: \(updatedText), category: \(category)") 
-            self.placeSearchViewModel.searchPlace(input: updatedText, category: category) { places in
-                DispatchQueue.main.async {
-                    self.searchResultsView.update(with: places)
-                }
-            }
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: searchTask!)
-
-        return true
-    }
-
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if let searchText = searchBar.text, !searchText.isEmpty {
-            searchRecentViewModel.saveSearchHistory(query: searchText)
-            let category = selectedCategory ?? defaultCategory
-            print("searchBarSearchButtonClicked - query: \(searchText), category: \(category)") 
-            placeSearchViewModel.searchPlace(input: searchText, category: category) { [weak self] places in
-                guard let self = self else { return }
-                DispatchQueue.main.async {
-                    self.searchResultsView.update(with: places)
-                    self.showSearchResultsView()
-                }
-            }
-        }
-    }
-}
-
-extension SearchViewController: SearchResultCellDelegate {
-    func didTapFavoriteButton(for cell: SearchResultCell) {
-        guard let indexPath = searchResultsView.indexPath(for: cell),
-              indexPath.row < placeSearchViewModel.searchResults.count else {
-            return
-        }
-
-        let place = placeSearchViewModel.searchResults[indexPath.row]
-        let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
-
-        if isFavorite {
-            FavoritesManager.shared.removeFavorite(place: place)
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if segmentedControl.selectedSegmentIndex == 0 {
+            return recommendedKeywords.count
         } else {
-            FavoritesManager.shared.addFavorite(place: place)
+            return recentSearches.count
         }
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        if segmentedControl.selectedSegmentIndex == 0 {
+            cell.textLabel?.text = recommendedKeywords[indexPath.row]
+        } else {
+            cell.textLabel?.text = recentSearches[indexPath.row]
+        }
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let keyword: String
+        if segmentedControl.selectedSegmentIndex == 0 {
+            keyword = recommendedKeywords[indexPath.row]
+        } else {
+            keyword = recentSearches[indexPath.row]
+        }
+        searchBar.text = keyword
+        searchBarSearchButtonClicked(searchBar)
+    }
+
+    // MARK: - UISearchBarDelegate
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let query = searchBar.text, !query.isEmpty else { return }
+        searchRecentViewModel.saveSearchHistory(query: query)
+        let searchResultsVC = SearchResultsViewController()
+        searchResultsVC.searchQuery = query // 검색어 전달
+        navigationController?.pushViewController(searchResultsVC, animated: true)
     }
 }

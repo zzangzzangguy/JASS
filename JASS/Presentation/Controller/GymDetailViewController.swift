@@ -81,7 +81,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         scrollView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(300)
+            $0.height.equalTo(300) // 고정 높이로 설정하여 이미지가 없을 때 레이아웃 튀는 현상 방지
         }
     }
 
@@ -106,10 +106,9 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
 
         view.addSubview(detailsStackView)
         detailsStackView.snp.makeConstraints {
-            $0.top.equalTo(pageControl.snp.bottom).offset(0)
+            $0.top.equalTo(pageControl.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide)
-
+            $0.bottom.lessThanOrEqualTo(view.safeAreaLayoutGuide)
         }
         nameLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         addressLabel.setContentHuggingPriority(.defaultLow, for: .vertical)

@@ -1,6 +1,7 @@
 import GoogleMaps
 import GoogleMapsUtils
 import UIKit
+import CoreLocation
 
 protocol ClusterManagerDelegate: AnyObject {
     func searchPlacesInBounds(_ bounds: GMSCoordinateBounds, query: String, completion: @escaping ([Place]) -> Void)
@@ -14,6 +15,7 @@ class CustomClusterItem: NSObject, GMUClusterItem {
 
     init(place: Place) {
         self.position = place.coordinate
+//        self.position = coordinate
         self.place = place
     }
 }
@@ -149,7 +151,6 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
         mapView.animate(to: newCamera)
         return true
     }
-
     func renderer(_ renderer: GMUClusterRenderer, willRenderMarker marker: GMSMarker) {
         if let clusterItem = marker.userData as? CustomClusterItem {
             marker.icon = createMarkerIcon(with: clusterItem.place.name)

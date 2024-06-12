@@ -8,20 +8,16 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     var viewModel: MapViewModel!
     var mapView: GMSMapView!
     var searchController: UISearchController!
-    var recentSearchesView: RecentSearchesView!
-    var searchResultsView: SearchResultsView!
+    var recentSearchesViewController: RecentSearchesViewController!
+    var searchResultsViewController: SearchResultsViewController!
     var searchTask: DispatchWorkItem?
-    var filterContainerView: UIView!
-    var filterStackView: UIStackView!
-    var filterButton: UIButton!
     var placeSearchViewModel = PlaceSearchViewModel()
     var searchRecentViewModel = SearchRecentViewModel()
     let zoomInButton = UIButton(type: .system)
     let zoomOutButton = UIButton(type: .system)
     var clusterManager: ClusterManager!
     let locationManager = CLLocationManager()
-
-
+    private var geocodeTimer: Timer?
     private var selectedCategory: String?
     private let defaultCategory = "헬스"
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
@@ -29,6 +25,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationBarItems()
         setupSearchController()
         setupSearchViews()
         setupMapView()
@@ -37,21 +34,20 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         viewModel = MapViewModel(mapView: mapView, placeSearchViewModel: placeSearchViewModel, navigationController: navigationController)
         clusterManager = ClusterManager(mapView: mapView, navigationController: self.navigationController)
         clusterManager.delegate = self
-
-        setupFilterView()
-        setupFilterButtonView()
-
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.distanceFilter = 2000
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        tabBarController?.tabBar.isHidden = true
 
         searchRecentViewModel.updateRecentSearches = { [weak self] in
             DispatchQueue.main.async {
-                self?.recentSearchesView.updateSearchHistoryViews()
+                self?.recentSearchesViewController.updateSearchHistoryViews()
             }
         }
 
+        hideKeyboardWhenTappedAround()
     }
 
     private func applyFilter(filter: String, category: String) {
@@ -63,38 +59,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
             self.viewModel.filterPlaces()
             self.updateMapMarkers()
             if places.isEmpty {
-                       self.showToast("필터링된 장소가 없습니다.")
-                   }
-        }
-    }
-
-    private func setupFilterButtonView() {
-        filterContainerView = UIView()
-        filterStackView = UIStackView()
-        filterButton = UIButton()
-
-        filterButton.setTitleColor(.black, for: .normal)
-        filterButton.setTitle("필터", for: .normal)
-        filterButton.setImage(UIImage(systemName: "line.horizontal.3.decrease.circle"), for: .normal)
-        filterButton.tintColor = .systemBlue
-        filterButton.layer.cornerRadius = 16
-        filterButton.layer.borderWidth = 1.0
-        filterButton.layer.borderColor = UIColor.lightGray.cgColor
-        filterButton.addTarget(self, action: #selector(showFilterView), for: .touchUpInside)
-
-        filterContainerView.backgroundColor = UIColor.white
-        view.addSubview(filterContainerView)
-        filterContainerView.addSubview(filterButton)
-        filterContainerView.snp.makeConstraints {
-            $0.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(50)
-        }
-
-        filterButton.snp.makeConstraints {
-            $0.top.bottom.equalToSuperview().inset(10)
-            $0.leading.equalToSuperview().inset(20)
-            $0.width.equalTo(100)
+                self.showToast("필터링된 장소가 없습니다.")
+            }
         }
     }
 
@@ -109,7 +75,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         mapView = GMSMapView()
         mapView.isMyLocationEnabled = true
         mapView.settings.myLocationButton = true
-        
+
         mapView.delegate = self
         view.addSubview(mapView)
         mapView.snp.makeConstraints {
@@ -126,146 +92,155 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     }
 
     private func setupSearchViews() {
-        recentSearchesView = RecentSearchesView()
-        recentSearchesView.searchRecentViewModel = searchRecentViewModel
-        recentSearchesView.didSelectRecentSearch = { [weak self] query in
+        recentSearchesViewController = RecentSearchesViewController()
+        recentSearchesViewController.searchRecentViewModel = searchRecentViewModel
+        recentSearchesViewController.didSelectRecentSearch = { [weak self] query in
             guard let self = self else { return }
             self.searchController.searchBar.text = query
             self.searchPlace(query)
         }
-        view.addSubview(recentSearchesView)
-        recentSearchesView.snp.makeConstraints {
+        addChild(recentSearchesViewController)
+        view.addSubview(recentSearchesViewController.view)
+        recentSearchesViewController.view.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalToSuperview()
         }
-        recentSearchesView.isHidden = true
+        recentSearchesViewController.didMove(toParent: self)
+        recentSearchesViewController.view.isHidden = true
 
-        searchResultsView = SearchResultsView()
-        searchResultsView.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: self)
-        searchResultsView.delegate = self
-        view.addSubview(searchResultsView)
-        searchResultsView.snp.makeConstraints {
+        searchResultsViewController = SearchResultsViewController()
+        searchResultsViewController.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: self)
+        searchResultsViewController.mapViewModel = viewModel // 추가된 부분
+        searchResultsViewController.delegate = self // 추가된 부분
+        addChild(searchResultsViewController)
+        view.addSubview(searchResultsViewController.view)
+        searchResultsViewController.view.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalToSuperview()
         }
-        searchResultsView.isHidden = true
+        searchResultsViewController.didMove(toParent: self)
+        searchResultsViewController.view.isHidden = true
     }
 
-    private func setupFilterView() {
-        let filterViewController = FilterViewController()
-        filterViewController.delegate = self
-        self.filterView = filterViewController
+    func hideKeyboardWhenTappedAround() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
 
-    @objc private func showFilterView(_ sender: Any) {
-        guard let filterView = filterView else {
-            let filterViewController = FilterViewController()
-            filterViewController.delegate = self
-            self.filterView = filterViewController
-            present(filterViewController, animated: true, completion: nil)
-            return
-        }
-        present(filterView, animated: true, completion: nil)
+    @objc func dismissKeyboard() {
+        searchController.searchBar.endEditing(true)
     }
+    private func setupNavigationBarItems() {
+          let filterButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3.decrease.circle"), style: .plain, target: self, action: #selector(showFilterView))
+          navigationItem.rightBarButtonItem = filterButton
+      }
 
-    private func setupSearchController() {
-        searchController = UISearchController(searchResultsController: nil)
-        searchController.searchBar.delegate = self
-        searchController.searchBar.placeholder = "지역, 매장명을 검색해주세요"
-        searchController.searchBar.tintColor = UIColor.systemBlue
-        searchController.obscuresBackgroundDuringPresentation = false
+      @objc private func showFilterView(_ sender: Any) {
+          guard let filterView = filterView else {
+              let filterViewController = FilterViewController()
+              filterViewController.delegate = self
+              self.filterView = filterViewController
+              present(filterViewController, animated: true, completion: nil)
+              return
+          }
+          present(filterView, animated: true, completion: nil)
+      }
 
-        navigationItem.searchController = searchController
-        self.navigationItem.title = "검색"
+      private func setupSearchController() {
+          searchController = UISearchController(searchResultsController: nil)
+          searchController.searchBar.delegate = self
+          searchController.searchBar.placeholder = "지역, 매장명을 검색해주세요"
+          searchController.searchBar.tintColor = UIColor.systemBlue
+          searchController.obscuresBackgroundDuringPresentation = false
+          navigationItem.searchController = searchController
 
-        let appearance = UINavigationBarAppearance()
-        appearance.backgroundColor = UIColor.white
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
-        navigationController?.navigationBar.standardAppearance = appearance
-        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+          let appearance = UINavigationBarAppearance()
+          appearance.backgroundColor = UIColor.white
+          appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
+          navigationController?.navigationBar.standardAppearance = appearance
+          navigationController?.navigationBar.scrollEdgeAppearance = appearance
 
-        navigationItem.hidesSearchBarWhenScrolling = false
-        definesPresentationContext = true
-    }
+          navigationItem.hidesSearchBarWhenScrolling = false
+          definesPresentationContext = true
+      }
 
-    private func setupSearchRecentViewModel() {
-        searchRecentViewModel.didSelectRecentSearch = { [weak self] query in
-            guard let self = self else { return }
-            self.searchController.searchBar.text = query
-            self.searchPlace(query)
-        }
-    }
+      private func setupSearchRecentViewModel() {
+          searchRecentViewModel.didSelectRecentSearch = { [weak self] query in
+              guard let self = self else { return }
+              self.searchController.searchBar.text = query
+              self.searchPlace(query)
+          }
+      }
 
-    private func searchPlace(_ query: String) {
-        let category = selectedCategory ?? defaultCategory
-        if selectedCategory == nil {
-                showToast("필터가 적용되지 않았습니다. 기본 카테고리로 검색합니다.")
-            }
-        placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
-            guard let self = self else { return }
+      private func searchPlace(_ query: String) {
+          let category = selectedCategory ?? defaultCategory
+          if selectedCategory == nil {
+              showToast("필터가 적용되지 않았습니다. 기본 카테고리로 검색합니다.")
+          }
+          placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
+              guard let self = self else { return }
 
-            self.viewModel.places = places
+              self.viewModel.places = places
 
-            if let currentLocation = self.locationManager.location?.coordinate {
-                let group = DispatchGroup()
+              if let currentLocation = self.locationManager.location?.coordinate {
+                  let group = DispatchGroup()
 
-                for (index, place) in self.viewModel.places.enumerated() {
-                    group.enter()
-                    self.placeSearchViewModel.calculateDistances(from: currentLocation, to: place.coordinate) { distance in
-                        self.viewModel.places[index].distanceText = distance
-                        group.leave()
-                    }
-                }
+                  for (index, place) in self.viewModel.places.enumerated() {
+                          group.enter()
+                      self.placeSearchViewModel.calculateDistances(from: currentLocation, to: place.coordinate) { distance in
+                              self.viewModel.places[index].distanceText = distance
+                              group.leave()
+                          }
+                      }
 
-                group.notify(queue: .main) {
-                    self.searchResultsView.update(with: self.viewModel.places)
-                    self.showSearchResultsView()
-                }
-            } else {
-                self.searchResultsView.update(with: places)
-                self.showSearchResultsView()
+                  group.notify(queue: .main) {
+                      self.searchResultsViewController.update(with: self.viewModel.places)
+                      self.showSearchResultsView()
+                  }
+              } else {
+                  self.searchResultsViewController.update(with: places)
+                  self.showSearchResultsView()
+              }
+          }
+      }
 
-            }
-        }
-    }
+      private func configureZoomButton(button: UIButton, systemName: String, action: Selector) {
+          let imageConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium, scale: .large)
+          button.setImage(UIImage(systemName: systemName, withConfiguration: imageConfig), for: .normal)
+          button.tintColor = .white
+          button.backgroundColor = .blue
+          button.layer.cornerRadius = 20
+          button.addTarget(self, action: action, for: .touchUpInside)
+          view.addSubview(button)
+      }
 
-    private func configureZoomButton(button: UIButton, systemName: String, action: Selector) {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium, scale: .large)
-        button.setImage(UIImage(systemName: systemName, withConfiguration: imageConfig), for: .normal)
-        button.tintColor = .white
-        button.backgroundColor = .blue
-        button.layer.cornerRadius = 20
-        button.addTarget(self, action: action, for: .touchUpInside)
-        view.addSubview(button)
-    }
+      private func setupZoomButtons() {
+          configureZoomButton(button: zoomInButton, systemName: "plus.magnifyingglass", action: #selector(zoomIn))
+          configureZoomButton(button: zoomOutButton, systemName: "minus.magnifyingglass", action: #selector(zoomOut))
 
-    private func setupZoomButtons() {
-        configureZoomButton(button: zoomInButton, systemName: "plus.magnifyingglass", action: #selector(zoomIn))
-        configureZoomButton(button: zoomOutButton, systemName: "minus.magnifyingglass", action: #selector(zoomOut))
+          zoomInButton.snp.makeConstraints {
+              $0.leading.equalToSuperview().inset(20)
+              $0.centerY.equalToSuperview().offset(-30)
+              $0.width.height.equalTo(40)
+          }
+          zoomOutButton.snp.makeConstraints {
+              $0.leading.equalTo(zoomInButton.snp.leading)
+              $0.top.equalTo(zoomInButton.snp.bottom).offset(15)
+              $0.width.height.equalTo(40)
+          }
 
-        zoomInButton.snp.makeConstraints {
-                $0.leading.equalToSuperview().inset(20)
-                $0.centerY.equalToSuperview().offset(-30)
-                $0.width.height.equalTo(40)
-            }
-            zoomOutButton.snp.makeConstraints {
-                $0.leading.equalTo(zoomInButton.snp.leading)
-                $0.top.equalTo(zoomInButton.snp.bottom).offset(15)
-                $0.width.height.equalTo(40)
-            }
-
-        updateZoomButtonsState()
-    }
+          updateZoomButtonsState()
+      }
 
     @objc private func zoomIn() {
         let currentZoom = mapView.camera.zoom
         if currentZoom < mapView.maxZoom {
             mapView.animate(toZoom: currentZoom + 1)
             updateZoomButtonsState()
-            print("줌레벨:\(mapView.camera.zoom)")
-
+            print("줌레벨: \(mapView.camera.zoom)")
         }
     }
 
@@ -274,9 +249,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         if currentZoom > mapView.minZoom {
             mapView.animate(toZoom: currentZoom - 1)
             updateZoomButtonsState()
-            print("줌레벨:\(mapView.camera.zoom)")
-
-
+            print("줌레벨: \(mapView.camera.zoom)")
         }
     }
 
@@ -294,19 +267,14 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 
     func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
         updateZoomButtonsState()
-           if selectedCategory == nil {
-               showToast("선택된 필터가 없습니다. 필터를 확인해주세요.")
-           }
-           clusterManager.updateMarkersWithSelectedFilters()
-           if viewModel.filteredPlaces.isEmpty {
-               showToast("현재 화면에 표시된 장소가 없습니다.")
-           }
-        showMarkersToast()
+        if selectedCategory == nil {
+            showToast("선택된 필터가 없습니다. 필터를 확인해주세요.")
+        }
         clusterManager.updateMarkersWithSelectedFilters()
-
         if viewModel.filteredPlaces.isEmpty {
             showToast("현재 화면에 표시된 장소가 없습니다.")
         }
+        showMarkersToast()
     }
 
     private func showMarkersToast() {
@@ -326,9 +294,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
             guard let self = self else { return }
             let category = self.selectedCategory ?? self.defaultCategory
             self.placeSearchViewModel.searchPlace(input: searchText, category: category) { places in
-                self.searchResultsView.isHidden = places.isEmpty
-                self.recentSearchesView.isHidden = !places.isEmpty
-                self.filterContainerView.isHidden = !places.isEmpty
+                self.searchResultsViewController.view.isHidden = places.isEmpty
+                self.recentSearchesViewController.view.isHidden = !places.isEmpty
             }
         }
         searchTask = task
@@ -340,8 +307,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
             searchRecentViewModel.saveSearchHistory(query: searchText)
             showLoadingIndicator()
             let category = selectedCategory ?? defaultCategory
-            
-            print("searchBarSearchButton 실행 - query: \(searchText), category: \(category)") // 로그 추가
+
+            print("searchBarSearchButton 실행 - query: \(searchText), category: \(category)")
 
             placeSearchViewModel.searchPlace(input: searchText, category: category) { [weak self] places in
                 guard let self = self else { return }
@@ -355,37 +322,35 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 
                     for (index, place) in self.viewModel.places.enumerated() {
                         group.enter()
-                        self.placeSearchViewModel.calculateDistances(from: currentLocation, to: place.coordinate) { distance in
-                            self.viewModel.places[index].distanceText = distance
-                            group.leave()
-                        }
-                    }
+                                             self.placeSearchViewModel.calculateDistances(from: currentLocation, to: place.coordinate) { distance in
+                                                 self.viewModel.places[index].distanceText = distance
+                                                 group.leave()
+                                             }
+                                         }
 
                     group.notify(queue: .main) {
-                        self.searchResultsView.update(with: self.viewModel.places)
+                        self.searchResultsViewController.update(with: self.viewModel.places)
                         self.showSearchResultsView()
                     }
                 } else {
-                    self.searchResultsView.update(with: places)
+                    self.searchResultsViewController.update(with: places)
                     self.showSearchResultsView()
                 }
             }
         }
-        
     }
 
     private func showSearchResultsView() {
-        recentSearchesView.isHidden = true
-        searchResultsView.isHidden = false
+        recentSearchesViewController.view.isHidden = true
+        searchResultsViewController.view.isHidden = false
         mapView.isHidden = true
     }
 
     func didSelectPlace(_ place: Place) {
-
         searchRecentViewModel.saveSearchHistory(query: place.name)
-        viewModel.places = [place]
-        viewModel.updateSelectedPlaceMarker(for: place )
 
+        viewModel.places = [place]
+        viewModel.updateSelectedPlaceMarker(for: place)
 
         let camera = GMSCameraPosition.camera(withLatitude: place.geometry.location.lat, longitude: place.geometry.location.lng, zoom: 13.0)
         viewModel.mapView.camera = camera
@@ -393,9 +358,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         viewModel.mapView.isHidden = false
         zoomInButton.isHidden = false
         zoomOutButton.isHidden = false
-        searchResultsView.isHidden = true
-        recentSearchesView.isHidden = true
-        filterContainerView.isHidden = false
+        searchResultsViewController.view.isHidden = true
+        recentSearchesViewController.view.isHidden = true
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -404,32 +368,27 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         zoomOutButton.isHidden = false
         searchBar.text = ""
         searchBar.resignFirstResponder()
-        filterContainerView.isHidden = false
-        searchResultsView.isHidden = true
-        recentSearchesView.isHidden = true
+        searchResultsViewController.view.isHidden = true
+        recentSearchesViewController.view.isHidden = true
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         viewModel.mapView.isHidden = true
         zoomInButton.isHidden = true
         zoomOutButton.isHidden = true
-        filterContainerView.isHidden = true
 
         if searchBar.text?.isEmpty ?? true {
-            recentSearchesView.isHidden = false
+            recentSearchesViewController.view.isHidden = false
         } else {
-            recentSearchesView.isHidden = true
+            recentSearchesViewController.view.isHidden = true
         }
-
     }
-
 
     func handleSearchResults(_ places: [Place]) {
         viewModel.places = places
         viewModel.filteredPlaces = places
         viewModel.filterPlaces()
-        searchResultsView.viewModel?.loadSearchResults(with: viewModel.filteredPlaces)
-
+        searchResultsViewController.viewModel?.loadSearchResults(with: viewModel.filteredPlaces)
     }
 
     func updateMapMarkers() {
@@ -444,7 +403,23 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         loadingIndicator.stopAnimating()
     }
 
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.first {
+            throttleReverseGeocode(location: location)
+            locationManager.stopUpdatingLocation()
+        }
+    }
 
+    private func throttleReverseGeocode(location: CLLocation) {
+        geocodeTimer?.invalidate()
+        geocodeTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { [weak self] _ in
+            self?.updateLocationTitle(location: location)
+        }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Failed to find user's location: \(error.localizedDescription)")
+    }
 }
 
 extension MapViewController: GMSMapViewDelegate {
@@ -452,7 +427,29 @@ extension MapViewController: GMSMapViewDelegate {
         updateZoomButtonsState()
         clusterManager.updateMarkersWithSelectedFilters()
         print("현재 줌레벨: \(mapView.camera.zoom)")
+        let targetLocation = CLLocation(latitude: position.target.latitude, longitude: position.target.longitude)
+        print("지도 중심 위치: \(targetLocation.coordinate.latitude), \(targetLocation.coordinate.longitude)")
+        updateLocationTitle(location: targetLocation)
+        throttleReverseGeocode(location: targetLocation)
+    }
 
+    func updateLocationTitle(location: CLLocation) {
+        let geocoder = CLGeocoder()
+        print("지오코딩 시작: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
+            if let error = error {
+                print("Geocoding error: \(error.localizedDescription)")
+                return
+            }
+            if let placemark = placemarks?.first {
+                let locationTitle = "\(placemark.locality ?? "") \(placemark.subLocality ?? "")"
+                print("지오코딩 결과: \(locationTitle)")
+
+                DispatchQueue.main.async {
+                    self.navigationItem.title = locationTitle
+                }
+            }
+        }
     }
 
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
@@ -486,6 +483,7 @@ extension MapViewController: FilterViewDelegate {
         placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
             guard let self = self else { return }
             self.hideLoadingIndicator()
+
             self.viewModel.places = places
             self.viewModel.filterPlaces()
             clusterManager.updateMarkersWithSelectedFilters()
@@ -498,6 +496,7 @@ extension MapViewController: FilterViewDelegate {
 
         dismiss(animated: true, completion: nil)
     }
+
     func filterViewDidCancel(_ filterView: FilterViewController) {
         dismiss(animated: true, completion: nil)
     }
@@ -531,7 +530,6 @@ extension MapViewController: ClusterManagerDelegate {
 }
 
 extension MapViewController: SearchResultsViewDelegate {
-    
     func showToastForFavorite(place: Place, isAdded: Bool) {
         let message = isAdded ? "즐겨찾기에 추가되었습니다." : "즐겨찾기에서 제거되었습니다."
         view.makeToast(message)
