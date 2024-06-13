@@ -9,6 +9,8 @@ enum GooglePlacesAPI {
     case photo(reference: String, maxWidth: Int)
     case distanceMatrix(origins: String, destinations: String, mode: String, key: String)
     case details(placeID: String)
+    case autocomplete(input: String, types: String, components: String?, language: String?, location: String?, radius: Int?, strictbounds: Bool?, sessiontoken: String?)
+
 }
 
 extension GooglePlacesAPI: TargetType {
@@ -37,6 +39,8 @@ extension GooglePlacesAPI: TargetType {
             return "/distancematrix/json"
         case .details:
             return "/details/json"
+        case .autocomplete:
+            return "/autocomplete/json"
         }
     }
 
@@ -51,7 +55,7 @@ extension GooglePlacesAPI: TargetType {
                 "key": Bundle.apiKey,
                 "query": input
             ], encoding: URLEncoding.queryString)
-        case .photo(let reference, let maxWidth):  
+        case .photo(let reference, let maxWidth):
             let parameters: [String: Any] = [
                 "maxwidth": maxWidth,
                 "photoreference": reference,
@@ -59,11 +63,11 @@ extension GooglePlacesAPI: TargetType {
             ]
             return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
         case .details(let placeID):
-                    return .requestParameters(parameters: [
-                        "place_id": placeID,
-                        "fields": "place_id,reviews,name,geometry,formatted_address",
-                        "key": Bundle.apiKey
-                    ], encoding: URLEncoding.queryString)        case .searchInBounds(let parameters):
+            return .requestParameters(parameters: [
+                "place_id": placeID,
+                "fields": "place_id,reviews,name,geometry,formatted_address",
+                "key": Bundle.apiKey
+            ], encoding: URLEncoding.queryString)        case .searchInBounds(let parameters):
             var newParameters = parameters
             newParameters["key"] = Bundle.apiKey
             return .requestParameters(parameters: newParameters, encoding: URLEncoding.queryString)
@@ -77,8 +81,22 @@ extension GooglePlacesAPI: TargetType {
             return .requestParameters(parameters: newParameters, encoding: URLEncoding.queryString)
         case let .distanceMatrix(origins, destinations, mode, key):
             return .requestParameters(parameters: ["origins": origins, "destinations": destinations, "mode": mode, "key": key], encoding: URLEncoding.default)
+        case .autocomplete(let input, let types, let components, let language, let location, let radius, let strictbounds, let sessiontoken):
+            var parameters: [String: Any] = [
+                "input": input,
+                "types": types,
+                "key": Bundle.apiKey
+            ]
+            if let components = components { parameters["components"] = components }
+            if let language = language { parameters["language"] = language }
+            if let location = location { parameters["location"] = location }
+            if let radius = radius { parameters["radius"] = radius }
+            if let strictbounds = strictbounds { parameters["strictbounds"] = strictbounds }
+            if let sessiontoken = sessiontoken { parameters["sessiontoken"] = sessiontoken }
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
         }
     }
+
     var headers: [String: String]? {
         return ["Content-Type": "application/json"]
     }

@@ -2,7 +2,6 @@ import Foundation
 import GooglePlaces
 import CoreLocation
 
-
 struct Place: Codable {
     let name: String
     let formatted_address: String?
@@ -28,6 +27,7 @@ struct Place: Codable {
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: geometry.location.lat, longitude: geometry.location.lng)
     }
+
     struct Geometry: Codable {
         let location: Location
     }
@@ -71,7 +71,6 @@ struct Review: Codable {
         case profilePhotoUrl = "profile_photo_url"
         case relativeTimeDescription = "relative_time_description"
         case text, rating, time
-        
     }
 }
 
@@ -101,6 +100,15 @@ struct DistanceMatrixResponse: Codable {
                 let value: Int
             }
         }
+    }
+}
+
+struct AutoCompleteResponse: Codable {
+    let predictions: [Prediction]
+
+    struct Prediction: Codable {
+        let description: String
+        let place_id: String
     }
 }
 
