@@ -8,24 +8,24 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UISearchB
     let currentLocationLabel = UILabel()
     let findOnMapButton = UIButton()
     let headerView = UIView()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
+
         setupLocationManager()
         setupHeaderView()
         setupSearchBar()
         setupFindOnMapButton()
     }
-    
+
     func setupLocationManager() {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
     }
-    
+
     func setupHeaderView() {
         headerView.backgroundColor = .white
         view.addSubview(headerView)
@@ -34,15 +34,14 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UISearchB
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(60)
         }
-        
+
         headerView.addSubview(currentLocationLabel)
         currentLocationLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalToSuperview().offset(16)
         }
-        
     }
-    
+
     func setupSearchBar() {
         searchBar.placeholder = "어떤 운동을 찾고 계신가요?"
         searchBar.delegate = self
@@ -52,7 +51,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UISearchB
             make.leading.trailing.equalToSuperview().inset(16)
         }
     }
-    
+
     func setupFindOnMapButton() {
         findOnMapButton.setTitle("지도에서 찾기", for: .normal)
         findOnMapButton.backgroundColor = .systemBlue
@@ -67,12 +66,12 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UISearchB
             make.height.equalTo(50)
         }
     }
-    
+
     @objc func findOnMapButtonTapped() {
         let mapVC = MapViewController()
         self.navigationController?.pushViewController(mapVC, animated: true)
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         let geocoder = CLGeocoder()
@@ -88,11 +87,11 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UISearchB
             }
         }
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Failed to find user's location: \(error.localizedDescription)")
     }
-    
+
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         let searchVC = SearchViewController()
         searchVC.modalPresentationStyle = .overFullScreen

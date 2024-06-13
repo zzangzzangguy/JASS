@@ -23,12 +23,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             fatalError("API 키 연결에 실패했습니다.")
         }
         let config = Realm.Configuration(
-                   schemaVersion: 2, // 새로운 스키마 버전 (기존 버전보다 높은 값으로 설정)
+                   schemaVersion: 2,
                    migrationBlock: { migration, oldSchemaVersion in
                        if oldSchemaVersion < 1 {
-                           // 이전 스키마 버전이 1보다 낮은 경우 실행할 마이그레이션 코드
                            migration.enumerateObjects(ofType: FavoritePlace.className()) { oldObject, newObject in
-                               // 'name' 속성을 필수에서 선택적(optional)으로 변경
                                newObject?["name"] = oldObject?["name"]
                            }
                        }

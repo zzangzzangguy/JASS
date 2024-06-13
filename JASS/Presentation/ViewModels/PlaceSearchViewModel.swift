@@ -12,6 +12,8 @@ class PlaceSearchViewModel {
     var searchResults: [Place] = []
     var isSearching: Bool = false
     var updateSearchResults: (() -> Void)?
+    var autoCompleteResults: [String] = []
+    var updateAutoCompleteResults: (() -> Void)?
     var showError: ((String) -> Void)?
 
     private let categoriesToTypes: [String: (type: String, keyword: String)] = [
@@ -117,7 +119,7 @@ class PlaceSearchViewModel {
         provider.request(.distanceMatrix(origins: originString, destinations: destinationString, mode: "transit", key: Bundle.apiKey)) { result in
             switch result {
             case .success(let response):
-                print("Distance Matrix API Response: \(response)")
+                print("거리계산 API 계산: \(response)")
                 do {
                     if let json = try? JSONSerialization.jsonObject(with: response.data, options: .mutableContainers),
                        let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted),
@@ -129,7 +131,7 @@ class PlaceSearchViewModel {
                     if let element = distanceMatrix.rows.first?.elements.first,
                        let distance = element.distance {
                         let distanceText = distance.text
-                        print("Calculated Distance: \(distanceText)")
+                        print("거리 계산: \(distanceText)")
                         completion(distanceText)
                     } else {
                         print("Distance calculation returned nil element")
@@ -176,8 +178,39 @@ class PlaceSearchViewModel {
             searchResults[index].distanceText = distanceText
             updateSearchResults?()
         } else {
-            print("PlaceID \(placeID) not found in searchResults")  // 로그 추가
+            print("PlaceID \(placeID) 검색결과를 찿을수없습니다")
+        }
+
+    }
+    func searchAutoComplete(for query: String, completion: @escaping ([String]) -> Void) {
+            let types = "establishment"
+            let components = "country:kr"
+            provider.request(.autocomplete(input: query, types: types, components: components, language: "ko", location: nil, radius: nil, strictbounds: nil, sessiontoken: nil)) { result in
+                switch result {
+                case .success(let response):
+                    do {
+                        let autoCompleteResponse = try JSONDecoder().decode(AutoCompleteResponse.self, from: response.data)
+                        let suggestions = autoCompleteResponse.predictions.filter { prediction in
+                            let keywords = ["헬스", "헬스장", "피트니스", "체육관", "요가", "필라테스", "복싱", "크로스핏", "수영", "클라이밍"]
+                            return keywords.contains { keyword in
+                                prediction.description.contains(keyword)
+                            }
+                        }.map { prediction -> String in                     
+                            var description = prediction.description
+                            if let range = description.range(of: "대한민국") {
+                                description.removeSubrange(range)
+                            }
+                            return description.trimmingCharacters(in: .whitespacesAndNewlines)
+                        }
+                        completion(suggestions)
+                    } catch {
+                        print("JSON 디코딩 오류: \(error)")
+                        completion([])
+                    }
+                case .failure(let error):
+                    print("API 요청 실패: \(error)")
+                    completion([])
+                }
+            }
         }
     }
-}
-
