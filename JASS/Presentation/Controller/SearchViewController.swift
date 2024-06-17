@@ -1,5 +1,4 @@
 import UIKit
-import RealmSwift
 import SnapKit
 
 class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource {
@@ -131,11 +130,17 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if searchBar.text?.isEmpty == false {
-            cell.textLabel?.text = autoCompleteSuggestions[indexPath.row]
+            if indexPath.row < autoCompleteSuggestions.count {
+                cell.textLabel?.text = autoCompleteSuggestions[indexPath.row]
+            }
         } else if segmentedControl.selectedSegmentIndex == 0 {
-            cell.textLabel?.text = recommendedKeywords[indexPath.row]
+            if indexPath.row < recommendedKeywords.count {
+                cell.textLabel?.text = recommendedKeywords[indexPath.row]
+            }
         } else {
-            cell.textLabel?.text = recentSearches[indexPath.row]
+            if indexPath.row < recentSearches.count {
+                cell.textLabel?.text = recentSearches[indexPath.row]
+            }
         }
         return cell
     }
@@ -143,11 +148,23 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let keyword: String
         if searchBar.text?.isEmpty == false {
-            keyword = autoCompleteSuggestions[indexPath.row]
+            if indexPath.row < autoCompleteSuggestions.count {
+                keyword = autoCompleteSuggestions[indexPath.row]
+            } else {
+                return
+            }
         } else if segmentedControl.selectedSegmentIndex == 0 {
-            keyword = recommendedKeywords[indexPath.row]
+            if indexPath.row < recommendedKeywords.count {
+                keyword = recommendedKeywords[indexPath.row]
+            } else {
+                return
+            }
         } else {
-            keyword = recentSearches[indexPath.row]
+            if indexPath.row < recentSearches.count {
+                keyword = recentSearches[indexPath.row]
+            } else {
+                return
+            }
         }
         searchBar.text = keyword
         searchBarSearchButtonClicked(searchBar) // 검색어 입력 후 검색 수행

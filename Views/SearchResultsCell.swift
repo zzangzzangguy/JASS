@@ -123,7 +123,6 @@ class SearchResultCell: UITableViewCell {
         nameLabel.text = place.name
         addressLabel.text = place.formatted_address
         reviewsLabel.text = place.reviews?.compactMap { $0.text }.joined(separator: "\n\n") ?? "리뷰 없음"
-//        distanceLabel.text = place.distanceText ?? "계산 중..." // 초기 텍스트 설정
 
 
         print("셀 구성: 이름: \(place.name), 주소: \(place.formatted_address ?? "주소 정보 없음"), 거리: \(place.distanceText ?? "거리 정보 없음"), 리뷰: \(reviewsLabel.text ?? "리뷰 없음")")

@@ -11,7 +11,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     var recentSearchesViewController: RecentSearchesViewController!
     var searchResultsViewController: SearchResultsViewController!
     var searchTask: DispatchWorkItem?
-    var placeSearchViewModel = PlaceSearchViewModel()
+    var placeSearchViewModel: PlaceSearchViewModel
     var searchRecentViewModel = SearchRecentViewModel()
     let zoomInButton = UIButton(type: .system)
     let zoomOutButton = UIButton(type: .system)
@@ -22,6 +22,16 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     private let defaultCategory = "헬스"
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
     private var filterView: FilterViewController?
+
+    // Custom initializer to inject the PlaceSearchViewModel
+    init(viewModel: PlaceSearchViewModel) {
+        self.placeSearchViewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -134,106 +144,106 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         searchController.searchBar.endEditing(true)
     }
     private func setupNavigationBarItems() {
-          let filterButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3.decrease.circle"), style: .plain, target: self, action: #selector(showFilterView))
-          navigationItem.rightBarButtonItem = filterButton
-      }
+        let filterButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3.decrease.circle"), style: .plain, target: self, action: #selector(showFilterView))
+        navigationItem.rightBarButtonItem = filterButton
+    }
 
-      @objc private func showFilterView(_ sender: Any) {
-          guard let filterView = filterView else {
-              let filterViewController = FilterViewController()
-              filterViewController.delegate = self
-              self.filterView = filterViewController
-              present(filterViewController, animated: true, completion: nil)
-              return
-          }
-          present(filterView, animated: true, completion: nil)
-      }
+    @objc private func showFilterView(_ sender: Any) {
+        guard let filterView = filterView else {
+            let filterViewController = FilterViewController()
+            filterViewController.delegate = self
+            self.filterView = filterViewController
+            present(filterViewController, animated: true, completion: nil)
+            return
+        }
+        present(filterView, animated: true, completion: nil)
+    }
 
-      private func setupSearchController() {
-          searchController = UISearchController(searchResultsController: nil)
-          searchController.searchBar.delegate = self
-          searchController.searchBar.placeholder = "지역, 매장명을 검색해주세요"
-          searchController.searchBar.tintColor = UIColor.systemBlue
-          searchController.obscuresBackgroundDuringPresentation = false
-          navigationItem.searchController = searchController
+    private func setupSearchController() {
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.delegate = self
+        searchController.searchBar.placeholder = "지역, 매장명을 검색해주세요"
+        searchController.searchBar.tintColor = UIColor.systemBlue
+        searchController.obscuresBackgroundDuringPresentation = false
+        navigationItem.searchController = searchController
 
-          let appearance = UINavigationBarAppearance()
-          appearance.backgroundColor = UIColor.white
-          appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
-          navigationController?.navigationBar.standardAppearance = appearance
-          navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = UIColor.white
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
 
-          navigationItem.hidesSearchBarWhenScrolling = false
-          definesPresentationContext = true
-      }
+        navigationItem.hidesSearchBarWhenScrolling = false
+        definesPresentationContext = true
+    }
 
-      private func setupSearchRecentViewModel() {
-          searchRecentViewModel.didSelectRecentSearch = { [weak self] query in
-              guard let self = self else { return }
-              self.searchController.searchBar.text = query
-              self.searchPlace(query)
-          }
-      }
+    private func setupSearchRecentViewModel() {
+        searchRecentViewModel.didSelectRecentSearch = { [weak self] query in
+            guard let self = self else { return }
+            self.searchController.searchBar.text = query
+            self.searchPlace(query)
+        }
+    }
 
-      private func searchPlace(_ query: String) {
-          let category = selectedCategory ?? defaultCategory
-          if selectedCategory == nil {
-              showToast("필터가 적용되지 않았습니다. 기본 카테고리로 검색합니다.")
-          }
-          placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
-              guard let self = self else { return }
+    private func searchPlace(_ query: String) {
+        let category = selectedCategory ?? defaultCategory
+        if selectedCategory == nil {
+            showToast("필터가 적용되지 않았습니다. 기본 카테고리로 검색합니다.")
+        }
+        placeSearchViewModel.searchPlace(input: query, category: category) { [weak self] places in
+            guard let self = self else { return }
 
-              self.viewModel.places = places
+            self.viewModel.places = places
 
-              if let currentLocation = self.locationManager.location?.coordinate {
-                  let group = DispatchGroup()
+            if let currentLocation = self.locationManager.location?.coordinate {
+                let group = DispatchGroup()
 
-                  for (index, place) in self.viewModel.places.enumerated() {
-                          group.enter()
-                      self.placeSearchViewModel.calculateDistances(from: currentLocation, to: place.coordinate) { distance in
-                              self.viewModel.places[index].distanceText = distance
-                              group.leave()
-                          }
-                      }
+                for (index, place) in self.viewModel.places.enumerated() {
+                    group.enter()
+                    self.placeSearchViewModel.calculateDistances(from: currentLocation, to: place.coordinate) { distance in
+                        self.viewModel.places[index].distanceText = distance
+                        group.leave()
+                    }
+                }
 
-                  group.notify(queue: .main) {
-                      self.searchResultsViewController.update(with: self.viewModel.places)
-                      self.showSearchResultsView()
-                  }
-              } else {
-                  self.searchResultsViewController.update(with: places)
-                  self.showSearchResultsView()
-              }
-          }
-      }
+                group.notify(queue: .main) {
+                    self.searchResultsViewController.update(with: self.viewModel.places)
+                    self.showSearchResultsView()
+                }
+            } else {
+                self.searchResultsViewController.update(with: places)
+                self.showSearchResultsView()
+            }
+        }
+    }
 
-      private func configureZoomButton(button: UIButton, systemName: String, action: Selector) {
-          let imageConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium, scale: .large)
-          button.setImage(UIImage(systemName: systemName, withConfiguration: imageConfig), for: .normal)
-          button.tintColor = .white
-          button.backgroundColor = .blue
-          button.layer.cornerRadius = 20
-          button.addTarget(self, action: action, for: .touchUpInside)
-          view.addSubview(button)
-      }
+    private func configureZoomButton(button: UIButton, systemName: String, action: Selector) {
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium, scale: .large)
+        button.setImage(UIImage(systemName: systemName, withConfiguration: imageConfig), for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = .blue
+        button.layer.cornerRadius = 20
+        button.addTarget(self, action: action, for: .touchUpInside)
+        view.addSubview(button)
+    }
 
-      private func setupZoomButtons() {
-          configureZoomButton(button: zoomInButton, systemName: "plus.magnifyingglass", action: #selector(zoomIn))
-          configureZoomButton(button: zoomOutButton, systemName: "minus.magnifyingglass", action: #selector(zoomOut))
+    private func setupZoomButtons() {
+        configureZoomButton(button: zoomInButton, systemName: "plus.magnifyingglass", action: #selector(zoomIn))
+        configureZoomButton(button: zoomOutButton, systemName: "minus.magnifyingglass", action: #selector(zoomOut))
 
-          zoomInButton.snp.makeConstraints {
-              $0.leading.equalToSuperview().inset(20)
-              $0.centerY.equalToSuperview().offset(-30)
-              $0.width.height.equalTo(40)
-          }
-          zoomOutButton.snp.makeConstraints {
-              $0.leading.equalTo(zoomInButton.snp.leading)
-              $0.top.equalTo(zoomInButton.snp.bottom).offset(15)
-              $0.width.height.equalTo(40)
-          }
+        zoomInButton.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(20)
+            $0.centerY.equalToSuperview().offset(-30)
+            $0.width.height.equalTo(40)
+        }
+        zoomOutButton.snp.makeConstraints {
+            $0.leading.equalTo(zoomInButton.snp.leading)
+            $0.top.equalTo(zoomInButton.snp.bottom).offset(15)
+            $0.width.height.equalTo(40)
+        }
 
-          updateZoomButtonsState()
-      }
+        updateZoomButtonsState()
+    }
 
     @objc private func zoomIn() {
         let currentZoom = mapView.camera.zoom
@@ -322,11 +332,11 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 
                     for (index, place) in self.viewModel.places.enumerated() {
                         group.enter()
-                                             self.placeSearchViewModel.calculateDistances(from: currentLocation, to: place.coordinate) { distance in
-                                                 self.viewModel.places[index].distanceText = distance
-                                                 group.leave()
-                                             }
-                                         }
+                        self.placeSearchViewModel.calculateDistances(from: currentLocation, to: place.coordinate) { distance in
+                            self.viewModel.places[index].distanceText = distance
+                            group.leave()
+                        }
+                    }
 
                     group.notify(queue: .main) {
                         self.searchResultsViewController.update(with: self.viewModel.places)

@@ -70,7 +70,6 @@ class SearchRecentViewModel {
             }
             print("삭제된 검색 이력: \(query)")
 
-            // 캐시에서 삭제
             cachedRecentSearches.removeAll(where: { $0 == query })
 
             updateRecentSearches?()

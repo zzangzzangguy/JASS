@@ -11,6 +11,9 @@
 		4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */; };
 		4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */; };
 		4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */; };
+		4E21846D2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */; };
+		4E21846F2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */; };
+		4E2184712C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */; };
 		4E52D97B2C19AE0D0007494A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E52D97A2C19AE0D0007494A /* SearchViewController.swift */; };
 		4E7CB96B2C10139E00F5F3D7 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96A2C10139E00F5F3D7 /* RxCocoa */; };
 		4E7CB96D2C10139E00F5F3D7 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96C2C10139E00F5F3D7 /* RxRelay */; };
@@ -81,6 +84,9 @@
 		4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
 		4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterManager.swift; sourceTree = "<group>"; };
+		4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyFacilitiesViewModel.swift; sourceTree = "<group>"; };
+		4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacilityCollectionViewCell.swift; sourceTree = "<group>"; };
+		4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyFacilitiesTableViewCell.swift; sourceTree = "<group>"; };
 		4E52D97A2C19AE0D0007494A /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		4E9966CD2BE141BF002E3763 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		4E9966CF2BE141D9002E3763 /* FavoriteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteManager.swift; sourceTree = "<group>"; };
@@ -305,6 +311,8 @@
 		4EF9318D2B3EA06E00E5794B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */,
+				4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */,
 				4EDB89852BEAA118001C558E /* FavoritePlaceCell.swift */,
 				4EF9317D2B29DB7800E5794B /* SearchResultsCell.swift */,
 				4EF931892B3D5FEB00E5794B /* RecentSearchCell.swift */,
@@ -315,6 +323,7 @@
 		4EF9318E2B3EA0AA00E5794B /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */,
 				4EF9316A2B21C04600E5794B /* PlaceSearchViewModel.swift */,
 				4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */,
 				4EF931812B336EEB00E5794B /* SearchRecentViewModel.swift */,
@@ -647,8 +656,10 @@
 				4EF9316D2B21C32D00E5794B /* MapViewController.swift in Sources */,
 				4ECA89DC2BF0BE24006C6DEC /* SearchResultsViewModel.swift in Sources */,
 				4EF931882B3B426D00E5794B /* RecentPlacesViewModel.swift in Sources */,
+				4E21846D2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift in Sources */,
 				4ECA89DE2BF0DBA7006C6DEC /* FavoritePlace.swift in Sources */,
 				4EF931922B46CB5E00E5794B /* MainViewController.swift in Sources */,
+				4E21846F2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift in Sources */,
 				4EF931822B336EEB00E5794B /* SearchRecentViewModel.swift in Sources */,
 				4E9966CE2BE141BF002E3763 /* LocationManager.swift in Sources */,
 				4EF9318A2B3D5FEC00E5794B /* RecentSearchCell.swift in Sources */,
@@ -656,6 +667,7 @@
 				4EF9317E2B29DB7800E5794B /* SearchResultsCell.swift in Sources */,
 				4ECA89E02BF11978006C6DEC /* ToastManager.swift in Sources */,
 				4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */,
+				4E2184712C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift in Sources */,
 				4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */,
 				4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */,
 				4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */,

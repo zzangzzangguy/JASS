@@ -165,7 +165,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
             openingHoursLabel.text = "등록된 영업시간 정보가 없습니다"
         }
 
-        updateFavoriteButton(showToast: false) // 초기 로드 시 토스트 메시지를 표시하지 않음
+        updateFavoriteButton(showToast: false)
     }
 
     private func fetchPlacePhotos() {
@@ -231,7 +231,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
             guard let self = self else { return }
 
             if let error = error {
-                print("Error loading photo metadata: \(error.localizedDescription)")
+                print("사진 로드 오류발생: \(error.localizedDescription)")
                 return
             }
 
