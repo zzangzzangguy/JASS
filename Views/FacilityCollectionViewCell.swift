@@ -3,9 +3,15 @@ import SnapKit
 import Then
 import GooglePlaces
 
+protocol FacilityCollectionViewCellDelegate: AnyObject {
+    func didTapFacilityCell(_ cell: FacilityCollectionViewCell, place: Place)
+}
+
 final class FacilityCollectionViewCell: UICollectionViewCell {
     static let identifier = "FacilityCollectionViewCell"
     private let placeSearchViewModel = PlaceSearchViewModel()
+    weak var delegate: FacilityCollectionViewCellDelegate?
+    private var place: Place?
 
     private let imageView = UIImageView()
     private let nameLabel = UILabel()
@@ -15,6 +21,7 @@ final class FacilityCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
     }
 
     required init?(coder: NSCoder) {
@@ -69,8 +76,7 @@ final class FacilityCollectionViewCell: UICollectionViewCell {
     }
 
     func configure(with place: Place) {
-        print("Configuring cell with place: \(place.name)")
-
+        self.place = place
         nameLabel.text = place.name
         addressLabel.text = place.formatted_address ?? "주소 없음"
 
@@ -80,20 +86,18 @@ final class FacilityCollectionViewCell: UICollectionViewCell {
                 guard let self = self else { return }
                 self.loadingIndicator.stopAnimating()
                 if let image = image {
-                    print("사진 로드 성공: \(photoReference)")
                     self.imageView.image = image
                 } else {
-                    print("사진 로드 실패: \(photoReference)")
                     self.imageView.image = UIImage(named: "defaultImage")
                 }
             }
         } else {
-            print("사진 참조 없음, 기본 이미지 설정")
             imageView.image = UIImage(named: "defaultImage")
         }
     }
 
-    func setImage(_ image: UIImage) {
-        self.imageView.image = image
+    @objc private func handleTap() {
+        guard let place = place else { return }
+        delegate?.didTapFacilityCell(self, place: place)
     }
 }

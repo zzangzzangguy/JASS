@@ -6,6 +6,7 @@ class NearbyFacilitiesTableViewCell: UITableViewCell {
 
     private let collectionView: UICollectionView
     private var places: [Place] = []
+    weak var delegate: FacilityCollectionViewCellDelegate?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         let layout = UICollectionViewFlowLayout()
@@ -37,15 +38,9 @@ class NearbyFacilitiesTableViewCell: UITableViewCell {
         self.places = places
         collectionView.reloadData()
     }
-
-    func setImage(_ image: UIImage, at index: Int) {
-        if let cell = collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? FacilityCollectionViewCell {
-            cell.setImage(image)
-        }
-    }
 }
 
-extension NearbyFacilitiesTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource {
+extension NearbyFacilitiesTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, FacilityCollectionViewCellDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return places.count
     }
@@ -54,8 +49,12 @@ extension NearbyFacilitiesTableViewCell: UICollectionViewDelegate, UICollectionV
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FacilityCollectionViewCell.identifier, for: indexPath) as? FacilityCollectionViewCell else {
             return UICollectionViewCell()
         }
-        let place = places[indexPath.item]
-        cell.configure(with: place)
+        cell.configure(with: places[indexPath.item])
+        cell.delegate = self
         return cell
+    }
+
+    func didTapFacilityCell(_ cell: FacilityCollectionViewCell, place: Place) {
+        delegate?.didTapFacilityCell(cell, place: place)
     }
 }
