@@ -169,8 +169,8 @@ extension MainViewController: UISearchBarDelegate {
     }
 }
 
-// MARK: - UITableViewDelegate, UITableViewDataSource
-extension MainViewController: UITableViewDelegate, UITableViewDataSource {
+// MARK: - UITableViewDelegate, UITableViewDataSource, FacilityCollectionViewCellDelegate
+extension MainViewController: UITableViewDelegate, UITableViewDataSource, FacilityCollectionViewCellDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -184,7 +184,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         cell.configure(with: nearbyFacilitiesViewModel.places)
+        cell.delegate = self
         return cell
+    }
+
+    func didTapFacilityCell(_ cell: FacilityCollectionViewCell, place: Place) {
+        let gymDetailVC = GymDetailViewController(place: place)
+        navigationController?.pushViewController(gymDetailVC, animated: true)
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
