@@ -163,11 +163,4 @@ extension SearchResultsViewController {
         return tableView.indexPath(for: cell)
     }
 
-//    func reloadRowAtIndexPath(_ indexPath: IndexPath) {
-//        DispatchQueue.main.async {
-//            self.tableView.reloadRows(at: [indexPath], with: .automatic)
-//        }didSelectRowAt
-
-
-//    }
 }

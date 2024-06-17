@@ -4,7 +4,7 @@ import GoogleMaps
 enum GooglePlacesAPI {
     case placeSearch(input: String)
     case searchInBounds(parameters: [String: Any])
-    case nearbySearch(parameters: [String: String])
+    case nearbySearch(parameters: [String: Any])
     case textSearch(parameters: [String: Any])
     case photo(reference: String, maxWidth: Int)
     case distanceMatrix(origins: String, destinations: String, mode: String, key: String)
@@ -56,12 +56,11 @@ extension GooglePlacesAPI: TargetType {
                 "query": input
             ], encoding: URLEncoding.queryString)
         case .photo(let reference, let maxWidth):
-            let parameters: [String: Any] = [
-                "maxwidth": maxWidth,
-                "photoreference": reference,
-                "key": Bundle.apiKey
-            ]
-            return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
+                   return .requestParameters(parameters: [
+                       "maxwidth": maxWidth,
+                       "photoreference": reference,
+                       "key": Bundle.apiKey
+                   ], encoding: URLEncoding.queryString)
         case .details(let placeID):
             return .requestParameters(parameters: [
                 "place_id": placeID,
