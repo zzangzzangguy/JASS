@@ -1,6 +1,5 @@
 import UIKit
 import SnapKit
-import Then
 import GooglePlaces
 
 protocol FacilityCollectionViewCellDelegate: AnyObject {
@@ -9,9 +8,9 @@ protocol FacilityCollectionViewCellDelegate: AnyObject {
 
 final class FacilityCollectionViewCell: UICollectionViewCell {
     static let identifier = "FacilityCollectionViewCell"
-    private let placeSearchViewModel = PlaceSearchViewModel()
     weak var delegate: FacilityCollectionViewCellDelegate?
     private var place: Place?
+    private var photoMetadata: GMSPlacePhotoMetadata?
 
     private let imageView = UIImageView()
     private let nameLabel = UILabel()
@@ -79,20 +78,48 @@ final class FacilityCollectionViewCell: UICollectionViewCell {
         self.place = place
         nameLabel.text = place.name
         addressLabel.text = place.formatted_address ?? "주소 없음"
+        imageView.image = nil // 기존 이미지를 초기화합니다.
 
-        if let photoReference = place.photos?.first?.photoReference {
-            loadingIndicator.startAnimating()
-            placeSearchViewModel.fetchPlacePhoto(reference: photoReference, maxWidth: 400) { [weak self] image in
-                guard let self = self else { return }
-                self.loadingIndicator.stopAnimating()
-                if let image = image {
-                    self.imageView.image = image
-                } else {
-                    self.imageView.image = UIImage(named: "defaultImage")
-                }
+        loadingIndicator.startAnimating()
+
+        GMSPlacesClient.shared().lookUpPhotos(forPlaceID: place.place_id) { [weak self] (photoMetadataList, error) in
+            guard let self = self else { return }
+            self.loadingIndicator.stopAnimating()
+
+            if let error = error {
+                print("사진 메타데이터 로드 오류발생: \(error.localizedDescription)")
+                self.imageView.image = UIImage(named: "defaultImage")
+                return
             }
-        } else {
-            imageView.image = UIImage(named: "defaultImage")
+
+            guard let photos = photoMetadataList?.results, let firstPhoto = photos.first else {
+                print("사진 메타데이터 없음")
+                self.imageView.image = UIImage(named: "defaultImage")
+                return
+            }
+
+            self.photoMetadata = firstPhoto
+            self.loadImageForMetadata(photoMetadata: firstPhoto)
+        }
+    }
+
+    private func loadImageForMetadata(photoMetadata: GMSPlacePhotoMetadata) {
+        GMSPlacesClient.shared().loadPlacePhoto(photoMetadata) { [weak self] (photo, error) -> Void in
+            guard let self = self else { return }
+
+            if let error = error {
+                print("사진 로드 오류발생: \(error.localizedDescription)")
+                self.imageView.image = UIImage(named: "defaultImage")
+                return
+            }
+
+            if let photo = photo {
+                self.imageView.image = photo
+                print("이미지 로드 성공 - Place: \(String(describing: self.place?.name))")
+            } else {
+                self.imageView.image = UIImage(named: "defaultImage")
+                print("이미지 로드 실패, 디폴트 이미지 사용 - Place: \(String(describing: self.place?.name))")
+            }
         }
     }
 

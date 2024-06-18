@@ -13,6 +13,8 @@ protocol SearchResultCellDelegate: AnyObject {
 class SearchResultCell: UITableViewCell {
     var placeSearchViewModel: PlaceSearchViewModel?
     static let reuseIdentifier = "SearchResultCell"
+    weak var delegate: SearchResultCellDelegate?
+    var place: Place?
 
     private let placeImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
@@ -50,9 +52,6 @@ class SearchResultCell: UITableViewCell {
         $0.numberOfLines = 2
 
     }
-
-    weak var delegate: SearchResultCellDelegate?
-    var place: Place?
 
     private let loadingIndicator = UIActivityIndicatorView(style: .medium)
 

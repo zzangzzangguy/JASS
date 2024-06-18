@@ -161,7 +161,7 @@ class PlaceSearchViewModel {
                     let json = try JSONSerialization.jsonObject(with: response.data, options: .mutableContainers)
                     let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
                     if let jsonString = String(data: jsonData, encoding: .utf8) {
-                        print("Place Details API Response JSON: \(jsonString)")
+//                        print("Place Details API Response JSON: \(jsonString)")
                     }
                     
                     let placeDetailsResponse = try JSONDecoder().decode(PlaceDetailsResponse.self, from: response.data)

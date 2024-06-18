@@ -100,7 +100,27 @@ class MainViewController: UIViewController {
     }
 
     @objc private func refreshNearbyFacilities() {
-        nearbyFacilitiesViewModel.refreshRandomPlaces()
+        guard let location = currentLocation else { return }
+        nearbyFacilitiesViewModel.fetchNearbyFacilities(at: location) { [weak self] in
+            guard let self = self else { return }
+            let group = DispatchGroup()
+
+            self.nearbyFacilitiesViewModel.places.forEach { place in
+                group.enter()
+                self.placeSearchViewModel.fetchPlaceDetails(placeID: place.place_id) { detailedPlace in
+                    if let detailedPlace = detailedPlace {
+                        if let index = self.nearbyFacilitiesViewModel.places.firstIndex(where: { $0.place_id == place.place_id }) {
+                            self.nearbyFacilitiesViewModel.places[index] = detailedPlace
+                        }
+                    }
+                    group.leave()
+                }
+            }
+
+            group.notify(queue: .main) {
+                self.tableView.reloadData()
+            }
+        }
     }
 
     private func fetchNearbyFacilities() {
