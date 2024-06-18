@@ -1,4 +1,5 @@
 import UIKit
+import SnapKit
 import Toast
 
 class FavoritesViewController: UIViewController {
@@ -17,11 +18,17 @@ class FavoritesViewController: UIViewController {
     }
 
     private func setupTableView() {
-        tableView = UITableView(frame: view.bounds, style: .plain)
+        tableView = UITableView(frame: .zero, style: .plain)
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.estimatedRowHeight = 100
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.register(FavoritePlaceCell.self, forCellReuseIdentifier: FavoritePlaceCell.reuseIdentifier)
         view.addSubview(tableView)
+
+        tableView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
     }
 
     private func setupFavoritesManager() {
@@ -35,10 +42,9 @@ extension FavoritesViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: FavoritePlaceCell.reuseIdentifier, for: indexPath) as! FavoritePlaceCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "FavoritePlaceCell", for: indexPath) as! FavoritePlaceCell
         let place = favoritesManager.getFavorites()[indexPath.row]
         cell.configure(with: place)
-        
         cell.delegate = self
         return cell
     }

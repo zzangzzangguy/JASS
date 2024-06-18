@@ -90,7 +90,6 @@ class FilterViewController: UIViewController {
         collectionView.backgroundColor = .white
         return collectionView
     }()
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white

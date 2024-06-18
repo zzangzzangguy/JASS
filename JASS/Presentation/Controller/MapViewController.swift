@@ -121,8 +121,8 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 
         searchResultsViewController = SearchResultsViewController()
         searchResultsViewController.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: self)
-        searchResultsViewController.mapViewModel = viewModel // 추가된 부분
-        searchResultsViewController.delegate = self // 추가된 부분
+        searchResultsViewController.mapViewModel = viewModel
+        searchResultsViewController.delegate = self 
         addChild(searchResultsViewController)
         view.addSubview(searchResultsViewController.view)
         searchResultsViewController.view.snp.makeConstraints {

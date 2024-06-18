@@ -16,7 +16,7 @@ class SearchResultsViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupBindings()
-        print("PlaceSearchViewModel 인스턴스 생성")
+//        print("PlaceSearchViewModel 생성")
         placeSearchViewModel = PlaceSearchViewModel()
         
 
