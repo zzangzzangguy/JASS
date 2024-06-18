@@ -18,17 +18,19 @@ class FavoritesViewController: UIViewController {
     }
 
     private func setupTableView() {
-        tableView = UITableView(frame: .zero, style: .plain)
+        tableView = UITableView()/*(frame: .zero, style: .plain)*/
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.estimatedRowHeight = 100
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.register(FavoritePlaceCell.self, forCellReuseIdentifier: FavoritePlaceCell.reuseIdentifier)
+//        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         view.addSubview(tableView)
-
+        tableView.estimatedRowHeight = 120 
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+        tableView.register(FavoritePlaceCell.self, forCellReuseIdentifier: "FavoritePlaceCell")
+
+
     }
 
     private func setupFavoritesManager() {

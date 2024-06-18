@@ -50,9 +50,9 @@ class FavoritePlaceCell: UITableViewCell {
         favoriteButton.tintColor = .gray
 
         placeImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(10)
+            make.leading.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(100)
+            make.width.height.equalTo(80)
         }
 
         nameLabel.snp.makeConstraints { make in
@@ -65,7 +65,8 @@ class FavoritePlaceCell: UITableViewCell {
             make.top.equalTo(nameLabel.snp.bottom).offset(5)
             make.leading.equalTo(nameLabel.snp.leading)
             make.trailing.equalTo(nameLabel.snp.trailing)
-            make.bottom.equalToSuperview().inset(16) // 셀의 하단에 고정
+            make.bottom.equalToSuperview().inset(16)
+            
         }
 
         favoriteButton.snp.makeConstraints { make in
@@ -98,7 +99,7 @@ class FavoritePlaceCell: UITableViewCell {
 
     private func loadPlaceImage() {
         guard let placeID = place?.place_id else {
-            placeImageView.image = UIImage(named: "defaultImage")
+            setDefaultImage()
             return
         }
 
@@ -109,12 +110,12 @@ class FavoritePlaceCell: UITableViewCell {
             self.loadingIndicator.stopAnimating()
 
             if let error = error {
-                self.placeImageView.image = UIImage(named: "defaultImage")
+                self.setDefaultImage()
                 return
             }
 
             guard let photos = photoMetadataList?.results, let firstPhoto = photos.first else {
-                self.placeImageView.image = UIImage(named: "defaultImage")
+                self.setDefaultImage()
                 return
             }
 
@@ -123,20 +124,28 @@ class FavoritePlaceCell: UITableViewCell {
         }
     }
 
+    private func setDefaultImage() {
+        placeImageView.image = UIImage(named: "defaultImage")
+        placeImageView.contentMode = .scaleAspectFit
+        placeImageView.clipsToBounds = true
+    }
+
     private func loadImageForMetadata(photoMetadata: GMSPlacePhotoMetadata) {
         GMSPlacesClient.shared().loadPlacePhoto(photoMetadata) { [weak self] (photo, error) -> Void in
             guard let self = self else { return }
 
             if let error = error {
-                self.placeImageView.image = UIImage(named: "defaultImage")
+                self.setDefaultImage()
                 return
             }
 
             if let photo = photo {
                 self.placeImageView.image = photo
             } else {
-                self.placeImageView.image = UIImage(named: "defaultImage")
+                self.setDefaultImage()
             }
+            self.placeImageView.contentMode = .scaleAspectFill
+            self.placeImageView.clipsToBounds = true
         }
     }
 
