@@ -23,7 +23,6 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
     private var filterView: FilterViewController?
 
-    // Custom initializer to inject the PlaceSearchViewModel
     init(viewModel: PlaceSearchViewModel) {
         self.placeSearchViewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -49,7 +48,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         locationManager.distanceFilter = 2000
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
-        tabBarController?.tabBar.isHidden = true
+//        tabBarController?.tabBar.isHidden = true
 
         searchRecentViewModel.updateRecentSearches = { [weak self] in
             DispatchQueue.main.async {
@@ -59,6 +58,14 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 
         hideKeyboardWhenTappedAround()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+              self.tabBarController?.tabBar.isHidden = true
+          }
+    override func viewWillDisappear(_ animated: Bool) {
+          super.viewWillDisappear(animated)
+          self.tabBarController?.tabBar.isHidden = false
+      }
 
     private func applyFilter(filter: String, category: String) {
         showLoadingIndicator()
@@ -122,7 +129,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         searchResultsViewController = SearchResultsViewController()
         searchResultsViewController.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: self)
         searchResultsViewController.mapViewModel = viewModel
-        searchResultsViewController.delegate = self 
+//        searchResultsViewController.delegate = self
         addChild(searchResultsViewController)
         view.addSubview(searchResultsViewController.view)
         searchResultsViewController.view.snp.makeConstraints {
@@ -539,9 +546,9 @@ extension MapViewController: ClusterManagerDelegate {
     }
 }
 
-extension MapViewController: SearchResultsViewDelegate {
-    func showToastForFavorite(place: Place, isAdded: Bool) {
-        let message = isAdded ? "즐겨찾기에 추가되었습니다." : "즐겨찾기에서 제거되었습니다."
-        view.makeToast(message)
-    }
-}
+//extension MapViewController: SearchResultsViewDelegate {
+//    func showToastForFavorite(place: Place, isAdded: Bool) {
+//        let message = isAdded ? "즐겨찾기에 추가되었습니다." : "즐겨찾기에서 제거되었습니다."
+//        view.makeToast(message)
+//    }
+//}

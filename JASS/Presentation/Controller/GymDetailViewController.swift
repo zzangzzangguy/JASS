@@ -281,30 +281,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     }
 
     private func showToastForFavorite(isFavorite: Bool) {
-        let message = isFavorite ? "즐겨찾기에 추가되었습니다" : "즐겨찾기에서 제거되었습니다"
-        let toastLabel = UILabel().then {
-            $0.backgroundColor = UIColor.black.withAlphaComponent(0.6)
-            $0.textColor = UIColor.white
-            $0.textAlignment = .center
-            $0.font = UIFont.systemFont(ofSize: 14)
-            $0.text = message
-            $0.alpha = 1.0
-            $0.layer.cornerRadius = 10
-            $0.clipsToBounds = true
-        }
-
-        view.addSubview(toastLabel)
-        toastLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalToSuperview().offset(-100)
-            $0.width.equalTo(200)
-            $0.height.equalTo(35)
-        }
-
-        UIView.animate(withDuration: 2.0, delay: 0.1, options: .curveEaseOut, animations: {
-            toastLabel.alpha = 0.0
-        }, completion: { _ in
-            toastLabel.removeFromSuperview()
-        })
-    }
-}
+           let message = isFavorite ? "즐겨찾기에 추가되었습니다" : "즐겨찾기에서 제거되었습니다"
+           view.makeToast(message)
+       }
+   }

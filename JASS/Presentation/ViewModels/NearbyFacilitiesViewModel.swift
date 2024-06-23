@@ -12,6 +12,7 @@ class NearbyFacilitiesViewModel {
     private let placeSearchViewModel = PlaceSearchViewModel()
 
     func fetchNearbyFacilities(at location: CLLocationCoordinate2D, completion: @escaping () -> Void) {
+        print("fetchNearbyFacilities 호출됨: \(location)")
         placeSearchViewModel.searchNearbySportsFacilities(at: location) { [weak self] places in
             self?.places = places.shuffled().prefix(5).map { $0 }
             self?.reloadData?()

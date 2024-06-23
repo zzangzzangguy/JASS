@@ -20,7 +20,9 @@ class FavoritesManager {
     }
     
     func removeFavorite(place: Place) {
-        guard let favorite = realm.objects(FavoritePlace.self).filter("placeID == %@", place.place_id).first else { return }
+        guard let favorite =
+                realm.objects(FavoritePlace.self).filter("placeID == %@", place.place_id).first else
+        { return }
         try! realm.write {
             realm.delete(favorite)
             NotificationCenter.default.post(name: .favoritesDidChange, object: place)
@@ -36,7 +38,7 @@ class FavoritesManager {
     }
     
     func toggleFavorite(place: Place) {
-        if isFavorite(placeID: place.place_id ?? "") {
+        if isFavorite(placeID: place.place_id) {
             removeFavorite(place: place)
         } else {
             addFavorite(place: place)

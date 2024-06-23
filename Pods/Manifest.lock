@@ -1,5 +1,4 @@
 PODS:
-  - Alamofire (5.9.1)
   - Google-Maps-iOS-Utils (4.1.0):
     - Google-Maps-iOS-Utils/Clustering (= 4.1.0)
     - Google-Maps-iOS-Utils/Geometry (= 4.1.0)
@@ -25,54 +24,23 @@ PODS:
   - GoogleMaps/Maps (8.4.0):
     - GoogleMaps/Base
   - GooglePlaces (8.5.0)
-  - Kingfisher (7.11.0)
-  - Moya (15.0.0):
-    - Moya/Core (= 15.0.0)
-  - Moya/Core (15.0.0):
-    - Alamofire (~> 5.0)
-  - Moya/RxSwift (15.0.0):
-    - Moya/Core
-    - RxSwift (~> 6.0)
-  - RxCocoa (6.7.1):
-    - RxRelay (= 6.7.1)
-    - RxSwift (= 6.7.1)
-  - RxRelay (6.7.1):
-    - RxSwift (= 6.7.1)
-  - RxSwift (6.7.1)
 
 DEPENDENCIES:
   - Google-Maps-iOS-Utils
   - GoogleMaps
   - GooglePlaces
-  - Kingfisher
-  - Moya
-  - Moya/RxSwift
-  - RxCocoa
-  - RxSwift
 
 SPEC REPOS:
   trunk:
-    - Alamofire
     - Google-Maps-iOS-Utils
     - GoogleMaps
     - GooglePlaces
-    - Kingfisher
-    - Moya
-    - RxCocoa
-    - RxRelay
-    - RxSwift
 
 SPEC CHECKSUMS:
-  Alamofire: f36a35757af4587d8e4f4bfa223ad10be2422b8c
   Google-Maps-iOS-Utils: 3343332b18dfd5be8f1f44edd7d481ace3da4d9a
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GooglePlaces: 426efb69051e7b460e16300ba63598687d10fa1a
-  Kingfisher: b9c985d864d43515f404f1ef4a8ce7d802ace3ac
-  Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
-  RxCocoa: f5609cb4637587a7faa99c5d5787e3ad582b75a4
-  RxRelay: 4151ba01152436b08271e08410135e099880eae5
-  RxSwift: b9a93a26031785159e11abd40d1a55bcb8057e52
 
-PODFILE CHECKSUM: 218806d1115e120af8ff2abef6b81de8d1ed41d6
+PODFILE CHECKSUM: fa78c23b2d1a70a6a29874680ab4d1d376468290
 
 COCOAPODS: 1.15.2

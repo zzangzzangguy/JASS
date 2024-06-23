@@ -47,6 +47,7 @@ class RecentSearchesViewController: UIViewController {
         tableView.reloadData()
         let recentSearches = searchRecentViewModel.loadRecentSearches()
         if recentSearches.isEmpty {
+
             let noDataLabel = UILabel()
             noDataLabel.text = "최근 검색어가 없습니다."
             noDataLabel.textAlignment = .center
