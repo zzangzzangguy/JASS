@@ -5,7 +5,6 @@ import SnapKit
 class MainViewController: UIViewController {
     let locationManager = CLLocationManager()
     let searchBar = UISearchBar()
-    let currentLocationLabel = UILabel()
     let findOnMapButton = UIButton()
     let headerView = UIView()
     let tableView = UITableView()
@@ -23,6 +22,11 @@ class MainViewController: UIViewController {
         setupFindOnMapButton()
         setupTableView()
         setupRefreshButton()
+
+//        navigationController?.navigationBar.barStyle = .black
+        navigationController?.navigationBar.isTranslucent = false
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
 
         nearbyFacilitiesViewModel.reloadData = { [weak self] in
             self?.tableView.reloadData()
@@ -45,36 +49,35 @@ class MainViewController: UIViewController {
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(60)
         }
-
-        headerView.addSubview(currentLocationLabel)
-        currentLocationLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().offset(16)
-        }
     }
 
     private func setupSearchBar() {
         searchBar.placeholder = "어떤 운동을 찾고 계신가요?"
+        searchBar.searchBarStyle = .minimal
         searchBar.delegate = self
         view.addSubview(searchBar)
         searchBar.snp.makeConstraints { make in
-            make.top.equalTo(headerView.snp.bottom).offset(10)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.leading.trailing.equalToSuperview().inset(16)
         }
     }
 
     private func setupFindOnMapButton() {
         findOnMapButton.setTitle("지도에서 찾기", for: .normal)
-        findOnMapButton.backgroundColor = .systemBlue
-        findOnMapButton.setTitleColor(.white, for: .normal)
+        findOnMapButton.setTitleColor(UIColor.white, for: .normal)
+        findOnMapButton.imageView?.contentMode = .scaleAspectFit
+        findOnMapButton.layer.cornerRadius = 10
+        findOnMapButton.clipsToBounds = true
         findOnMapButton.layer.cornerRadius = 8
+        findOnMapButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+        findOnMapButton.setBackgroundImage(UIImage(named: "sungyeop"), for: .normal)
         findOnMapButton.addTarget(self, action: #selector(findOnMapButtonTapped), for: .touchUpInside)
         view.addSubview(findOnMapButton)
         findOnMapButton.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom).offset(20)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(200)
-            make.height.equalTo(50)
+                  make.centerX.equalToSuperview()
+            make.width.equalTo(150)
+            make.height.equalTo(100)
         }
     }
 
@@ -101,6 +104,7 @@ class MainViewController: UIViewController {
 
     @objc private func refreshNearbyFacilities() {
         guard let location = currentLocation else { return }
+        print("refreshNearbyFacilities 호출됨: \(location)")
         nearbyFacilitiesViewModel.fetchNearbyFacilities(at: location) { [weak self] in
             guard let self = self else { return }
             let group = DispatchGroup()
@@ -162,11 +166,11 @@ extension MainViewController: CLLocationManagerDelegate {
             guard let self = self else { return }
             if let error = error {
                 print("Reverse geocode error: \(error)")
-                self.currentLocationLabel.text = "위치를 가져올 수 없습니다."
+                self.navigationItem.title = "위치를 가져올 수 없습니다."
                 return
             }
             if let placemark = placemarks?.first {
-                self.currentLocationLabel.text = "\(placemark.locality ?? "") \(placemark.subLocality ?? "")"
+                self.navigationItem.title = "\(placemark.locality ?? "") \(placemark.subLocality ?? "")"
             }
         }
         locationManager.stopUpdatingLocation()
@@ -226,3 +230,4 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource, Facili
         return 180
     }
 }
+ 

@@ -50,7 +50,6 @@ class SearchResultCell: UITableViewCell {
         $0.numberOfLines = 0
         $0.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
         $0.numberOfLines = 2
-
     }
 
     private let loadingIndicator = UIActivityIndicatorView(style: .medium)
@@ -123,7 +122,6 @@ class SearchResultCell: UITableViewCell {
         addressLabel.text = place.formatted_address
         reviewsLabel.text = place.reviews?.compactMap { $0.text }.joined(separator: "\n\n") ?? "리뷰 없음"
 
-
         print("셀 구성: 이름: \(place.name), 주소: \(place.formatted_address ?? "주소 정보 없음"), 거리: \(place.distanceText ?? "거리 정보 없음"), 리뷰: \(reviewsLabel.text ?? "리뷰 없음")")
 
         if let currentLocation = currentLocation {
@@ -152,8 +150,9 @@ class SearchResultCell: UITableViewCell {
         }
 
         let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
-        favoriteButton.tintColor = isFavorite ? .red : .gray
+        updateFavoriteButton(isFavorite: isFavorite)
     }
+
     func updateDistanceText(_ distanceText: String?) {
         distanceLabel.text = distanceText ?? "거리 정보 없음"
     }
@@ -165,7 +164,6 @@ class SearchResultCell: UITableViewCell {
             placeImageView.image = UIImage(named: "defaultImage")
             loadingIndicator.stopAnimating()
         }
-
     }
 
     private func loadImageForMetadata(place: Place, photo: Photo) {

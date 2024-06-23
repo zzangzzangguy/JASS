@@ -15,7 +15,9 @@ class PlaceSearchViewModel {
     var autoCompleteResults: [String] = []
     var updateAutoCompleteResults: (() -> Void)?
     var showError: ((String) -> Void)?
-    
+    var cachedPlaces: [String: Place] = [:] // 캐시 추가
+
+
     private let categoriesToTypes: [String: (type: String, keyword: String)] = [
         "헬스": ("gym", "헬스"),
         "필라테스": ("gym", "필라테스"),
@@ -153,7 +155,13 @@ class PlaceSearchViewModel {
     
     func fetchPlaceDetails(placeID: String, completion: @escaping (Place?) -> Void) {
         print("fetchPlaceDetails 호출됨: \(placeID)")
-        
+           // Add a cache check here
+           if let cachedPlace = cachedPlaces[placeID] {
+               print("캐시된 데이터 사용: \(placeID)")
+               completion(cachedPlace)
+               return
+           }
+
         provider.request(.details(placeID: placeID)) { result in
             switch result {
             case .success(let response):
@@ -165,6 +173,8 @@ class PlaceSearchViewModel {
                     }
                     
                     let placeDetailsResponse = try JSONDecoder().decode(PlaceDetailsResponse.self, from: response.data)
+                    self.cachedPlaces[placeID] = placeDetailsResponse.result
+
                     completion(placeDetailsResponse.result)
                 } catch {
                     print("JSON 디코딩 오류: \(error)")

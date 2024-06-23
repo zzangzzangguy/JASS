@@ -49,7 +49,7 @@ class SearchResultsViewModel {
             favoritesManager.addFavorite(place: place)
         }
         
-        updateSearchResults?()
+//        updateSearchResults?()
     }
     
     func loadSearchResults(with places: [Place]) {

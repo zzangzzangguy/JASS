@@ -3,6 +3,11 @@ import SnapKit
 import Then
 import Kingfisher
 import CoreLocation
+import Toast
+
+protocol SearchResultsViewDelegate: AnyObject {
+    func didSelectPlace(_ place: Place)
+}
 
 class SearchResultsViewController: UIViewController {
     var searchQuery: String?
@@ -16,10 +21,7 @@ class SearchResultsViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupBindings()
-//        print("PlaceSearchViewModel 생성")
         placeSearchViewModel = PlaceSearchViewModel()
-        
-
     }
 
     private func setupUI() {
@@ -64,7 +66,6 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
             cell.placeSearchViewModel = placeSearchViewModel
             cell.configure(with: place, currentLocation: currentLocation)
             cell.distanceLabel.text = place.distanceText ?? "거리 정보 없음"
-
             cell.delegate = self
 
             print("Fetching details for place: \(place.place_id)")
@@ -97,7 +98,6 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
 
         return cell
     }
-    
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let place = viewModel?.searchResults[indexPath.row] else { return }
@@ -109,7 +109,7 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
         mapViewModel?.updateSelectedPlaceMarker(for: selectedPlace)
         delegate?.didSelectPlace(place)
     }
-    
+
     func reloadCellForPlace(_ place: Place) {
         guard let indexPath = viewModel?.searchResults.firstIndex(where: { $0.place_id == place.place_id }) else {
             return
@@ -127,9 +127,7 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
     }
 }
 
-
 extension SearchResultsViewController: SearchResultCellDelegate {
-
     func didUpdateDistance(for cell: SearchResultCell, distanceText: String?) {
         guard let indexPath = tableView.indexPath(for: cell),
               var place = viewModel?.searchResults[indexPath.row] else {
@@ -146,21 +144,17 @@ extension SearchResultsViewController: SearchResultCellDelegate {
             return
         }
 
+        let placeID = place.place_id ?? ""
+        let wasFavorite = FavoritesManager.shared.isFavorite(placeID: placeID)
+
         viewModel?.updateFavoriteStatus(for: place)
 
-        cell.updateFavoriteButton(isFavorite: !FavoritesManager.shared.isFavorite(placeID: place.place_id ?? ""))
-        delegate?.showToastForFavorite(place: place, isAdded: !FavoritesManager.shared.isFavorite(placeID: place.place_id ?? ""))
+//        FavoritesManager.shared.toggleFavorite(place: place)
+
+        let isFavoriteNow = !wasFavorite
+        cell.updateFavoriteButton(isFavorite: isFavoriteNow)
+
+        let message = isFavoriteNow ? "즐겨찾기에 추가되었습니다." : "즐겨찾기에서 제거되었습니다."
+        view.makeToast(message)
     }
-}
-
-protocol SearchResultsViewDelegate: AnyObject {
-    func didSelectPlace(_ place: Place)
-    func showToastForFavorite(place: Place, isAdded: Bool)
-}
-
-extension SearchResultsViewController {
-    func indexPath(for cell: UITableViewCell) -> IndexPath? {
-        return tableView.indexPath(for: cell)
-    }
-
 }
