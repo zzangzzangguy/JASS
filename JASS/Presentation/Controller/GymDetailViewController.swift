@@ -12,7 +12,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     var images: [UIImage] = []
 
     init(place: Place) {
-        gym = place
+        self.gym = place
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -81,7 +81,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         scrollView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(300) // 고정 높이로 설정하여 이미지가 없을 때 레이아웃 튀는 현상 방지
+            $0.height.equalTo(300)
         }
     }
 
@@ -281,7 +281,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     }
 
     private func showToastForFavorite(isFavorite: Bool) {
-           let message = isFavorite ? "즐겨찾기에 추가되었습니다" : "즐겨찾기에서 제거되었습니다"
-           view.makeToast(message)
-       }
-   }
+        let message = isFavorite ? "즐겨찾기에 추가되었습니다" : "즐겨찾기에서 제거되었습니다"
+        view.makeToast(message)
+    }
+}

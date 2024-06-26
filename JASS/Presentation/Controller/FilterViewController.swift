@@ -3,7 +3,7 @@ import SnapKit
 import Then
 
 protocol FilterViewDelegate: AnyObject {
-    func filterView(_ filterView: FilterViewController, didSelectCategories categories: [String])
+    func filterView(_ filterView: FilterViewController, didSelectCategories categories: Set<String>)
     func filterViewDidCancel(_ filterView: FilterViewController)
 }
 
@@ -63,7 +63,7 @@ class FilterCollectionViewCell: UICollectionViewCell {
 
 class FilterViewController: UIViewController {
     private var categories = ["헬스", "필라테스", "복싱", "크로스핏", "골프", "수영", "클라이밍"]
-    private var selectedCategories: Set<String> = []
+    var selectedCategories: Set<String> = []  // Array<String>에서 Set<String>으로 변경
 
     weak var delegate: FilterViewDelegate?
 
@@ -130,10 +130,9 @@ class FilterViewController: UIViewController {
 
     @objc private func applyButtonTapped() {
         let selectedCategoriesArray = Array(selectedCategories)
-        delegate?.filterView(self, didSelectCategories: selectedCategoriesArray)
-        dismiss(animated: true, completion: nil)
-
-    }
+        delegate?.filterView(self, didSelectCategories: selectedCategories)
+         dismiss(animated: true, completion: nil)
+     }
 
     @objc private func cancelButtonTapped() {
         delegate?.filterViewDidCancel(self)

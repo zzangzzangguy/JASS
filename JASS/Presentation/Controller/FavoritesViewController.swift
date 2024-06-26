@@ -23,7 +23,7 @@ class FavoritesViewController: UIViewController {
         tableView.dataSource = self
 //        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         view.addSubview(tableView)
-        tableView.estimatedRowHeight = 120 
+        tableView.estimatedRowHeight = 120
         tableView.rowHeight = UITableView.automaticDimension
         tableView.snp.makeConstraints {
             $0.edges.equalToSuperview()

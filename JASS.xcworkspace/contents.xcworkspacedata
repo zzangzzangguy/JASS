@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/ganghoseong/JASS/Extension+/FavoritePlace.swift">
-   </FileRef>
-   <FileRef
       location = "group:JASS.xcodeproj">
    </FileRef>
    <FileRef
