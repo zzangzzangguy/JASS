@@ -43,22 +43,22 @@ class RecentSearchesViewController: UIViewController {
         return headerView
     }
 
-    func updateSearchHistoryViews() {
-        tableView.reloadData()
-        let recentSearches = searchRecentViewModel.loadRecentSearches()
-        if recentSearches.isEmpty {
-
-            let noDataLabel = UILabel()
-            noDataLabel.text = "최근 검색어가 없습니다."
-            noDataLabel.textAlignment = .center
-            noDataLabel.textColor = .gray
-            tableView.backgroundView = noDataLabel
-            tableView.allowsSelection = false
-        } else {
-            tableView.backgroundView = nil
-            tableView.allowsSelection = true
-        }
-    }
+//    func updateSearchHistoryViews() {
+//        tableView.reloadData()
+//        let recentSearches = searchRecentViewModel.loadRecentSearches()
+//        if recentSearches.isEmpty {
+//
+//            let noDataLabel = UILabel()
+//            noDataLabel.text = "최근 검색어가 없습니다."
+//            noDataLabel.textAlignment = .center
+//            noDataLabel.textColor = .gray
+//            tableView.backgroundView = noDataLabel
+//            tableView.allowsSelection = false
+//        } else {
+//            tableView.backgroundView = nil
+//            tableView.allowsSelection = true
+//        }
+//    }
 
     private func findViewController() -> UIViewController? {
         var nextResponder: UIResponder? = self
@@ -87,7 +87,7 @@ extension RecentSearchesViewController: UITableViewDelegate, UITableViewDataSour
             guard let self = self else { return }
             let query = recentSearches[indexPath.row]
             self.searchRecentViewModel.deleteSearchHistory(query: query)
-            self.updateSearchHistoryViews()
+//            self.updateSearchHistoryViews()
         }
         return cell
     }

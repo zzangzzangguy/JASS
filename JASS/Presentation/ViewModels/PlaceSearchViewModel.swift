@@ -71,20 +71,27 @@ class PlaceSearchViewModel {
     }
     
     func searchPlace(input: String, category: String, completion: @escaping ([Place]) -> Void) {
-        guard let typeAndKeyword = categoriesToTypes[category], !input.isEmpty else {
+        guard !input.isEmpty else {
             completion([])
             return
         }
-        
-        let type = typeAndKeyword.type
-        
-        print("searchPlace 검색: \(input), 카테고리: \(category), 타입: \(type)")
-        
-        provider.request(.textSearch(parameters: ["query": input, "type": type])) { result in
+
+        var parameters: [String: Any] = ["query": input]
+
+        if category != "all" {
+            let typeAndKeyword = categoriesToTypes[category]
+            parameters["type"] = typeAndKeyword?.type ?? "gym"
+            parameters["query"] = "\(input) \(typeAndKeyword?.keyword ?? "")"
+        }
+
+        print("searchPlace 검색: \(input), 카테고리: \(category), 파라미터: \(parameters)")
+
+        provider.request(.textSearch(parameters: parameters)) { result in
             switch result {
             case .success(let response):
                 do {
                     let searchResults = try JSONDecoder().decode(SearchResults.self, from: response.data)
+                    print("검색 결과 수: \(searchResults.results.count)")
                     completion(searchResults.results)
                 } catch {
                     print("JSON 디코딩 오류: \(error)")
@@ -96,7 +103,8 @@ class PlaceSearchViewModel {
             }
         }
     }
-    
+
+
     func fetchPlacePhoto(reference: String, maxWidth: Int, completion: @escaping (UIImage?) -> Void) {
         provider.request(.photo(reference: reference, maxWidth: maxWidth)) { result in
             switch result {
@@ -155,7 +163,6 @@ class PlaceSearchViewModel {
     
     func fetchPlaceDetails(placeID: String, completion: @escaping (Place?) -> Void) {
         print("fetchPlaceDetails 호출됨: \(placeID)")
-           // Add a cache check here
            if let cachedPlace = cachedPlaces[placeID] {
                print("캐시된 데이터 사용: \(placeID)")
                completion(cachedPlace)
@@ -227,6 +234,7 @@ class PlaceSearchViewModel {
             }
         }
     }
+
     
     func searchNearbySportsFacilities(at location: CLLocationCoordinate2D, completion: @escaping ([Place]) -> Void) {
         let radius = 5000 // 5km 반경 내에서 검색

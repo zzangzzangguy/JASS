@@ -4,13 +4,22 @@ import SnapKit
 class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource {
 
     let searchBar = UISearchBar().then {
-        $0.placeholder = "어떤 운동을 찾고 계신가요?"
+        $0.placeholder = "지역, 또는 찾고계신 운동을 입력해주세요"
         $0.searchBarStyle = .minimal
         $0.layer.borderWidth = 1
         $0.layer.borderColor = UIColor.lightGray.cgColor
         $0.layer.cornerRadius = 10
         $0.clipsToBounds = true
     }
+
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "어떤 운동을 찾고 계신가요?"
+        label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        label.textAlignment = .center
+        return label
+    }()
+
     let recommendedKeywords = ["헬스", "요가", "크로스핏", "복싱", "필라테스", "G.X", "주짓수", "골프", "수영"]
     var recentSearches: [String] = []
     var tableView: UITableView!
@@ -43,7 +52,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         loadRecentSearches()
         setupKeywordButtons()
         print("SearchResultsViewController가 로드됨")
-
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
@@ -80,7 +88,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(segmentedControl.snp.bottom).offset(10)
+            make.top.equalTo(searchBar.snp.bottom).offset(10)
             make.leading.trailing.bottom.equalToSuperview()
         }
 
@@ -91,29 +99,60 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     }
 
     private func setupKeywordButtons() {
-        let buttonWidth: CGFloat = (view.frame.width - 60) / 3
-        let buttonHeight: CGFloat = 40
+        let scrollView = UIScrollView()
+        scrollView.showsHorizontalScrollIndicator = false
+        view.addSubview(scrollView)
+
+        let containerView = UIView()
+        scrollView.addSubview(containerView)
+
+        var xOffset: CGFloat = 0
+        var yOffset: CGFloat = 0
+        let buttonHeight: CGFloat = 32
         let verticalSpacing: CGFloat = 10
+        let horizontalSpacing: CGFloat = 8
+        let maxWidth = view.frame.width - 40
 
         for (index, keyword) in recommendedKeywords.enumerated() {
             let button = UIButton(type: .system)
             button.setTitle(keyword, for: .normal)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
             button.backgroundColor = .systemGray6
-            button.layer.cornerRadius = 20
-            button.addTarget(self, action: #selector(keywordButtonTapped(_:)), for: .touchUpInside)
+            button.setTitleColor(.black, for: .normal)
+            button.layer.cornerRadius = buttonHeight / 2
+            button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+            button.sizeToFit()
+            var buttonWidth = button.frame.width
 
-            view.addSubview(button)
+            buttonWidth = max(buttonWidth, 50)
+
+            if xOffset + buttonWidth + horizontalSpacing > maxWidth {
+                xOffset = 0
+                yOffset += buttonHeight + verticalSpacing
+            }
+
+            button.frame = CGRect(x: xOffset, y: yOffset, width: buttonWidth, height: buttonHeight)
+            containerView.addSubview(button)
             keywordButtons.append(button)
 
-            let row = index / 3
-            let column = index % 3
+            xOffset += buttonWidth + horizontalSpacing
+        }
 
-            button.snp.makeConstraints { make in
-                make.width.equalTo(buttonWidth)
-                make.height.equalTo(buttonHeight)
-                make.left.equalTo(view).offset(20 + CGFloat(column) * (buttonWidth + 10))
-                make.top.equalTo(segmentedControl.snp.bottom).offset(20 + CGFloat(row) * (buttonHeight + verticalSpacing))
-            }
+        containerView.snp.makeConstraints { make in
+            make.edges.equalTo(scrollView.contentLayoutGuide)
+            make.width.equalTo(scrollView)
+            make.height.equalTo(yOffset + buttonHeight)
+        }
+
+        scrollView.snp.makeConstraints { make in
+            make.top.equalTo(segmentedControl.snp.bottom).offset(20)
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.height.equalTo(containerView.snp.height)
+        }
+
+        tableView.snp.remakeConstraints { make in
+            make.top.equalTo(scrollView.snp.bottom).offset(20)
+            make.leading.trailing.bottom.equalToSuperview()
         }
     }
 
@@ -122,20 +161,10 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     }
 
     @objc private func segmentChanged() {
-        tableView.reloadData()
-        keywordButtons.forEach { $0.isHidden = segmentedControl.selectedSegmentIndex != 0 }
-
-        if segmentedControl.selectedSegmentIndex == 0 {
-            tableView.snp.updateConstraints { make in
-                make.top.equalTo(segmentedControl.snp.bottom).offset(140)
-            }
-        } else {
-            tableView.snp.updateConstraints { make in
-                make.top.equalTo(segmentedControl.snp.bottom).offset(10)
-            }
-        }
-        view.layoutIfNeeded()
+        updateUIForCurrentState()
     }
+
+
 
     @objc private func dismissKeyboard() {
         searchBar.resignFirstResponder()
@@ -147,8 +176,42 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         performSearch(query: keyword)
     }
 
+
+
     private func loadRecentSearches() {
         recentSearches = searchRecentViewModel.loadRecentSearches()
+        tableView.reloadData()
+    }
+    private func updateUIForCurrentState() {
+        let isRecommendedKeywordsSegment = segmentedControl.selectedSegmentIndex == 0
+        let isSearching = !(searchBar.text?.isEmpty ?? true)
+
+        tableView.reloadData()
+
+        if isSearching {
+            segmentedControl.isHidden = true
+            keywordButtons.forEach { $0.isHidden = true }
+            tableView.snp.remakeConstraints { make in
+                make.top.equalTo(searchBar.snp.bottom).offset(10)
+                make.leading.trailing.bottom.equalToSuperview()
+            }
+        } else {
+            segmentedControl.isHidden = false
+            keywordButtons.forEach { $0.isHidden = !isRecommendedKeywordsSegment }
+            if isRecommendedKeywordsSegment {
+                tableView.snp.remakeConstraints { make in
+                    make.top.equalTo(segmentedControl.snp.bottom).offset(20)
+                    make.leading.trailing.bottom.equalToSuperview()
+                }
+            } else {
+                tableView.snp.remakeConstraints { make in
+                    make.top.equalTo(segmentedControl.snp.bottom).offset(10)
+                    make.leading.trailing.bottom.equalToSuperview()
+                }
+            }
+        }
+
+        view.layoutIfNeeded()
     }
 
     private func performSearch(query: String) {
@@ -157,6 +220,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
 
         placeSearchViewModel.searchPlace(input: query, category: "all") { [weak self] places in
             guard let self = self else { return }
+            print("API returned \(places.count) places")
 
             DispatchQueue.main.async {
                 let searchResultsVC = SearchResultsViewController()
@@ -171,10 +235,15 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         }
     }
 
-
     // MARK: - UITableViewDataSource & UITableViewDelegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return segmentedControl.selectedSegmentIndex == 0 ? 0 : recentSearches.count
+        if searchBar.text?.isEmpty == false {
+            return autoCompleteSuggestions.count
+        } else if segmentedControl.selectedSegmentIndex == 0 {
+            return 0
+        } else {
+            return recentSearches.count
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -183,14 +252,8 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
             if indexPath.row < autoCompleteSuggestions.count {
                 cell.textLabel?.text = autoCompleteSuggestions[indexPath.row]
             }
-        } else if segmentedControl.selectedSegmentIndex == 0 {
-            if indexPath.row < recommendedKeywords.count {
-                cell.textLabel?.text = recommendedKeywords[indexPath.row]
-            }
         } else {
-            if indexPath.row < recentSearches.count {
-                cell.textLabel?.text = recentSearches[indexPath.row]
-            }
+            cell.textLabel?.text = recentSearches[indexPath.row]
         }
         return cell
     }
@@ -216,6 +279,8 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
                 return
             }
         }
+        searchBar.text = keyword
+        performSearch(query: keyword)
     }
 
     @objc func deleteRecentSearch(_ sender: UIButton) {
@@ -227,24 +292,48 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
 
     // MARK: - UISearchBarDelegate
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let query = searchBar.text, !query.isEmpty else { return }
-        performSearch(query: query)
+        guard let query = searchBar.text, !query.isEmpty else {
+            print("검색어를 입력하세요.")
+            return
+        }
+
+        LoadingIndicatorManager.shared.show(in: self.view)
+
+        placeSearchViewModel.searchPlace(input: query, category: "all") { [weak self] places in
+            guard let self = self else { return }
+            print("받은 장소 수: \(places.count)")
+
+            DispatchQueue.main.async {
+                LoadingIndicatorManager.shared.hide()
+
+                if places.isEmpty {
+                    self.noResultsLabel.isHidden = false
+                    self.noResultsLabel.text = "검색 결과가 없습니다."
+                } else {
+                    self.noResultsLabel.isHidden = true
+                    let searchResultsVC = SearchResultsViewController()
+                    searchResultsVC.searchQuery = query
+                    searchResultsVC.placeSearchViewModel = self.placeSearchViewModel
+                    searchResultsVC.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: searchResultsVC)
+                    searchResultsVC.viewModel?.loadSearchResults(with: places)
+                    searchResultsVC.modalPresentationStyle = .fullScreen
+                    self.present(searchResultsVC, animated: true, completion: nil)
+                    print("검색 결과 표시")
+                }
+            }
+        }
     }
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.isEmpty {
             autoCompleteSuggestions = []
-        print("자동완성:\(autoCompleteSuggestions)")
-            tableView.reloadData()
-            noResultsLabel.isHidden = true
-            segmentedControl.isHidden = false
-            keywordButtons.forEach { $0.isHidden = false }
+            updateUIForCurrentState()
         } else {
-            segmentedControl.isHidden = true
-            keywordButtons.forEach { $0.isHidden = true }
-            placeSearchViewModel.searchAutoComplete(for: searchText) { suggestions in
-                self.autoCompleteSuggestions = suggestions
-                self.tableView.reloadData()
+            placeSearchViewModel.searchAutoComplete(for: searchText) { [weak self] suggestions in
+                self?.autoCompleteSuggestions = suggestions
+                DispatchQueue.main.async {
+                    self?.updateUIForCurrentState()
+                }
             }
         }
     }

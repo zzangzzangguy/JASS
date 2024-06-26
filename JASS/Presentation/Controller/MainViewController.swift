@@ -129,25 +129,39 @@ class MainViewController: UIViewController {
 
     private func fetchNearbyFacilities() {
         guard let location = currentLocation else { return }
+        print("fetchNearbyFacilities 호출됨: \(location)")
+
         nearbyFacilitiesViewModel.fetchNearbyFacilities(at: location) { [weak self] in
             guard let self = self else { return }
-            let group = DispatchGroup()
 
-            self.nearbyFacilitiesViewModel.places.forEach { place in
-                group.enter()
-                self.placeSearchViewModel.fetchPlaceDetails(placeID: place.place_id) { detailedPlace in
-                    if let detailedPlace = detailedPlace {
-                        if let index = self.nearbyFacilitiesViewModel.places.firstIndex(where: { $0.place_id == place.place_id }) {
-                            self.nearbyFacilitiesViewModel.places[index] = detailedPlace
-                        }
-                    }
-                    group.leave()
-                }
-            }
-
-            group.notify(queue: .main) {
+            DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
+
+            self.loadDetailedPlaceInformation()
+        }
+    }
+
+    private func loadDetailedPlaceInformation() {
+        let group = DispatchGroup()
+
+        for (index, place) in nearbyFacilitiesViewModel.places.enumerated() {
+            group.enter()
+            placeSearchViewModel.fetchPlaceDetails(placeID: place.place_id) { [weak self] detailedPlace in
+                defer { group.leave() }
+                guard let self = self, let detailedPlace = detailedPlace else { return }
+
+                DispatchQueue.main.async {
+                    self.nearbyFacilitiesViewModel.places[index] = detailedPlace
+                    if let visibleRows = self.tableView.indexPathsForVisibleRows, visibleRows.contains(IndexPath(row: index, section: 0)) {
+                        self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    }
+                }
+            }
+        }
+
+        group.notify(queue: .main) {
+            print("모든 상세 정보 로딩 완료")
         }
     }
 
