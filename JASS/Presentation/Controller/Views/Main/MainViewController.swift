@@ -200,11 +200,15 @@ extension MainViewController: CLLocationManagerDelegate {
 extension MainViewController: UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         let searchVC = SearchViewController()
-        searchVC.modalPresentationStyle = .overFullScreen
-        self.present(searchVC, animated: true) {
+        searchVC.currentLocation = self.currentLocation  // 현재 위치 전달
+
+        let navController = UINavigationController(rootViewController: searchVC)
+        navController.modalPresentationStyle = .overFullScreen
+        self.present(navController, animated: true) {
             searchVC.searchBar.becomeFirstResponder()
         }
     }
+
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource, FacilityCollectionViewCellDelegate
@@ -227,7 +231,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource, Facili
     }
 
     func didTapFacilityCell(_ cell: FacilityCollectionViewCell, place: Place) {
-        let gymDetailVC = GymDetailViewController(place: place)
+        let gymDetailViewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel)
+        let gymDetailVC = GymDetailViewController(viewModel: gymDetailViewModel)
         navigationController?.pushViewController(gymDetailVC, animated: true)
     }
 

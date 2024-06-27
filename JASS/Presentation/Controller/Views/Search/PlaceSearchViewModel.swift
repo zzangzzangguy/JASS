@@ -8,6 +8,7 @@ struct SearchResults: Codable {
 }
 
 class PlaceSearchViewModel {
+    private var distanceCache: [String: String] = [:]
     let provider = MoyaProvider<GooglePlacesAPI>()
     var searchResults: [Place] = []
     var isSearching: Bool = false
@@ -125,10 +126,17 @@ class PlaceSearchViewModel {
 
 
     func calculateDistances(from origin: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D, completion: @escaping (String?) -> Void) {
+        let cacheKey = "\(origin.latitude),\(origin.longitude)-\(destination.latitude),\(destination.longitude)"
+
+        if let cachedDistance = distanceCache[cacheKey] {
+            completion(cachedDistance)
+            return
+        }
+
         let originString = "\(origin.latitude),\(origin.longitude)"
         let destinationString = "\(destination.latitude),\(destination.longitude)"
         print("Request Origin: \(originString), Destination: \(destinationString)")
-        
+
         provider.request(.distanceMatrix(origins: originString, destinations: destinationString, mode: "transit", key: Bundle.apiKey)) { result in
             switch result {
             case .success(let response):
@@ -139,12 +147,13 @@ class PlaceSearchViewModel {
                        let jsonString = String(data: jsonData, encoding: .utf8) {
                         print("Distance Matrix API Response JSON: \(jsonString)")
                     }
-                    
+
                     let distanceMatrix = try JSONDecoder().decode(DistanceMatrixResponse.self, from: response.data)
                     if let element = distanceMatrix.rows.first?.elements.first,
                        let distance = element.distance {
                         let distanceText = distance.text
                         print("거리 계산: \(distanceText)")
+                        self.distanceCache[cacheKey] = distanceText
                         completion(distanceText)
                     } else {
                         print("Distance calculation returned nil element")
@@ -160,7 +169,7 @@ class PlaceSearchViewModel {
             }
         }
     }
-    
+
     func fetchPlaceDetails(placeID: String, completion: @escaping (Place?) -> Void) {
         print("fetchPlaceDetails 호출됨: \(placeID)")
            if let cachedPlace = cachedPlaces[placeID] {

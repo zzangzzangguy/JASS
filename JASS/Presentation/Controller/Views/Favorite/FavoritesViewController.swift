@@ -10,6 +10,7 @@ class FavoritesViewController: UIViewController {
         super.viewDidLoad()
         setupTableView()
         setupFavoritesManager()
+        setupNavigationBar()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -18,10 +19,9 @@ class FavoritesViewController: UIViewController {
     }
 
     private func setupTableView() {
-        tableView = UITableView()/*(frame: .zero, style: .plain)*/
+        tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
-//        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         view.addSubview(tableView)
         tableView.estimatedRowHeight = 120
         tableView.rowHeight = UITableView.automaticDimension
@@ -29,12 +29,14 @@ class FavoritesViewController: UIViewController {
             $0.edges.equalToSuperview()
         }
         tableView.register(FavoritePlaceCell.self, forCellReuseIdentifier: "FavoritePlaceCell")
-
-
     }
 
     private func setupFavoritesManager() {
         favoritesManager = FavoritesManager.shared
+    }
+
+    private func setupNavigationBar() {
+        navigationItem.title = "즐겨찾기"
     }
 }
 
@@ -55,7 +57,8 @@ extension FavoritesViewController: UITableViewDataSource {
 extension FavoritesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let place = favoritesManager.getFavorites()[indexPath.row]
-        let gymDetailVC = GymDetailViewController(place: place)
+        let viewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: PlaceSearchViewModel())
+        let gymDetailVC = GymDetailViewController(viewModel: viewModel)
         navigationController?.pushViewController(gymDetailVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }

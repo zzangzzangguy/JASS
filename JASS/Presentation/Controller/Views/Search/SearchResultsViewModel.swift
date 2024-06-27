@@ -41,23 +41,26 @@ class SearchResultsViewModel {
     }
 
     func updateFavoriteStatus(for place: Place) {
-        let isFavorite = favoritesManager.isFavorite(placeID: place.place_id ?? "")
+        let wasFavorite = favoritesManager.isFavorite(placeID: place.place_id ?? "")
 
-        if isFavorite {
+        if wasFavorite {
             favoritesManager.removeFavorite(place: place)
         } else {
             favoritesManager.addFavorite(place: place)
         }
 
-        let message = isFavorite ? "즐겨찾기에서 제거되었습니다." : "즐겨찾기에 추가되었습니다."
+        let message = wasFavorite ? "즐겨찾기에서 제거되었습니다." : "즐겨찾기에 추가되었습니다."
         viewController?.view.makeToast(message)
     }
+
+
 
     func updatePlace(_ updatedPlace: Place) {
         if let index = searchResults.firstIndex(where: { $0.place_id == updatedPlace.place_id }) {
             searchResults[index] = updatedPlace
             updateSearchResults?()
         }
+        
     }
 
 
