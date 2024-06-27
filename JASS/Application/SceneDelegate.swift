@@ -16,40 +16,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
-
-        let tabBarController = UITabBarController()
-
-        let mainViewController = MainViewController()
-        mainViewController.tabBarItem = UITabBarItem(
-            title: "홈",
-            image: UIImage(systemName: "house"),
-            selectedImage: UIImage(systemName: "house.fill")
-        )
-
-//        let mapViewController = MapViewController()
-//        mapViewController.tabBarItem = UITabBarItem(
-//            title: "매장 지도",
-//            image: UIImage(systemName: "map"),
-//            selectedImage: UIImage(systemName: "map.fill")
-//        )
-
-        let favoritesViewController = FavoritesViewController()
-        favoritesViewController.tabBarItem = UITabBarItem(
-            title: "즐겨찾기",
-            image: UIImage(systemName: "heart"),
-            selectedImage: UIImage(systemName: "heart.fill")
-        )
-
-        UITabBar.appearance().backgroundColor = UIColor.systemBackground
-
-        tabBarController.viewControllers = [UINavigationController(rootViewController: mainViewController),
-//                                                 UINavigationController(rootViewController: mapViewController),
-                                                 UINavigationController(rootViewController: favoritesViewController)]
-
-        window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = tabBarController
-        window?.makeKeyAndVisible()
+        let window = UIWindow(windowScene: windowScene)
+        let appCoordinator = AppCoordinator(window: window)
+        appCoordinator.start()
     }
+
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.

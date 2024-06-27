@@ -499,7 +499,7 @@ extension MapViewController: GMSMapViewDelegate {
         }
 
         print("마커 클릭됨: \(place.name)")
-        let gymDetailVC = GymDetailViewController(place: place)
+        let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel))
                gymDetailVC.modalPresentationStyle = .fullScreen
                present(gymDetailVC, animated: true, completion: nil)
         return true
@@ -560,7 +560,7 @@ extension MapViewController: ClusterManagerDelegate {
     }
 
     func clusterManager(_ clusterManager: ClusterManager, didSelectPlace place: Place) {
-        let gymDetailVC = GymDetailViewController(place: place)
+        let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel))
         navigationController?.pushViewController(gymDetailVC, animated: true)
     }
 }

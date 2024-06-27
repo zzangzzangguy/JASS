@@ -122,16 +122,22 @@ class SearchResultCell: UITableViewCell {
         addressLabel.text = place.formatted_address
         reviewsLabel.text = place.reviews?.compactMap { $0.text }.joined(separator: "\n\n") ?? "리뷰 없음"
 
-        print("셀 구성: 이름: \(place.name), 주소: \(place.formatted_address ?? "주소 정보 없음"), 거리: \(place.distanceText ?? "거리 정보 없음"), 리뷰: \(reviewsLabel.text ?? "리뷰 없음")")
+//        print("셀 구성: 이름: \(place.name), 주소: \(place.formatted_address ?? "주소 정보 없음"), 거리: \(place.distanceText ?? "거리 정보 없음")//, 리뷰: \(reviewsLabel.text ?? "리뷰 없음")")
 
-        if let currentLocation = currentLocation {
-            placeSearchViewModel?.calculateDistances(from: currentLocation, to: place.coordinate) { [weak self] distanceText in
-                guard let self = self else { return }
-                DispatchQueue.main.async {
-                    self.placeSearchViewModel?.updateDistanceText(for: place.place_id, distanceText: distanceText)
-                    self.place?.distanceText = distanceText
+        if let distanceText = place.distanceText {
+                updateDistanceText(distanceText)
+            } else if let currentLocation = currentLocation {
+                distanceLabel.text = "거리 계산 중..."
+                placeSearchViewModel?.calculateDistances(from: currentLocation, to: place.coordinate) { [weak self] distanceText in
+                    guard let self = self else { return }
+                    DispatchQueue.main.async {
+                        self.updateDistanceText(distanceText)
+                        self.delegate?.didUpdateDistance(for: self, distanceText: distanceText)
+                    }
                 }
-            }
+            } else {
+                distanceLabel.text = "위치 정보 없음"
+
             if place.reviews == nil {
                 placeSearchViewModel?.fetchPlaceDetails(placeID: place.place_id) { [weak self] detailedPlace in
                     guard let self = self else { return }
@@ -155,6 +161,8 @@ class SearchResultCell: UITableViewCell {
 
     func updateDistanceText(_ distanceText: String?) {
         distanceLabel.text = distanceText ?? "거리 정보 없음"
+        self.place?.distanceText = distanceText
+
     }
 
     private func loadFirstPhotoForPlace(_ place: Place, photoMetadatas: [Photo]) {

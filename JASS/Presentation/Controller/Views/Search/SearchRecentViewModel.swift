@@ -16,7 +16,7 @@ class SearchRecentViewModel {
         } catch {
             print("Realm 초기화 실패: \(error)")
             handleError?(error)
-            
+
             fatalError("Realm 초기화 실패")
         }
     }

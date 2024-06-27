@@ -13,9 +13,9 @@ class FavoritePlaceCell: UITableViewCell {
     private var photoMetadata: GMSPlacePhotoMetadata?
 
     private let placeImageView = UIImageView()
-    let nameLabel = UILabel()
-    let addressLabel = UILabel()
-    let favoriteButton = UIButton(type: .system)
+    private let nameLabel = UILabel()
+    private let addressLabel = UILabel()
+    private let favoriteButton = UIButton(type: .system)
     private let loadingIndicator = UIActivityIndicatorView(style: .medium)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -51,13 +51,14 @@ class FavoritePlaceCell: UITableViewCell {
 
         placeImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(80)
+            make.top.equalToSuperview().inset(16)
+            make.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(placeImageView.snp.width).multipliedBy(0.75) // 종횡비를 조정
         }
 
         nameLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(16)
-            make.leading.equalTo(placeImageView.snp.trailing).offset(10)
+            make.top.equalTo(placeImageView.snp.bottom).offset(10)
+            make.leading.equalTo(placeImageView.snp.leading)
             make.trailing.equalTo(favoriteButton.snp.leading).offset(-10)
         }
 
@@ -66,11 +67,10 @@ class FavoritePlaceCell: UITableViewCell {
             make.leading.equalTo(nameLabel.snp.leading)
             make.trailing.equalTo(nameLabel.snp.trailing)
             make.bottom.equalToSuperview().inset(16)
-            
         }
 
         favoriteButton.snp.makeConstraints { make in
-            make.centerY.equalTo(placeImageView.snp.centerY)
+            make.centerY.equalTo(nameLabel.snp.centerY)
             make.trailing.equalToSuperview().inset(20)
             make.width.height.equalTo(24)
         }

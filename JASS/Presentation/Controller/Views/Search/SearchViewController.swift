@@ -1,8 +1,11 @@
 import UIKit
 import SnapKit
+import GooglePlaces
+import CoreLocation
 
 class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource {
 
+    var currentLocation: CLLocationCoordinate2D?
     let searchBar = UISearchBar().then {
         $0.placeholder = "지역, 또는 찾고계신 운동을 입력해주세요"
         $0.searchBarStyle = .minimal
@@ -215,22 +218,25 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     }
 
     private func performSearch(query: String) {
-        print("검색 실행: \(query)")
+        print("SearchViewController - 현재 위치: \(String(describing: self.currentLocation))")  // 디버그 출력
+//        print("검색 실행: \(query)")
         searchRecentViewModel.saveSearchHistory(query: query)
-
         placeSearchViewModel.searchPlace(input: query, category: "all") { [weak self] places in
             guard let self = self else { return }
             print("API returned \(places.count) places")
-
             DispatchQueue.main.async {
                 let searchResultsVC = SearchResultsViewController()
                 searchResultsVC.searchQuery = query
                 searchResultsVC.placeSearchViewModel = self.placeSearchViewModel
                 searchResultsVC.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: searchResultsVC)
                 searchResultsVC.viewModel?.loadSearchResults(with: places)
+                searchResultsVC.currentLocation = self.currentLocation
+                let navController = UINavigationController(rootViewController: searchResultsVC)
+                self.navigationController?.pushViewController(searchResultsVC, animated: true)
+                self.navigationController?.setNavigationBarHidden(true, animated: false)
 
-                searchResultsVC.modalPresentationStyle = .fullScreen
-                self.present(searchResultsVC, animated: true, completion: nil)
+//                searchResultsVC.modalPresentationStyle = .fullScreen
+//                self.present(searchResultsVC, animated: true, completion: nil)
             }
         }
     }
@@ -298,7 +304,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         }
 
         LoadingIndicatorManager.shared.show(in: self.view)
-
         placeSearchViewModel.searchPlace(input: query, category: "all") { [weak self] places in
             guard let self = self else { return }
             print("받은 장소 수: \(places.count)")
@@ -314,10 +319,11 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
                     let searchResultsVC = SearchResultsViewController()
                     searchResultsVC.searchQuery = query
                     searchResultsVC.placeSearchViewModel = self.placeSearchViewModel
+                    searchResultsVC.currentLocation = self.currentLocation  
+
                     searchResultsVC.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: searchResultsVC)
                     searchResultsVC.viewModel?.loadSearchResults(with: places)
-                    searchResultsVC.modalPresentationStyle = .fullScreen
-                    self.present(searchResultsVC, animated: true, completion: nil)
+                    self.navigationController?.pushViewController(searchResultsVC, animated: true)
                     print("검색 결과 표시")
                 }
             }

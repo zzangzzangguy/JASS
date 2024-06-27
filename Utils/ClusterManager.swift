@@ -134,17 +134,19 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
     func clusterManager(_ clusterManager: GMUClusterManager, didTap clusterItem: GMUClusterItem) -> Bool {
         if let item = clusterItem as? CustomClusterItem {
             DispatchQueue.main.async { [weak self] in
-                guard let self = self, let navigationController = self.navigationController else {
+                guard let self = self,
+                      let navigationController = self.navigationController else {
                     print("NavigationController를 찾을 수 없습니다.")
                     return
                 }
-                let detailVC = GymDetailViewController(place: item.place)
-                navigationController.pushViewController(detailVC, animated: true)
+                let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: item.place.place_id, placeSearchViewModel: self.delegate as! PlaceSearchViewModel))
+                navigationController.pushViewController(gymDetailVC, animated: true)
             }
             return true
         }
         return false
     }
+
 
     func clusterManager(_ clusterManager: GMUClusterManager, didTap cluster: GMUCluster) -> Bool {
         let newCamera = GMSCameraPosition.camera(withTarget: cluster.position, zoom: mapView.camera.zoom + 1)

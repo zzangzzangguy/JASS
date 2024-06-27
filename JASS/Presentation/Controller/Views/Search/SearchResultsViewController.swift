@@ -48,8 +48,9 @@ class SearchResultsViewController: UIViewController {
         $0.register(SearchResultCell.self, forCellReuseIdentifier: SearchResultCell.reuseIdentifier)
     }
     var selectedCategories: Set<String> = []
-    private let defaultCategory = "헬스,필라테스,크로스핏,복싱,수영,골프,클라이밍"
+    var currentLocation: CLLocationCoordinate2D?
 
+    private let defaultCategory = "헬스,필라테스,크로스핏,복싱,수영,골프,클라이밍"
 
     var searchQuery: String? {
         didSet {
@@ -69,6 +70,22 @@ class SearchResultsViewController: UIViewController {
         setupBindings()
         setupActions()
         performInitialSearch()
+        print("SearchResultsViewController - 받은 현재 위치: \(String(describing: self.currentLocation))")  // 디버그 출력
+
+        self.placeSearchViewModel = PlaceSearchViewModel()
+
+        if let currentLocation = self.currentLocation {
+            LocationManager.shared.setCurrentLocation(currentLocation)
+        }
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
     // MARK: - Setup
@@ -128,8 +145,9 @@ class SearchResultsViewController: UIViewController {
     // MARK: - Actions
 
     @objc private func backButtonTapped() {
-        dismiss(animated: true, completion: nil)
-    }
+        navigationController?.setNavigationBarHidden(false, animated: false)
+              navigationController?.popViewController(animated: true)
+              }
 
     @objc private func searchButtonTapped() {
         performSearch()
@@ -151,7 +169,6 @@ class SearchResultsViewController: UIViewController {
             self?.update(with: places)
         }
     }
-
 
     private func performInitialSearch() {
         guard let query = searchQuery else { return }
@@ -175,28 +192,29 @@ class SearchResultsViewController: UIViewController {
 
     private func calculateDistances(for places: [Place], from currentLocation: CLLocationCoordinate2D) {
         let group = DispatchGroup()
-        for (index, place) in places.enumerated() {
+        var updatedPlaces = [Place]()
+
+        for place in places {
             group.enter()
             placeSearchViewModel?.calculateDistances(from: currentLocation, to: place.coordinate) { [weak self] distance in
                 defer { group.leave() }
-                guard let self = self else { return }
                 var updatedPlace = place
                 updatedPlace.distanceText = distance ?? "거리 정보 없음"
-                self.viewModel?.updatePlace(updatedPlace)
+                updatedPlaces.append(updatedPlace)
             }
         }
+
         group.notify(queue: .main) { [weak self] in
+            self?.viewModel?.loadSearchResults(with: updatedPlaces)
             self?.tableView.reloadData()
         }
     }
+
     private func reloadCellForPlace(_ place: Place) {
         guard let indexPath = viewModel?.searchResults.firstIndex(where: { $0.place_id == place.place_id }).map({ IndexPath(row: $0, section: 0) }) else { return }
 
-        DispatchQueue.main.async { [weak self] in
-            if let cell = self?.tableView.cellForRow(at: indexPath) as? SearchResultCell {
-                cell.distanceLabel.text = place.distanceText ?? "거리 정보 없음"
-            }
-            self?.tableView.reloadRows(at: [indexPath], with: .none)
+        if let cell = tableView.cellForRow(at: indexPath) as? SearchResultCell {
+            cell.updateDistanceText(place.distanceText)
         }
     }
 }
@@ -207,29 +225,17 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel?.searchResults.count ?? 0
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchResultCell.reuseIdentifier, for: indexPath) as? SearchResultCell,
               let place = viewModel?.searchResults[indexPath.row] else {
             return UITableViewCell()
         }
-        
+        cell.placeSearchViewModel = self.placeSearchViewModel
         let currentLocation = LocationManager.shared.getCurrentLocation()
         cell.configure(with: place, currentLocation: currentLocation)
         cell.delegate = self
-        
-        if let currentLocation = currentLocation {
-            placeSearchViewModel?.calculateDistances(from: currentLocation, to: place.coordinate) { [weak self, weak cell] distance in
-                DispatchQueue.main.async {
-                    cell?.updateDistanceText(distance)
-                    if var updatedPlace = self?.viewModel?.searchResults[indexPath.row] {
-                        updatedPlace.distanceText = distance
-                        self?.viewModel?.updatePlace(updatedPlace)
-                    }
-                }
-            }
-        }
-        
+
         placeSearchViewModel?.fetchPlaceDetails(placeID: place.place_id) { [weak cell] detailedPlace in
             DispatchQueue.main.async {
                 if let detailedPlace = detailedPlace {
@@ -237,20 +243,20 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
                 }
             }
         }
-        
+
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let place = viewModel?.searchResults[indexPath.row] else { return }
-        //        mapViewModel?.updateSelectedPlaceMarker(for: place)
-        
+        guard let place = viewModel?.searchResults[indexPath.row],
+              let placeSearchViewModel = placeSearchViewModel else { return }
+
         delegate?.didSelectPlace(place)
-        let gymDetailVC = GymDetailViewController(place: place)
-        gymDetailVC.modalPresentationStyle = .fullScreen
-        present(gymDetailVC, animated: true, completion: nil)
+        let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel))
+        navigationController?.pushViewController(gymDetailVC, animated: true)
     }
 }
+
 // MARK: - SearchResultCellDelegate
 
 extension SearchResultsViewController: SearchResultCellDelegate {
@@ -288,9 +294,8 @@ extension SearchResultsViewController: UISearchBarDelegate {
 extension SearchResultsViewController: FilterViewDelegate {
     func filterViewDidCancel(_ filterView: FilterViewController) {
         dismiss(animated: true, completion: nil)
-
     }
-    
+
     func filterView(_ filterView: FilterViewController, didSelectCategories categories: Set<String>) {
         selectedCategories = categories.isEmpty ? [defaultCategory] : categories
 

@@ -6,13 +6,13 @@ import SnapKit
 class GymDetailViewController: UIViewController, UIScrollViewDelegate {
 
     // MARK: - Properties
-    var gym: Place?
+    var viewModel: GymDetailViewModel
     var scrollView: UIScrollView!
     var pageControl: UIPageControl!
     var images: [UIImage] = []
 
-    init(place: Place) {
-        self.gym = place
+    init(viewModel: GymDetailViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -43,6 +43,12 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         $0.numberOfLines = 0
     }
 
+    private let backButton = UIButton(type: .system).then {
+        $0.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        $0.tintColor = .black
+        $0.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+    }
+
     private let favoriteButton = UIButton(type: .system).then {
         $0.setImage(UIImage(systemName: "heart"), for: .normal)
         $0.tintColor = .gray
@@ -54,11 +60,20 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("Gym Data: \(String(describing: gym))")
 
         setupUI()
-        fetchPlaceDetails()
-        fetchPlacePhotos()
+        setupBindings()
+        viewModel.loadPlaceDetails()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
     // MARK: - Setup
@@ -69,6 +84,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         setupPageControl()
         setupDetails()
         setupLoadingIndicator()
+        setupBackButton()
     }
 
     private func setupScrollView() {
@@ -117,6 +133,15 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         favoriteButton.setContentHuggingPriority(.defaultLow, for: .vertical)
     }
 
+    private func setupBackButton() {
+        view.addSubview(backButton)
+        backButton.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            make.width.height.equalTo(44)
+        }
+    }
+
     private func setupLoadingIndicator() {
         view.addSubview(loadingIndicator)
         loadingIndicator.snp.makeConstraints {
@@ -124,151 +149,64 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         }
     }
 
-    private func fetchPlaceDetails() {
-        guard let gym = gym else { return }
-
-        let placeID = gym.place_id
-        let placeFields: GMSPlaceField = [.name, .formattedAddress, .phoneNumber, .website, .openingHours, .coordinate]
-
-        GMSPlacesClient.shared().fetchPlace(fromPlaceID: placeID, placeFields: placeFields, sessionToken: nil) { [weak self] (place, error) in
-            guard let self = self else { return }
-
-            if let error = error {
-                print("Error fetching place details: \(error.localizedDescription)")
-                return
-            }
-
-            if let place = place {
-                self.populateData(with: place)
-            }
+    private func setupBindings() {
+        viewModel.onPlaceDetailsUpdated = { [weak self] in
+            guard let self = self, let place = self.viewModel.placeDetails else { return }
+            self.populateData(with: place)
         }
     }
 
-    private func populateData(with place: GMSPlace) {
+    private func populateData(with place: Place) {
         nameLabel.text = place.name
-
-        if let address = place.formattedAddress {
-            addressLabel.text = address
-        } else {
-            addressLabel.text = "등록된 주소 정보가 없습니다"
-        }
-
-        if let phone = place.phoneNumber {
-            phoneLabel.text = "Phone: \(phone)"
-        } else {
-            phoneLabel.text = "등록된 전화번호 정보가 없습니다"
-        }
-
-        if let openingHours = place.openingHours, let weekdayText = openingHours.weekdayText {
-            openingHoursLabel.text = "Hours: \(weekdayText.joined(separator: "\n"))"
-        } else {
-            openingHoursLabel.text = "등록된 영업시간 정보가 없습니다"
-        }
-
+        addressLabel.text = place.formatted_address ?? "등록된 주소 정보가 없습니다"
+        phoneLabel.text = "Phone: \(place.phoneNumber ?? "등록된 전화번호 정보가 없습니다")"
+        openingHoursLabel.text = place.openingHours ?? "등록된 영업시간 정보가 없습니다"
         updateFavoriteButton(showToast: false)
+        loadImages()  // 이 줄 추가
     }
 
-    private func fetchPlacePhotos() {
-        guard let gym = gym else { return }
-
-        loadingIndicator.startAnimating()
-
-        GMSPlacesClient.shared().lookUpPhotos(forPlaceID: gym.place_id) { [weak self] (photoMetadataList, error) in
-            guard let self = self else { return }
-
-            self.loadingIndicator.stopAnimating()
-
-            if let error = error {
-                print("Error fetching photos: \(error.localizedDescription)")
-                self.showNoImageIcon()
-                return
-            }
-
-            guard let photos = photoMetadataList?.results, !photos.isEmpty else {
-                self.showNoImageIcon()
-                return
-            }
-
-            self.pageControl.numberOfPages = photos.count
-            self.pageControl.currentPage = 0
-
-            for photoMetadata in photos {
-                self.loadImageForMetadata(photoMetadata: photoMetadata)
-            }
+    private func loadImages() {
+        viewModel.loadImages { [weak self] images in
+            self?.images = images
+            self?.setupImageViews()
         }
     }
 
-    private func showNoImageIcon() {
-        let stackView = UIStackView().then {
-            $0.axis = .vertical
-            $0.spacing = 8
-            $0.alignment = .center
+    private func setupImageViews() {
+        scrollView.subviews.forEach { $0.removeFromSuperview() } // 기존 이미지 뷰 제거
 
-            let noImageIcon = UIImage(systemName: "photo")?.withTintColor(.gray, renderingMode: .alwaysOriginal)
-            let imageView = UIImageView(image: noImageIcon).then {
-                $0.contentMode = .scaleAspectFit
+        for (index, image) in images.enumerated() {
+            let imageView = UIImageView(image: image)
+            imageView.contentMode = .scaleAspectFill
+            imageView.clipsToBounds = true
+            scrollView.addSubview(imageView)
+            imageView.snp.makeConstraints { make in
+                make.leading.equalToSuperview().offset(CGFloat(index) * scrollView.frame.width)
+                make.width.equalTo(scrollView.snp.width)
+                make.height.equalTo(scrollView.snp.height)
             }
-
-            let label = UILabel().then {
-                $0.text = "등록된 사진이 없습니다"
-                $0.textColor = .gray
-                $0.textAlignment = .center
-            }
-
-            $0.addArrangedSubview(imageView)
-            $0.addArrangedSubview(label)
         }
-
-        scrollView.addSubview(stackView)
-
-        stackView.snp.makeConstraints {
-            $0.center.equalToSuperview()
-        }
-    }
-
-    private func loadImageForMetadata(photoMetadata: GMSPlacePhotoMetadata) {
-        GMSPlacesClient.shared().loadPlacePhoto(photoMetadata, callback: { [weak self] (photo, error) -> Void in
-            guard let self = self else { return }
-
-            if let error = error {
-                print("사진 로드 오류발생: \(error.localizedDescription)")
-                return
-            }
-
-            if let photo = photo {
-                DispatchQueue.main.async {
-                    self.addImageToScrollView(photo: photo)
-                }
-            }
-        })
-    }
-
-    private func addImageToScrollView(photo: UIImage) {
-        let imageView = UIImageView(image: photo)
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-
-        let xPosition = self.scrollView.bounds.width * CGFloat(images.count)
-        imageView.frame = CGRect(x: xPosition, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height)
-
-        scrollView.addSubview(imageView)
-        scrollView.contentSize.width = self.scrollView.bounds.width * CGFloat(images.count + 1)
-        images.append(photo)
+        scrollView.contentSize = CGSize(width: scrollView.frame.width * CGFloat(images.count), height: scrollView.frame.height)
+        pageControl.numberOfPages = images.count
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let pageIndex = round(scrollView.contentOffset.x / view.bounds.width)
+        let pageIndex = round(scrollView.contentOffset.x / view.frame.width)
         pageControl.currentPage = Int(pageIndex)
     }
 
     @objc private func toggleFavorite() {
-        guard let gym = gym else { return }
+        guard let gym = viewModel.placeDetails else { return }
         FavoritesManager.shared.toggleFavorite(place: gym)
         updateFavoriteButton(showToast: true)
     }
 
+    @objc private func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+
     private func updateFavoriteButton(showToast: Bool) {
-        guard let gym = gym else { return }
+        guard let gym = viewModel.placeDetails else { return }
         let isFavorite = FavoritesManager.shared.isFavorite(placeID: gym.place_id)
         let heartImage = isFavorite ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
         let tintColor: UIColor = isFavorite ? .red : .gray
