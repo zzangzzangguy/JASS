@@ -7,6 +7,10 @@ class FavoritePlace: Object {
     @objc dynamic var formattedAddress: String?
     @objc dynamic var phoneNumber: String?
 
+    override static func primaryKey() -> String? {
+        return "placeID"
+    }
+
     convenience init(place: Place) {
         self.init()
         self.placeID = place.place_id
@@ -28,6 +32,7 @@ class FavoritePlace: Object {
         )
     }
 }
+
 extension Notification.Name {
-    static let favoritesDidChange = Notification.Name("FavoritesDidChange")
+    static let favoritesDidChange = Notification.Name("favoritesDidChange")
 }

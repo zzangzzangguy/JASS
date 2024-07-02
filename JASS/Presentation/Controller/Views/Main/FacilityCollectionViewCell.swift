@@ -78,7 +78,7 @@ final class FacilityCollectionViewCell: UICollectionViewCell {
         self.place = place
         nameLabel.text = place.name
         addressLabel.text = place.formatted_address ?? "주소 없음"
-        imageView.image = nil // 기존 이미지를 초기화합니다.
+        imageView.image = nil
 
         loadingIndicator.startAnimating()
 
@@ -108,7 +108,9 @@ final class FacilityCollectionViewCell: UICollectionViewCell {
             guard let self = self else { return }
 
             if let error = error {
-                print("사진 로드 오류발생: \(error.localizedDescription)")
+                if self.photoMetadata == nil {
+                    print("사진 로드 오류발생: \(error.localizedDescription)")
+                }
                 self.imageView.image = UIImage(named: "defaultImage")
                 return
             }
@@ -122,6 +124,7 @@ final class FacilityCollectionViewCell: UICollectionViewCell {
             }
         }
     }
+
 
     @objc private func handleTap() {
         guard let place = place else { return }

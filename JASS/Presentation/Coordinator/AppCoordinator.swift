@@ -16,13 +16,14 @@ final class AppCoordinator: Coordinator {
     private func showMainViewController() {
         let tabBarController = UITabBarController()
         let placeRepository = PlaceRepositoryImpl(apiService: GooglePlacesAPIService())
-        let placeUseCase = DefaultPlaceUseCase(repository: placeRepository) // 오류 해결: PlaceUseCaseImpl 초기화
+        let placeUseCase = DefaultPlaceUseCase(repository: placeRepository) 
         let mainCoordinator = MainCoordinator(navigationController: navigationController, tabBarController: tabBarController, placeUseCase: placeUseCase)
         mainCoordinator.delegate = self
         childCoordinators.append(mainCoordinator)
         mainCoordinator.start()
 
-        navigationController.viewControllers = [tabBarController]
+        navigationController.setViewControllers([tabBarController], animated: false)
+//        navigationController.setNavigationBarHidden(true, animated: false)
     }
 }
 

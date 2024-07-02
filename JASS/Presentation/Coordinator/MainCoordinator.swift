@@ -1,5 +1,5 @@
 import UIKit
-import CoreLocation 
+import CoreLocation
 
 final class MainCoordinator: Coordinator {
     weak var delegate: CoordinatorDelegate?
@@ -26,6 +26,9 @@ final class MainCoordinator: Coordinator {
         mainVC.coordinator = self
         mainVC.tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
 
+        let mainNavController = UINavigationController(rootViewController: mainVC)
+        mainNavController.setNavigationBarHidden(false, animated: false)
+
         let favoritesCoordinator = FavoritesCoordinator(navigationController: UINavigationController(), placeUseCase: placeUseCase)
         childCoordinators.append(favoritesCoordinator)
         favoritesCoordinator.start()
@@ -33,29 +36,34 @@ final class MainCoordinator: Coordinator {
         favoritesVC.tabBarItem = UITabBarItem(title: "즐겨찾기", image: UIImage(systemName: "heart"), selectedImage: UIImage(systemName: "heart.fill"))
 
         tabBarController.viewControllers = [
-            UINavigationController(rootViewController: mainVC),
+            mainNavController,
             favoritesCoordinator.navigationController
         ]
         navigationController.pushViewController(tabBarController, animated: false)
     }
 
-   
     func showSearch(from viewController: UIViewController) {
-           let searchCoordinator = SearchCoordinator(navigationController: UINavigationController(), placeUseCase: placeUseCase)
-           childCoordinators.append(searchCoordinator)
-           searchCoordinator.start()
-           if let searchVC = searchCoordinator.navigationController.viewControllers.first as? SearchViewController {
-               searchVC.coordinator = searchCoordinator
-               searchCoordinator.navigationController.modalPresentationStyle = .fullScreen
-               viewController.present(searchCoordinator.navigationController, animated: true, completion: nil)
-           }
-       }
-
+        let searchCoordinator = SearchCoordinator(navigationController: UINavigationController(), placeUseCase: placeUseCase)
+        childCoordinators.append(searchCoordinator)
+        searchCoordinator.start()
+        if let searchVC = searchCoordinator.navigationController.viewControllers.first as? SearchViewController {
+            searchVC.coordinator = searchCoordinator
+            searchCoordinator.navigationController.modalPresentationStyle = .fullScreen
+            viewController.present(searchCoordinator.navigationController, animated: true, completion: nil)
+        }
+    }
 
     func showPlaceDetails(from viewController: UIViewController, for place: Place) {
         let detailViewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase))
         let detailVC = GymDetailViewController(viewModel: detailViewModel)
-        viewController.navigationController?.pushViewController(detailVC, animated: true)
+        detailVC.coordinator = self
+        navigationController.pushViewController(detailVC, animated: true)
+        navigationController.setNavigationBarHidden(true, animated: true)
+    }
+
+    func popViewController() {
+        navigationController.popViewController(animated: true)
+        navigationController.setNavigationBarHidden(false, animated: true)
     }
 
     func showMap() {
@@ -74,5 +82,4 @@ final class MainCoordinator: Coordinator {
         searchResultsVC.viewModel?.loadSearchResults(with: places)
         viewController.navigationController?.pushViewController(searchResultsVC, animated: true)
     }
-
-    }
+}

@@ -4,8 +4,8 @@ import Then
 import SnapKit
 
 class GymDetailViewController: UIViewController, UIScrollViewDelegate {
-
-    // MARK: - Properties
+    
+    var coordinator: MainCoordinator?
     var viewModel: GymDetailViewModel
     var scrollView: UIScrollView!
     var pageControl: UIPageControl!
@@ -64,16 +64,20 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         setupUI()
         setupBindings()
         viewModel.loadPlaceDetails()
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        coordinator?.popViewController()
     }
 
     // MARK: - Setup
@@ -137,7 +141,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         view.addSubview(backButton)
         backButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.width.height.equalTo(44)
         }
     }
@@ -162,7 +166,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         phoneLabel.text = "Phone: \(place.phoneNumber ?? "등록된 전화번호 정보가 없습니다")"
         openingHoursLabel.text = place.openingHours ?? "등록된 영업시간 정보가 없습니다"
         updateFavoriteButton(showToast: false)
-        loadImages()  // 이 줄 추가
+        loadImages()
     }
 
     private func loadImages() {
@@ -173,21 +177,35 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     }
 
     private func setupImageViews() {
-        scrollView.subviews.forEach { $0.removeFromSuperview() } // 기존 이미지 뷰 제거
+        scrollView.subviews.forEach { $0.removeFromSuperview() }
 
-        for (index, image) in images.enumerated() {
-            let imageView = UIImageView(image: image)
-            imageView.contentMode = .scaleAspectFill
-            imageView.clipsToBounds = true
-            scrollView.addSubview(imageView)
-            imageView.snp.makeConstraints { make in
-                make.leading.equalToSuperview().offset(CGFloat(index) * scrollView.frame.width)
-                make.width.equalTo(scrollView.snp.width)
-                make.height.equalTo(scrollView.snp.height)
+        if images.isEmpty {
+            let noPhotoLabel = UILabel()
+            noPhotoLabel.text = "등록된 사진이 없습니다"
+            noPhotoLabel.textAlignment = .center
+            scrollView.addSubview(noPhotoLabel)
+            noPhotoLabel.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+                make.width.equalTo(scrollView)
             }
+            pageControl.isHidden = true
+        } else {
+            for (index, image) in images.enumerated() {
+                let imageView = UIImageView(image: image)
+                imageView.contentMode = .scaleAspectFill
+                imageView.clipsToBounds = true
+                scrollView.addSubview(imageView)
+                imageView.snp.makeConstraints { make in
+                    make.leading.equalToSuperview().offset(CGFloat(index) * scrollView.frame.width)
+                    make.width.equalTo(scrollView.snp.width)
+                    make.height.equalTo(scrollView.snp.height)
+                    make.top.equalToSuperview()
+                }
+            }
+            scrollView.contentSize = CGSize(width: scrollView.frame.width * CGFloat(images.count), height: scrollView.frame.height)
+            pageControl.numberOfPages = images.count
+            pageControl.isHidden = false
         }
-        scrollView.contentSize = CGSize(width: scrollView.frame.width * CGFloat(images.count), height: scrollView.frame.height)
-        pageControl.numberOfPages = images.count
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -202,6 +220,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     }
 
     @objc private func backButtonTapped() {
+        navigationController?.setNavigationBarHidden(false, animated: false)
         navigationController?.popViewController(animated: true)
     }
 

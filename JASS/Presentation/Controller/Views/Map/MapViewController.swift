@@ -4,7 +4,6 @@ import GooglePlaces
 import SnapKit
 import Toast
 import RxSwift
-import KakaoMapsSDK
 
 class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManagerDelegate {
     private let disposeBag = DisposeBag()
@@ -88,6 +87,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = true
+        
     }
 
     override func viewWillDisappear(_ animated: Bool) {
