@@ -14,15 +14,13 @@ class FavoritesManager {
     func addFavorite(place: Place) {
         let favorite = FavoritePlace(place: place)
         try! realm.write {
-            realm.add(favorite)
+            realm.add(favorite, update: .modified)
             NotificationCenter.default.post(name: .favoritesDidChange, object: place)
         }
     }
 
     func removeFavorite(place: Place) {
-        guard let favorite =
-                realm.objects(FavoritePlace.self).filter("placeID == %@", place.place_id).first else
-        { return }
+        guard let favorite = realm.objects(FavoritePlace.self).filter("placeID == %@", place.place_id).first else { return }
         try! realm.write {
             realm.delete(favorite)
             NotificationCenter.default.post(name: .favoritesDidChange, object: place)

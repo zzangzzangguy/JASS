@@ -15,7 +15,6 @@ class CustomClusterItem: NSObject, GMUClusterItem {
 
     init(place: Place) {
         self.position = place.coordinate
-//        self.position = coordinate
         self.place = place
     }
 }
@@ -61,19 +60,19 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
     let clusterManager: GMUClusterManager
     weak var delegate: ClusterManagerDelegate?
     weak var navigationController: UINavigationController?
+    weak var coordinator: MapCoordinator?
 
-    init(mapView: GMSMapView, navigationController: UINavigationController?) {
+    init(mapView: GMSMapView, navigationController: UINavigationController?, coordinator: MapCoordinator?) {
         self.mapView = mapView
         self.navigationController = navigationController
-
+        self.coordinator = coordinator
         let iconGenerator = GMUDefaultClusterIconGenerator()
         let renderer = CustomClusterRenderer(mapView: mapView, clusterIconGenerator: iconGenerator)
-        let algorithm = GMUNonHierarchicalDistanceBasedAlgorithm(clusterDistancePoints: 100)!
-
+        guard let algorithm = GMUNonHierarchicalDistanceBasedAlgorithm(clusterDistancePoints: 100) else {
+            fatalError("클러스터 알고리즘 초기화 실패")
+        }
         self.clusterManager = GMUClusterManager(map: mapView, algorithm: algorithm, renderer: renderer)
-
         super.init()
-
         self.clusterManager.setDelegate(self, mapDelegate: self)
         renderer.delegate = self
     }
@@ -135,24 +134,20 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
         if let item = clusterItem as? CustomClusterItem {
             DispatchQueue.main.async { [weak self] in
                 guard let self = self,
-                      let navigationController = self.navigationController else {
-                    print("NavigationController를 찾을 수 없습니다.")
-                    return
-                }
-                let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: item.place.place_id, placeSearchViewModel: self.delegate as! PlaceSearchViewModel))
-                navigationController.pushViewController(gymDetailVC, animated: true)
+                      let viewController = self.navigationController?.topViewController else { return }
+                self.coordinator?.showPlaceDetails(from: viewController, for: item.place)
             }
             return true
         }
         return false
     }
 
-
     func clusterManager(_ clusterManager: GMUClusterManager, didTap cluster: GMUCluster) -> Bool {
         let newCamera = GMSCameraPosition.camera(withTarget: cluster.position, zoom: mapView.camera.zoom + 1)
         mapView.animate(to: newCamera)
         return true
     }
+
     func renderer(_ renderer: GMUClusterRenderer, willRenderMarker marker: GMSMarker) {
         if let clusterItem = marker.userData as? CustomClusterItem {
             marker.icon = createMarkerIcon(with: clusterItem.place.name)

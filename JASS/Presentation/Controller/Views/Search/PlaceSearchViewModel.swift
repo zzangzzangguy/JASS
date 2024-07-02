@@ -1,129 +1,47 @@
 import Foundation
-import Moya
+import RxSwift
+import RxCocoa
 import GoogleMaps
 import CoreLocation
 
-struct SearchResults: Codable {
-    let results: [Place]
-}
-
 class PlaceSearchViewModel {
+    private let disposeBag = DisposeBag()
+    private let placeUseCase: PlaceUseCase
     private var distanceCache: [String: String] = [:]
-    let provider = MoyaProvider<GooglePlacesAPI>()
-    var searchResults: [Place] = []
-    var isSearching: Bool = false
-    var updateSearchResults: (() -> Void)?
-    var autoCompleteResults: [String] = []
-    var updateAutoCompleteResults: (() -> Void)?
-    var showError: ((String) -> Void)?
-    var cachedPlaces: [String: Place] = [:] // 캐시 추가
 
+    var searchResults: BehaviorRelay<[Place]> = BehaviorRelay(value: [])
+    var isSearching: BehaviorRelay<Bool> = BehaviorRelay(value: false)
+    var autoCompleteResults: BehaviorRelay<[String]> = BehaviorRelay(value: [])
+    var showError: PublishRelay<String> = PublishRelay()
+    var cachedPlaces: [String: Place] = [:]
 
-    private let categoriesToTypes: [String: (type: String, keyword: String)] = [
-        "헬스": ("gym", "헬스"),
-        "필라테스": ("gym", "필라테스"),
-        "복싱": ("gym", "복싱"),
-        "크로스핏": ("gym", "크로스핏"),
-        "골프": ("golf_course", "골프장"),
-        "수영": ("gym", "수영장"),
-        "클라이밍": ("gym", "클라이밍")
-    ]
-    
-    func searchPlacesInBounds(_ bounds: GMSCoordinateBounds, query: String, completion: @escaping ([Place]) -> Void) {
-        guard !query.isEmpty else {
-            print("검색어가 비어있습니다. 마커를 업데이트하지 않습니다.")
-            completion([])
-            return
-        }
-        
-        let center = CLLocationCoordinate2D(latitude: (bounds.northEast.latitude + bounds.southWest.latitude) / 2,
-                                            longitude: (bounds.northEast.longitude + bounds.southWest.longitude) / 2)
-        let radius = min(bounds.northEast.distance(to: bounds.southWest) / 2, 5000)
-        
-        let typeAndKeyword = categoriesToTypes[query]
-        let type = typeAndKeyword?.type ?? ""
-        let keyword = typeAndKeyword?.keyword ?? query
-        
-        let parameters: [String: Any] = [
-            "location": "\(center.latitude),\(center.longitude)",
-            "radius": Int(radius),
-            "keyword": keyword,
-            "type": type
-        ]
-        
-        print("searchPlacesInBounds 검색: \(parameters)")
-        
-        provider.request(.searchInBounds(parameters: parameters)) { result in
-            switch result {
-            case .success(let response):
-                print("HTTP 상태 코드: \(response.statusCode)")
-                do {
-                    let searchResults = try JSONDecoder().decode(SearchResults.self, from: response.data)
-                    completion(searchResults.results)
-                } catch {
-                    print("JSON 디코딩 오류: \(error)")
-                    completion([])
-                }
-            case .failure(let error):
-                print("API 요청 실패: \(error)")
-                completion([])
-            }
-        }
+    init(placeUseCase: PlaceUseCase) {
+        self.placeUseCase = placeUseCase
     }
-    
-    func searchPlace(input: String, category: String, completion: @escaping ([Place]) -> Void) {
+
+    func searchPlace(input: String, category: String) -> Observable<[Place]> {
         guard !input.isEmpty else {
-            completion([])
-            return
+            return Observable.just([])
         }
 
-        var parameters: [String: Any] = ["query": input]
-
-        if category != "all" {
-            let typeAndKeyword = categoriesToTypes[category]
-            parameters["type"] = typeAndKeyword?.type ?? "gym"
-            parameters["query"] = "\(input) \(typeAndKeyword?.keyword ?? "")"
-        }
-
-        print("searchPlace 검색: \(input), 카테고리: \(category), 파라미터: \(parameters)")
-
-        provider.request(.textSearch(parameters: parameters)) { result in
-            switch result {
-            case .success(let response):
-                do {
-                    let searchResults = try JSONDecoder().decode(SearchResults.self, from: response.data)
-                    print("검색 결과 수: \(searchResults.results.count)")
-                    completion(searchResults.results)
-                } catch {
-                    print("JSON 디코딩 오류: \(error)")
-                    completion([])
-                }
-            case .failure(let error):
-                print("API 요청 실패: \(error)")
-                completion([])
-            }
-        }
+        isSearching.accept(true)
+        return placeUseCase.searchPlaces(query: input)
+            .do(onNext: { [weak self] places in
+                self?.searchResults.accept(places)
+                self?.isSearching.accept(false)
+            }, onError: { [weak self] error in
+                self?.showError.accept(error.localizedDescription)
+                self?.isSearching.accept(false)
+            })
     }
 
-
-    func fetchPlacePhoto(reference: String, maxWidth: Int, completion: @escaping (UIImage?) -> Void) {
-        provider.request(.photo(reference: reference, maxWidth: maxWidth)) { result in
-            switch result {
-            case .success(let response):
-                if let image = UIImage(data: response.data) {
-                    print("사진 요청 성공: \(reference)")
-                    completion(image)
-                } else {
-                    print("사진 데이터 변환 실패: \(reference)")
-                    completion(nil)
-                }
-            case .failure(let error):
-                print("사진 요청 실패: \(error.localizedDescription), 참조: \(reference)")
-                completion(nil)
-            }
-        }
+    func fetchPlacePhoto(reference: String, maxWidth: Int) -> Observable<UIImage?> {
+        return placeUseCase.getPlacePhotos(reference: reference, maxWidth: maxWidth)
+            .map { $0 as UIImage? }
+            .do(onError: { [weak self] error in
+                self?.showError.accept(error.localizedDescription)
+            })
     }
-
 
     func calculateDistances(from origin: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D, completion: @escaping (String?) -> Void) {
         let cacheKey = "\(origin.latitude),\(origin.longitude)-\(destination.latitude),\(destination.longitude)"
@@ -133,150 +51,59 @@ class PlaceSearchViewModel {
             return
         }
 
-        let originString = "\(origin.latitude),\(origin.longitude)"
-        let destinationString = "\(destination.latitude),\(destination.longitude)"
-        print("Request Origin: \(originString), Destination: \(destinationString)")
-
-        provider.request(.distanceMatrix(origins: originString, destinations: destinationString, mode: "transit", key: Bundle.apiKey)) { result in
-            switch result {
-            case .success(let response):
-                print("거리계산 API 계산: \(response)")
-                do {
-                    if let json = try? JSONSerialization.jsonObject(with: response.data, options: .mutableContainers),
-                       let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted),
-                       let jsonString = String(data: jsonData, encoding: .utf8) {
-                        print("Distance Matrix API Response JSON: \(jsonString)")
-                    }
-
-                    let distanceMatrix = try JSONDecoder().decode(DistanceMatrixResponse.self, from: response.data)
-                    if let element = distanceMatrix.rows.first?.elements.first,
-                       let distance = element.distance {
-                        let distanceText = distance.text
-                        print("거리 계산: \(distanceText)")
-                        self.distanceCache[cacheKey] = distanceText
-                        completion(distanceText)
-                    } else {
-                        print("Distance calculation returned nil element")
-                        completion(nil)
-                    }
-                } catch {
-                    print("거리 계산 JSON 디코딩 오류: \(error)")
-                    completion(nil)
-                }
-            case .failure(let error):
-                print("거리 계산 API 요청 실패: \(error)")
+        placeUseCase.calculateDistances(from: origin, to: destination)
+            .subscribe(onNext: { [weak self] distance in
+                self?.distanceCache[cacheKey] = distance
+                completion(distance)
+            }, onError: { [weak self] error in
+                self?.showError.accept(error.localizedDescription)
                 completion(nil)
-            }
-        }
+            })
+            .disposed(by: disposeBag)
     }
 
     func fetchPlaceDetails(placeID: String, completion: @escaping (Place?) -> Void) {
-        print("fetchPlaceDetails 호출됨: \(placeID)")
-           if let cachedPlace = cachedPlaces[placeID] {
-               print("캐시된 데이터 사용: \(placeID)")
-               completion(cachedPlace)
-               return
-           }
+        if let cachedPlace = cachedPlaces[placeID] {
+            completion(cachedPlace)
+            return
+        }
 
-        provider.request(.details(placeID: placeID)) { result in
-            switch result {
-            case .success(let response):
-                do {
-                    let json = try JSONSerialization.jsonObject(with: response.data, options: .mutableContainers)
-                    let jsonData = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
-                    if let jsonString = String(data: jsonData, encoding: .utf8) {
-//                        print("Place Details API Response JSON: \(jsonString)")
-                    }
-                    
-                    let placeDetailsResponse = try JSONDecoder().decode(PlaceDetailsResponse.self, from: response.data)
-                    self.cachedPlaces[placeID] = placeDetailsResponse.result
-
-                    completion(placeDetailsResponse.result)
-                } catch {
-                    print("JSON 디코딩 오류: \(error)")
-                    completion(nil)
-                }
-            case .failure(let error):
-                print("API 요청 실패: \(error)")
+        placeUseCase.getPlaceDetails(placeID: placeID)
+            .subscribe(onNext: { [weak self] place in
+                self?.cachedPlaces[placeID] = place
+                completion(place)
+            }, onError: { [weak self] error in
+                self?.showError.accept(error.localizedDescription)
                 completion(nil)
-            }
-        }
-    }
-    
-    func updateDistanceText(for placeID: String, distanceText: String?) {
-        if let index = searchResults.firstIndex(where: { $0.place_id == placeID }) {
-            searchResults[index].distanceText = distanceText
-            updateSearchResults?()
-        } else {
-            print("PlaceID \(placeID) 검색결과를 찿을수없습니다")
-        }
-    }
-    
-    func searchAutoComplete(for query: String, completion: @escaping ([String]) -> Void) {
-        let types = "establishment"
-        let components = "country:kr"
-        provider.request(.autocomplete(input: query, types: types, components: components, language: "ko", location: nil, radius: nil, strictbounds: nil, sessiontoken: nil)) { result in
-            switch result {
-            case .success(let response):
-                do {
-                    let autoCompleteResponse = try JSONDecoder().decode(AutoCompleteResponse.self, from: response.data)
-                    let suggestions = autoCompleteResponse.predictions.filter { prediction in
-                        let keywords = ["헬스", "헬스장", "피트니스", "체육관", "요가", "필라테스", "복싱", "크로스핏", "수영", "클라이밍"]
-                        return keywords.contains { keyword in
-                            prediction.description.contains(keyword)
-                        }
-                    }.map { prediction -> String in
-                        var description = prediction.description
-                        if let range = description.range(of: "대한민국") {
-                            description.removeSubrange(range)
-                        }
-                        return description.trimmingCharacters(in: .whitespacesAndNewlines)
-                    }
-                    completion(suggestions)
-                } catch {
-                    print("JSON 디코딩 오류: \(error)")
-                    completion([])
-                }
-            case .failure(let error):
-                print("API 요청 실패: \(error)")
-                completion([])
-            }
-        }
+            })
+            .disposed(by: disposeBag)
     }
 
-    
-    func searchNearbySportsFacilities(at location: CLLocationCoordinate2D, completion: @escaping ([Place]) -> Void) {
-        let radius = 5000 // 5km 반경 내에서 검색
-        let categories = ["헬스", "필라테스", "복싱", "크로스핏", "골프", "수영", "클라이밍"]
-        let group = DispatchGroup()
-        var allPlaces: [Place] = []
-        
-        for category in categories {
-            group.enter()
-            let parameters: [String: Any] = [
-                "location": "\(location.latitude),\(location.longitude)",
-                "radius": radius,
-                "keyword": category,
-                "type": "gym"
-            ]
-            provider.request(.nearbySearch(parameters: parameters)) { result in
-                switch result {
-                case .success(let response):
-                    do {
-                        let searchResults = try JSONDecoder().decode(SearchResults.self, from: response.data)
-                        allPlaces.append(contentsOf: searchResults.results)
-                    } catch {
-                        print("JSON 디코딩 오류: \(error)")
-                    }
-                case .failure(let error):
-                    print("API 요청 실패: \(error)")
-                }
-                group.leave()
-            }
+    func searchAutoComplete(for query: String) -> Observable<[String]> {
+        return placeUseCase.getAutocomplete(query: query)
+            .do(onNext: { [weak self] suggestions in
+                self?.autoCompleteResults.accept(suggestions)
+            }, onError: { [weak self] error in
+                self?.showError.accept(error.localizedDescription)
+            })
+    }
+
+    func searchNearbySportsFacilities(at location: CLLocationCoordinate2D) -> Observable<[Place]> {
+            return placeUseCase.searchNearbySportsFacilities(at: location)
+                .do(onNext: { [weak self] places in
+                    self?.searchResults.accept(places)
+                }, onError: { [weak self] error in
+                    self?.showError.accept(error.localizedDescription)
+                })
         }
-        
-        group.notify(queue: .main) {
-            completion(allPlaces)
-        }
+
+    func searchPlacesInBounds(bounds: GMSCoordinateBounds, query: String, completion: @escaping ([Place]) -> Void) {
+        placeUseCase.searchPlacesInBounds(bounds: bounds, query: query)
+            .subscribe(onNext: { places in
+                completion(places)
+            }, onError: { error in
+                completion([])
+            })
+            .disposed(by: disposeBag)
     }
 }

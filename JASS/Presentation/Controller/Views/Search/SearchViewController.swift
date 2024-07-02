@@ -2,10 +2,23 @@ import UIKit
 import SnapKit
 import GooglePlaces
 import CoreLocation
+import RxSwift
 
 class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource {
-
     var currentLocation: CLLocationCoordinate2D?
+    weak var coordinator: SearchCoordinator?
+    private let disposeBag = DisposeBag()
+    var placeSearchViewModel: PlaceSearchViewModel
+
+    init(placeSearchViewModel: PlaceSearchViewModel) {
+        self.placeSearchViewModel = placeSearchViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     let searchBar = UISearchBar().then {
         $0.placeholder = "지역, 또는 찾고계신 운동을 입력해주세요"
         $0.searchBarStyle = .minimal
@@ -27,10 +40,8 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     var recentSearches: [String] = []
     var tableView: UITableView!
     var searchRecentViewModel = SearchRecentViewModel()
-    var placeSearchViewModel = PlaceSearchViewModel()
     var autoCompleteSuggestions: [String] = []
     var keywordButtons: [UIButton] = []
-
     let segmentedControl = UISegmentedControl(items: ["추천 검색어", "최근 검색어"])
     let noResultsLabel: UILabel = {
         let label = UILabel()
@@ -54,7 +65,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         setupUI()
         loadRecentSearches()
         setupKeywordButtons()
-        print("SearchResultsViewController가 로드됨")
+        print("SearchViewController가 로드됨")
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
@@ -63,7 +74,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
 
     private func setupUI() {
         view.backgroundColor = .white
-
         view.addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(10)
@@ -167,8 +177,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         updateUIForCurrentState()
     }
 
-
-
     @objc private func dismissKeyboard() {
         searchBar.resignFirstResponder()
     }
@@ -179,12 +187,11 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         performSearch(query: keyword)
     }
 
-
-
     private func loadRecentSearches() {
         recentSearches = searchRecentViewModel.loadRecentSearches()
         tableView.reloadData()
     }
+
     private func updateUIForCurrentState() {
         let isRecommendedKeywordsSegment = segmentedControl.selectedSegmentIndex == 0
         let isSearching = !(searchBar.text?.isEmpty ?? true)
@@ -218,26 +225,47 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     }
 
     private func performSearch(query: String) {
-        print("SearchViewController - 현재 위치: \(String(describing: self.currentLocation))")  // 디버그 출력
-//        print("검색 실행: \(query)")
+        print("performSearch called with query: \(query)")
+        print("SearchViewController - 현재 위치: \(String(describing: self.currentLocation))")
         searchRecentViewModel.saveSearchHistory(query: query)
-        placeSearchViewModel.searchPlace(input: query, category: "all") { [weak self] places in
-            guard let self = self else { return }
-            print("API returned \(places.count) places")
-            DispatchQueue.main.async {
-                let searchResultsVC = SearchResultsViewController()
-                searchResultsVC.searchQuery = query
-                searchResultsVC.placeSearchViewModel = self.placeSearchViewModel
-                searchResultsVC.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: searchResultsVC)
-                searchResultsVC.viewModel?.loadSearchResults(with: places)
-                searchResultsVC.currentLocation = self.currentLocation
-                let navController = UINavigationController(rootViewController: searchResultsVC)
-                self.navigationController?.pushViewController(searchResultsVC, animated: true)
-                self.navigationController?.setNavigationBarHidden(true, animated: false)
+        placeSearchViewModel.searchPlace(input: query, category: "all")
+            .subscribe(onNext: { [weak self] places in
+                guard let self = self else { return }
+                print("API returned \(places.count) places")
+                DispatchQueue.main.async {
+                    self.coordinator?.showSearchResults(from: self, query: query, places: places, currentLocation: self.currentLocation)
+                }
+            }, onError: { error in
+                print("Search error: \(error)")
+            })
+            .disposed(by: disposeBag)
+    }
 
-//                searchResultsVC.modalPresentationStyle = .fullScreen
-//                self.present(searchResultsVC, animated: true, completion: nil)
-            }
+    // MARK: - UISearchBarDelegate
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let query = searchBar.text, !query.isEmpty else {
+            print("검색어를 입력하세요.")
+            return
+        }
+        print("Search button clicked with query: \(query)")
+        performSearch(query: query)
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            autoCompleteSuggestions = []
+            updateUIForCurrentState()
+        } else {
+            placeSearchViewModel.searchAutoComplete(for: searchText)
+                .subscribe(onNext: { [weak self] suggestions in
+                    self?.autoCompleteSuggestions = suggestions
+                    DispatchQueue.main.async {
+                        self?.updateUIForCurrentState()
+                    }
+                }, onError: { error in
+                    print("Autocomplete error: \(error)")
+                })
+                .disposed(by: disposeBag)
         }
     }
 
@@ -294,54 +322,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         searchRecentViewModel.deleteSearchHistory(query: recentSearches[index])
         loadRecentSearches()
         tableView.reloadData()
-    }
-
-    // MARK: - UISearchBarDelegate
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let query = searchBar.text, !query.isEmpty else {
-            print("검색어를 입력하세요.")
-            return
-        }
-
-        LoadingIndicatorManager.shared.show(in: self.view)
-        placeSearchViewModel.searchPlace(input: query, category: "all") { [weak self] places in
-            guard let self = self else { return }
-            print("받은 장소 수: \(places.count)")
-
-            DispatchQueue.main.async {
-                LoadingIndicatorManager.shared.hide()
-
-                if places.isEmpty {
-                    self.noResultsLabel.isHidden = false
-                    self.noResultsLabel.text = "검색 결과가 없습니다."
-                } else {
-                    self.noResultsLabel.isHidden = true
-                    let searchResultsVC = SearchResultsViewController()
-                    searchResultsVC.searchQuery = query
-                    searchResultsVC.placeSearchViewModel = self.placeSearchViewModel
-                    searchResultsVC.currentLocation = self.currentLocation  
-
-                    searchResultsVC.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: searchResultsVC)
-                    searchResultsVC.viewModel?.loadSearchResults(with: places)
-                    self.navigationController?.pushViewController(searchResultsVC, animated: true)
-                    print("검색 결과 표시")
-                }
-            }
-        }
-    }
-
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.isEmpty {
-            autoCompleteSuggestions = []
-            updateUIForCurrentState()
-        } else {
-            placeSearchViewModel.searchAutoComplete(for: searchText) { [weak self] suggestions in
-                self?.autoCompleteSuggestions = suggestions
-                DispatchQueue.main.async {
-                    self?.updateUIForCurrentState()
-                }
-            }
-        }
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

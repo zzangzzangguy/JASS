@@ -3,9 +3,20 @@ import SnapKit
 import Toast
 
 class FavoritesViewController: UIViewController {
+    weak var coordinator: FavoritesCoordinator?
+    var placeSearchViewModel: PlaceSearchViewModel!
     var tableView: UITableView!
     var favoritesManager: FavoritesManager!
 
+    init(viewModel: PlaceSearchViewModel) { // 초기화 인자 추가
+           self.placeSearchViewModel = viewModel
+           super.init(nibName: nil, bundle: nil)
+       }
+
+       required init?(coder: NSCoder) {
+           fatalError("init(coder:) has not been implemented")
+       }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
@@ -57,7 +68,7 @@ extension FavoritesViewController: UITableViewDataSource {
 extension FavoritesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let place = favoritesManager.getFavorites()[indexPath.row]
-        let viewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: PlaceSearchViewModel())
+        let viewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel)
         let gymDetailVC = GymDetailViewController(viewModel: viewModel)
         navigationController?.pushViewController(gymDetailVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
