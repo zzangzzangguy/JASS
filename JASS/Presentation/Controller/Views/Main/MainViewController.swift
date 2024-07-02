@@ -1,16 +1,29 @@
 import UIKit
 import CoreLocation
 import SnapKit
+import RxSwift
 
 class MainViewController: UIViewController {
+    private let disposeBag = DisposeBag()
     let locationManager = CLLocationManager()
     let searchBar = UISearchBar()
     let findOnMapButton = UIButton()
     let headerView = UIView()
     let tableView = UITableView()
     var currentLocation: CLLocationCoordinate2D?
-    let nearbyFacilitiesViewModel = NearbyFacilitiesViewModel()
-    let placeSearchViewModel = PlaceSearchViewModel()
+    var nearbyFacilitiesViewModel: NearbyFacilitiesViewModel!
+    var viewModel: PlaceSearchViewModel!
+    weak var coordinator: MainCoordinator?
+
+    init(viewModel: PlaceSearchViewModel, placeUseCase: PlaceUseCase) {
+        self.viewModel = viewModel
+        self.nearbyFacilitiesViewModel = NearbyFacilitiesViewModel(placeUseCase: placeUseCase)
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,7 +36,6 @@ class MainViewController: UIViewController {
         setupTableView()
         setupRefreshButton()
 
-//        navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
@@ -75,7 +87,7 @@ class MainViewController: UIViewController {
         view.addSubview(findOnMapButton)
         findOnMapButton.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom).offset(20)
-                  make.centerX.equalToSuperview()
+            make.centerX.equalToSuperview()
             make.width.equalTo(150)
             make.height.equalTo(100)
         }
@@ -98,8 +110,7 @@ class MainViewController: UIViewController {
     }
 
     @objc func findOnMapButtonTapped() {
-        let mapVC = MapViewController(viewModel: placeSearchViewModel)
-        self.navigationController?.pushViewController(mapVC, animated: true)
+        coordinator?.showMap()
     }
 
     @objc private func refreshNearbyFacilities() {
@@ -111,7 +122,7 @@ class MainViewController: UIViewController {
 
             self.nearbyFacilitiesViewModel.places.forEach { place in
                 group.enter()
-                self.placeSearchViewModel.fetchPlaceDetails(placeID: place.place_id) { detailedPlace in
+                self.viewModel.fetchPlaceDetails(placeID: place.place_id) { detailedPlace in
                     if let detailedPlace = detailedPlace {
                         if let index = self.nearbyFacilitiesViewModel.places.firstIndex(where: { $0.place_id == place.place_id }) {
                             self.nearbyFacilitiesViewModel.places[index] = detailedPlace
@@ -147,7 +158,7 @@ class MainViewController: UIViewController {
 
         for (index, place) in nearbyFacilitiesViewModel.places.enumerated() {
             group.enter()
-            placeSearchViewModel.fetchPlaceDetails(placeID: place.place_id) { [weak self] detailedPlace in
+            viewModel.fetchPlaceDetails(placeID: place.place_id) { [weak self] detailedPlace in
                 defer { group.leave() }
                 guard let self = self, let detailedPlace = detailedPlace else { return }
 
@@ -199,16 +210,8 @@ extension MainViewController: CLLocationManagerDelegate {
 // MARK: - UISearchBarDelegate
 extension MainViewController: UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        let searchVC = SearchViewController()
-        searchVC.currentLocation = self.currentLocation  // 현재 위치 전달
-
-        let navController = UINavigationController(rootViewController: searchVC)
-        navController.modalPresentationStyle = .overFullScreen
-        self.present(navController, animated: true) {
-            searchVC.searchBar.becomeFirstResponder()
-        }
+        coordinator?.showSearch(from: self)
     }
-
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource, FacilityCollectionViewCellDelegate
@@ -231,7 +234,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource, Facili
     }
 
     func didTapFacilityCell(_ cell: FacilityCollectionViewCell, place: Place) {
-        let gymDetailViewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel)
+        let gymDetailViewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: viewModel)
         let gymDetailVC = GymDetailViewController(viewModel: gymDetailViewModel)
         navigationController?.pushViewController(gymDetailVC, animated: true)
     }
@@ -249,4 +252,3 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource, Facili
         return 180
     }
 }
- 
