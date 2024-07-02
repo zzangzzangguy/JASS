@@ -14,6 +14,7 @@ class MainViewController: UIViewController {
     var nearbyFacilitiesViewModel: NearbyFacilitiesViewModel!
     var viewModel: PlaceSearchViewModel!
     weak var coordinator: MainCoordinator?
+    private var hasFetchedInitialLocation = false // 초기 위치 업데이트 플래그
 
     init(viewModel: PlaceSearchViewModel, placeUseCase: PlaceUseCase) {
         self.viewModel = viewModel
@@ -23,6 +24,11 @@ class MainViewController: UIViewController {
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        configureNavigationBar()
     }
 
     override func viewDidLoad() {
@@ -36,14 +42,17 @@ class MainViewController: UIViewController {
         setupTableView()
         setupRefreshButton()
 
-        navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.shadowImage = UIImage()
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-
         nearbyFacilitiesViewModel.reloadData = { [weak self] in
             self?.tableView.reloadData()
             self?.printFetchedPlaces()
         }
+    }
+
+    private func configureNavigationBar() {
+        navigationController?.setNavigationBarHidden(false, animated: false)
+        navigationController?.navigationBar.isTranslucent = false
+        navigationController?.navigationBar.barTintColor = .white
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
     }
 
     private func setupLocationManager() {
@@ -184,7 +193,7 @@ class MainViewController: UIViewController {
 // MARK: - CLLocationManagerDelegate
 extension MainViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
+        guard let location = locations.last, !hasFetchedInitialLocation else { return }
         currentLocation = location.coordinate
         let geocoder = CLGeocoder()
         geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
@@ -198,6 +207,7 @@ extension MainViewController: CLLocationManagerDelegate {
                 self.navigationItem.title = "\(placemark.locality ?? "") \(placemark.subLocality ?? "")"
             }
         }
+        hasFetchedInitialLocation = true
         locationManager.stopUpdatingLocation()
         fetchNearbyFacilities()
     }

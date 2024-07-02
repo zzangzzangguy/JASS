@@ -76,9 +76,10 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         view.backgroundColor = .white
         view.addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(10)
-            make.leading.equalToSuperview().inset(20)
-        }
+               make.top.equalTo(view.safeAreaLayoutGuide).offset(10)
+               make.leading.equalToSuperview().offset(20)
+               make.width.height.equalTo(44)
+           }
 
         searchBar.delegate = self
         view.addSubview(searchBar)
@@ -258,7 +259,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         } else {
             placeSearchViewModel.searchAutoComplete(for: searchText)
                 .subscribe(onNext: { [weak self] suggestions in
-                    self?.autoCompleteSuggestions = suggestions
+                    self?.autoCompleteSuggestions = suggestions.filter { !$0.contains("대한민국") }
                     DispatchQueue.main.async {
                         self?.updateUIForCurrentState()
                     }

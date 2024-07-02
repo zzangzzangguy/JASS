@@ -19,15 +19,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.  
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
 
     // MARK: - Private Methods
 
     private func setupGoogleMapsAndPlaces() {
         if let apiKey = Bundle.main.infoDictionary?["API_KEY"] as? String {
+            print("Google Maps API Key: \(apiKey)")
             GMSServices.provideAPIKey(apiKey)
             GMSPlacesClient.provideAPIKey(apiKey)
         } else {
@@ -37,11 +35,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func setupRealm() {
         let config = Realm.Configuration(
-            schemaVersion: 2,
+            schemaVersion: 4,
             migrationBlock: { migration, oldSchemaVersion in
-                if oldSchemaVersion < 1 {
+                if oldSchemaVersion < 4 {
                     migration.enumerateObjects(ofType: FavoritePlace.className()) { oldObject, newObject in
-                        newObject?["name"] = oldObject?["name"]
+                        // 필요한 마이그레이션 로직 추가
                     }
                 }
             })
@@ -53,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         do {
             _ = try Realm()
         } catch {
-            fatalError("Realm 초기화 실패: \(error)")
+            print("Realm 초기화 실패: \(error)")
         }
     }
 }

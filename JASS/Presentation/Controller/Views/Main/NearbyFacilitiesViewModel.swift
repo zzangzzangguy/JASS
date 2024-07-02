@@ -21,7 +21,7 @@ class NearbyFacilitiesViewModel {
         print("fetchNearbyFacilities 호출됨: \(location)")
         placeSearchViewModel.searchNearbySportsFacilities(at: location)
             .subscribe(onNext: { [weak self] places in
-                self?.places = Array(places.shuffled().prefix(5))
+                self?.places = Array(places.shuffled().prefix(2))
                 self?.reloadData?()
                 completion()
             }, onError: { error in

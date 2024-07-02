@@ -320,6 +320,7 @@
 		4E97CAAE2C2D7E8300ECF24B /* DetailView */ = {
 			isa = PBXGroup;
 			children = (
+				4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */,
 				4E0DD6862C2C43220029EDDB /* GymDetailViewModel.swift */,
 			);
 			path = DetailView;
@@ -410,7 +411,6 @@
 			isa = PBXGroup;
 			children = (
 				4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */,
-				4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */,
 				4EF9318D2B3EA06E00E5794B /* Views */,
 			);
 			path = Controller;
@@ -524,7 +524,6 @@
 				4EF931252B1C912E00E5794B /* Frameworks */,
 				4EF931262B1C912E00E5794B /* Resources */,
 				284952ECFEC490B7201BDBF9 /* [CP] Copy Pods Resources */,
-				DAF123C2B20B42FA74578E94 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -578,7 +577,6 @@
 				4EF931452B1C913000E5794B /* Frameworks */,
 				4EF931462B1C913000E5794B /* Resources */,
 				3C3B9E5F84FF979B8D044A32 /* [CP] Copy Pods Resources */,
-				DFDAF925647D3BC648F6E1A2 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -770,40 +768,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		DAF123C2B20B42FA74578E94 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		DFDAF925647D3BC648F6E1A2 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

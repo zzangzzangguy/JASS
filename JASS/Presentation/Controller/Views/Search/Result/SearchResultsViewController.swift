@@ -94,6 +94,7 @@ class SearchResultsViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        tableView.reloadData()
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 

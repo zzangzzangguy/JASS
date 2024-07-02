@@ -25,7 +25,10 @@ class PlaceSearchViewModel {
         }
 
         isSearching.accept(true)
-        return placeUseCase.searchPlaces(query: input)
+        return placeUseCase.searchPlaces(query: input + "헬스,필라테스,수영장,요가,크로스핏,복싱,G.X,주짓수,골프,수영")
+            .map { places in
+                return places.filter { $0.isGym }
+            }
             .do(onNext: { [weak self] places in
                 self?.searchResults.accept(places)
                 self?.isSearching.accept(false)
@@ -81,6 +84,9 @@ class PlaceSearchViewModel {
 
     func searchAutoComplete(for query: String) -> Observable<[String]> {
         return placeUseCase.getAutocomplete(query: query)
+            .map { suggestions in
+                return suggestions.filter { !$0.contains("대한민국") }
+            }
             .do(onNext: { [weak self] suggestions in
                 self?.autoCompleteResults.accept(suggestions)
             }, onError: { [weak self] error in
