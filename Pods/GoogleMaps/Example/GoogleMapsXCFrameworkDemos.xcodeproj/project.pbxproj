@@ -36,7 +36,6 @@
 		36963FF48688CB43A061A910 /* TileLayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AFB4D667570207CE427E154 /* TileLayerViewController.m */; };
 		36FF202E44BFF7E0F1475D3F /* walking_dot@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FD104BE757F6B292840CF4DA /* walking_dot@3x.png */; };
 		3B6B6998848E77BCB0E7C0DF /* glow-marker.png in Resources */ = {isa = PBXBuildFile; fileRef = 4FE519417F012DC5390E080B /* glow-marker.png */; };
-		3BE63F66CEA29205556B03D4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54FF7D728243C732BE5CCEBF /* UIKit.framework */; };
 		3C8910025E89CD7AE0502889 /* CustomIndoorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A480C379253CB45093B99A72 /* CustomIndoorViewController.m */; };
 		438FFCC78B8AB2DCF33CF057 /* FitBoundsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 692F0E1F5B81C6403AEC0919 /* FitBoundsViewController.m */; };
 		44B81C062D7DC06F1ED8B298 /* x29.png in Resources */ = {isa = PBXBuildFile; fileRef = E2705016D4A4F41101F207FC /* x29.png */; };
@@ -53,6 +52,7 @@
 		57D5CD9CAB9D940115B826CA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2369B46AD19C2DE198A82E20 /* LaunchScreen.storyboard */; };
 		5C00D748465B33B26260A27E /* aeroplane.png in Resources */ = {isa = PBXBuildFile; fileRef = A5085DCE62CFD5956C4AE958 /* aeroplane.png */; };
 		6016438CA61517B434A91F5D /* IndoorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B26DE4CEA5D8AFDC911B31 /* IndoorViewController.m */; };
+		6266D7C7E5EE5F6CBEE5DD43 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54FF7D728243C732BE5CCEBF /* UIKit.framework */; };
 		64389E12EA070DB7D09CF034 /* boat@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 37D68F7F3A716D835389DE3A /* boat@2x.png */; };
 		64706C36737A9C9F2FB0614D /* australia.png in Resources */ = {isa = PBXBuildFile; fileRef = 391C4BEBCF0EB4DF08D479FB /* australia.png */; };
 		6CBE2501B899E79C259C2906 /* GMSNotCapturingTouchesTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4C73E5CA8887D1A321EB297 /* GMSNotCapturingTouchesTableView.m */; };
@@ -92,6 +92,7 @@
 		D3CB35F33C4AA227239546BC /* step2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 90DAA7D7D2EC158138011F70 /* step2@2x.png */; };
 		D9FF781A12DE20C4CC49BD76 /* MapLayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0CC84C1824BC3D464AE2360 /* MapLayerViewController.m */; };
 		DAFD70E93C7CA1D64F2F5EF4 /* TrafficMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DCDE5879DF446014DD233CC /* TrafficMapViewController.m */; };
+		E38C5B7F2B02AC7A001E5B82 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E38C5B7E2B02AC7A001E5B82 /* Contacts.framework */; };
 		E9C3A28449964E9845F007F5 /* FixedPanoramaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77D6F3A965ED915EF8C24711 /* FixedPanoramaViewController.m */; };
 		EDB724C24A2217BC88A9F518 /* StructuredGeocoderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F55B6A9A985370CD2161A26 /* StructuredGeocoderViewController.m */; };
 		EEBA3193E85AFF3585995FF5 /* CustomMarkersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 334E50318E9479B98AD305D3 /* CustomMarkersViewController.m */; };
@@ -261,7 +262,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3BE63F66CEA29205556B03D4 /* UIKit.framework in Frameworks */,
+				6266D7C7E5EE5F6CBEE5DD43 /* UIKit.framework in Frameworks */,
+				E38C5B7F2B02AC7A001E5B82 /* Contacts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,7 +282,7 @@
 			isa = PBXGroup;
 			children = (
 				289637F0EEDCF3E62A549F07 /* Source */,
-				8670F95D7A05C04D4029CFB9 /* Frameworks */,
+				9012D7FCBD3B8AF6F97D252A /* Frameworks */,
 				4821ED2B48575D39F15E7A3E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -356,7 +358,7 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
-		8670F95D7A05C04D4029CFB9 /* Frameworks */ = {
+		9012D7FCBD3B8AF6F97D252A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				54FF7D728243C732BE5CCEBF /* UIKit.framework */,
@@ -658,7 +660,10 @@
 		F9B4FA0FAFB2D015072B6DB9 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				"ARCHS[sdk=iphonesimulator*]" = x86_64;
+				"ARCHS[sdk=iphonesimulator*]" = (
+					x86_64,
+					arm64,
+				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

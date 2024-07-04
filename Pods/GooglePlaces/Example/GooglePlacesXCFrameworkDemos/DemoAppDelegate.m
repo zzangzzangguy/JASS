@@ -15,7 +15,11 @@
 
 #import "GooglePlacesXCFrameworkDemos/DemoAppDelegate.h"
 
+#if __has_feature(modules)
+@import GooglePlaces;
+#else
 #import <GooglePlaces/GooglePlaces.h>
+#endif
 #import "GooglePlacesXCFrameworkDemos/DemoSceneDelegate.h"
 #import "GooglePlacesXCFrameworkDemos/SDKDemoAPIKey.h"
 
@@ -31,7 +35,7 @@
     // Blow up if APIKeys have not yet been set.
     NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
     NSString *format = @"Configure APIKeys inside SDKDemoAPIKey.h for your  bundle `%@`, see "
-                       @"README.GooglePlacesXCFrameworkDemos for more information";
+                       @"README.GooglePlacesDemos for more information";
     @throw [NSException exceptionWithName:@"DemoAppDelegate"
                                    reason:[NSString stringWithFormat:format, bundleId]
                                  userInfo:nil];

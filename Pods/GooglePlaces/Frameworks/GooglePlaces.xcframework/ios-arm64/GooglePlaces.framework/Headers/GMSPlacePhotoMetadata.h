@@ -10,6 +10,9 @@
 
 #import <UIKit/UIKit.h>
 
+
+@class GMSPlaceAuthorAttribution;
+
 NS_ASSUME_NONNULL_BEGIN
 
 /** The metadata corresponding to a single photo associated with a place. */

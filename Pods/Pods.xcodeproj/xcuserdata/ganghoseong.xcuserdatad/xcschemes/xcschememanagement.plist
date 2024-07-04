@@ -4,7 +4,7 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Alamofire.xcscheme</key>
+		<key>Google-Maps-iOS-Utils.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -25,21 +25,6 @@
 			<false/>
 		</dict>
 		<key>GooglePlaces.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Kingfisher-Kingfisher.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Kingfisher.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Moya.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

@@ -1,38 +1,46 @@
 PODS:
-  - Alamofire (5.8.1)
-  - GoogleMaps (8.3.1):
-    - GoogleMaps/Maps (= 8.3.1)
-  - GoogleMaps/Base (8.3.1)
-  - GoogleMaps/Maps (8.3.1):
+  - Google-Maps-iOS-Utils (4.1.0):
+    - Google-Maps-iOS-Utils/Clustering (= 4.1.0)
+    - Google-Maps-iOS-Utils/Geometry (= 4.1.0)
+    - Google-Maps-iOS-Utils/GeometryUtils (= 4.1.0)
+    - Google-Maps-iOS-Utils/Heatmap (= 4.1.0)
+    - Google-Maps-iOS-Utils/QuadTree (= 4.1.0)
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/Clustering (4.1.0):
+    - Google-Maps-iOS-Utils/QuadTree
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/Geometry (4.1.0):
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/GeometryUtils (4.1.0):
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/Heatmap (4.1.0):
+    - Google-Maps-iOS-Utils/QuadTree
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/QuadTree (4.1.0):
+    - GoogleMaps
+  - GoogleMaps (8.4.0):
+    - GoogleMaps/Maps (= 8.4.0)
+  - GoogleMaps/Base (8.4.0)
+  - GoogleMaps/Maps (8.4.0):
     - GoogleMaps/Base
-  - GooglePlaces (8.3.0)
-  - Kingfisher (7.10.1)
-  - Moya (15.0.0):
-    - Moya/Core (= 15.0.0)
-  - Moya/Core (15.0.0):
-    - Alamofire (~> 5.0)
+  - GooglePlaces (8.5.0)
 
 DEPENDENCIES:
+  - Google-Maps-iOS-Utils
   - GoogleMaps
   - GooglePlaces
-  - Kingfisher
-  - Moya
 
 SPEC REPOS:
   trunk:
-    - Alamofire
+    - Google-Maps-iOS-Utils
     - GoogleMaps
     - GooglePlaces
-    - Kingfisher
-    - Moya
 
 SPEC CHECKSUMS:
-  Alamofire: 3ca42e259043ee0dc5c0cdd76c4bc568b8e42af7
-  GoogleMaps: b47b67bd63d708477d6ff457da2d695c0d8ceb5f
-  GooglePlaces: b922e192c50994436900ef14d19f84971950250b
-  Kingfisher: bc5abe80a8e0144537ef1dd5a0b2621b04f7f439
-  Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
+  Google-Maps-iOS-Utils: 3343332b18dfd5be8f1f44edd7d481ace3da4d9a
+  GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
+  GooglePlaces: 426efb69051e7b460e16300ba63598687d10fa1a
 
-PODFILE CHECKSUM: bf990924e9c3769cf8056c572114e3bccb542ff6
+PODFILE CHECKSUM: fa78c23b2d1a70a6a29874680ab4d1d376468290
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.15.2

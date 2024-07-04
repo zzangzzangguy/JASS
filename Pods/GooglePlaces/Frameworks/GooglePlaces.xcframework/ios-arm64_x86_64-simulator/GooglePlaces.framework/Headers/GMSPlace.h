@@ -18,6 +18,7 @@
 @class GMSPlacePhotoMetadata;
 @class GMSPlaceViewportInfo;
 @class GMSPlusCode;
+@class GMSPlaceReview;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -80,7 +81,6 @@ typedef NS_ENUM(NSInteger, GMSPlacesBusinessStatus) {
 
 /**@}*/
 
-
 /**
  * \defgroup BooleanPlaceAttribute GMSBooleanPlaceAttribute
  * @{
@@ -97,7 +97,6 @@ typedef NS_ENUM(NSInteger, GMSBooleanPlaceAttribute) {
 };
 
 /**@}*/
-
 
 /**
  * Represents a particular physical place. A GMSPlace encapsulates information about a physical
@@ -135,6 +134,7 @@ typedef NS_ENUM(NSInteger, GMSBooleanPlaceAttribute) {
  * enough users have reviewed this place).
  */
 @property(nonatomic, readonly, assign) float rating;
+
 
 /**
  * Price level for this place, as integers from 0 to 4.
@@ -270,7 +270,6 @@ typedef NS_ENUM(NSInteger, GMSBooleanPlaceAttribute) {
  */
 @property(nonatomic, readonly, nullable) NSURL *iconImageURL;
 
-
 /** Place Attribute for takeout experience. */
 @property(nonatomic, readonly) GMSBooleanPlaceAttribute takeout;
 
@@ -309,7 +308,6 @@ typedef NS_ENUM(NSInteger, GMSBooleanPlaceAttribute) {
 
 /** Place Attribute indicating place is wheelchair accessible at the entrance. */
 @property(nonatomic, readonly) GMSBooleanPlaceAttribute wheelchairAccessibleEntrance;
-
 
 @end
 

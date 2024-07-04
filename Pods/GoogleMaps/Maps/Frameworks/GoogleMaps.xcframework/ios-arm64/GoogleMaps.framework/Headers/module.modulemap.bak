@@ -6,6 +6,7 @@ module GoogleMaps {
   module * { export * }
   link "m"
   link "z"
+  link framework "Contacts"
   link framework "CoreData"
   link framework "CoreFoundation"
   link framework "CoreGraphics"
@@ -13,6 +14,7 @@ module GoogleMaps {
   link framework "CoreLocation"
   link framework "CoreTelephony"
   link framework "CoreText"
+  link framework "CoreVideo"
   link framework "Foundation"
   link framework "GLKit"
   link framework "ImageIO"

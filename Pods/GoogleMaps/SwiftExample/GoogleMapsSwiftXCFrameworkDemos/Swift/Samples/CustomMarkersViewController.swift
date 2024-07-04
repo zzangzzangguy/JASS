@@ -33,6 +33,9 @@ class CustomMarkersViewController: UIViewController {
     let clearButton = UIBarButtonItem(
       title: "Clear Markers", style: .plain, target: self, action: #selector(tapClear))
     navigationItem.rightBarButtonItems = [addButton, clearButton]
+
+    // Reset count on view load
+    markerCount = 0
   }
 
   func addDefaultMarkers() {
@@ -67,6 +70,9 @@ class CustomMarkersViewController: UIViewController {
   @objc func tapClear() {
     mapView.clear()
     addDefaultMarkers()
+
+    // Reset count on clear
+    markerCount = 0
   }
 
   @objc func addMarker(inBounds bounds: GMSCoordinateBounds) {

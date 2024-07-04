@@ -11,6 +11,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
+
 #import "GMSPlacesDeprecationUtils.h"
 
 @protocol GMSPlaceLocationBias;
@@ -118,7 +119,7 @@ typedef NS_ENUM(NSInteger, GMSPlacesAutocompleteTypeFilter) {
 /** The optional location bias to prefer place results near the location. */
 @property(nonatomic, nullable) id<GMSPlaceLocationBias> locationBias;
 
-/** The optional location restriction to limit the place results to. */
+/** The optional location restriction to limit place results. */
 @property(nonatomic, nullable) id<GMSPlaceLocationRestriction> locationRestriction;
 
 @end

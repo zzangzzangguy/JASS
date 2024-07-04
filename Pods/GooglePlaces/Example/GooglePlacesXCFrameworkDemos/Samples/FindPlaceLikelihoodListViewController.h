@@ -16,8 +16,10 @@
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
 
+#import "GooglePlacesXCFrameworkDemos/Support/BaseDemoViewController.h"
+
 /** Demo that exposes the findPlaceLikelihoodsForLocation API. */
 @interface FindPlaceLikelihoodListViewController
-    : UIViewController <UITableViewDataSource, UITableViewDelegate, CLLocationManagerDelegate>
+    : BaseDemoViewController <UITableViewDataSource, UITableViewDelegate, CLLocationManagerDelegate>
 
 @end

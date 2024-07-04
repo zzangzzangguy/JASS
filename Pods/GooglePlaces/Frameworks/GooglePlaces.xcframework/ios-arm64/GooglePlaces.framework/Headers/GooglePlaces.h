@@ -15,6 +15,8 @@
 #import <GooglePlaces/GMSPlaceLocationOptions.h>
 #import <GooglePlaces/GMSPlacePhotoMetadata.h>
 #import <GooglePlaces/GMSPlacePhotoMetadataList.h>
+#import <GooglePlaces/GMSPlaceProperty.h>
+#import <GooglePlaces/GMSPlaceSearchByTextRequest.h>
 #import <GooglePlaces/GMSPlaceSpecialDay.h>
 #import <GooglePlaces/GMSPlaceTypes.h>
 #import <GooglePlaces/GMSPlaceViewportInfo.h>

@@ -13,7 +13,11 @@
  * permissions and limitations under the License.
  */
 
+#if __has_feature(modules)
+@import GooglePlaces;
+#else
 #import <GooglePlaces/GooglePlaces.h>
+#endif
 #import "GooglePlacesXCFrameworkDemos/Support/BaseDemoViewController.h"
 
 static CGFloat const kButtonHeight = 44.f;
@@ -35,6 +39,12 @@ static CGFloat const kButtonTopMargin = 100.f;
  */
 @property(nonatomic, assign) GMSPlaceField placeFields;
 
+/**
+ * The |GMSPlaceProperty| array for specifying explicit place details to be requested for the
+ * |GMSPlace| result.
+ */
+
+@property(nonatomic, strong) NSArray<GMSPlaceProperty> *placeProperties;
 /**
  * Build a UIButton to display the autocomplete widget and add it to the UI. This should be called
  * only if the demo requires such a button, e.g. demos for modal presentation of widgets would use
