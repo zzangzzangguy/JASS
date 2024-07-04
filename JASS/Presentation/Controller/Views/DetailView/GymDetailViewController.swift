@@ -4,7 +4,6 @@ import Then
 import SnapKit
 
 class GymDetailViewController: UIViewController, UIScrollViewDelegate {
-    
     var coordinator: MainCoordinator?
     var viewModel: GymDetailViewModel
     var scrollView: UIScrollView!
@@ -70,13 +69,13 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+//        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+//        navigationController?.setNavigationBarHidden(false, animated: animated)
         coordinator?.popViewController()
     }
 

@@ -3,7 +3,6 @@ import UIKit
 
 final class FavoritesCoordinator: Coordinator {
     weak var delegate: CoordinatorDelegate?
-
     var navigationController: UINavigationController
     var childCoordinators: [Coordinator] = []
     let placeUseCase: PlaceUseCase
@@ -15,13 +14,14 @@ final class FavoritesCoordinator: Coordinator {
 
     func start() {
         let viewModel = PlaceSearchViewModel(placeUseCase: placeUseCase)
-        let viewController = FavoritesViewController(viewModel: viewModel) // viewModel을 초기화 인자로 전달
+        let viewController = FavoritesViewController(viewModel: viewModel) 
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: false)
     }
 
     func showPlaceDetails(_ place: Place) {
-        let detailViewController = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase)))
-        navigationController.pushViewController(detailViewController, animated: true)
-    }
-}
+           let detailViewController = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase)))
+           navigationController.setNavigationBarHidden(true, animated: true)
+           navigationController.pushViewController(detailViewController, animated: true)
+       }
+   }

@@ -14,6 +14,8 @@
 		4E21846D2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */; };
 		4E21846F2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */; };
 		4E2184712C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */; };
+		4E3D700F2C370C570090EBDF /* RecentPlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3D700E2C370C570090EBDF /* RecentPlace.swift */; };
+		4E3D70112C370D650090EBDF /* RecentPlacesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3D70102C370D650090EBDF /* RecentPlacesManager.swift */; };
 		4E52D97B2C19AE0D0007494A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E52D97A2C19AE0D0007494A /* SearchViewController.swift */; };
 		4E7CB96B2C10139E00F5F3D7 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96A2C10139E00F5F3D7 /* RxCocoa */; };
 		4E7CB96D2C10139E00F5F3D7 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96C2C10139E00F5F3D7 /* RxRelay */; };
@@ -51,6 +53,10 @@
 		4EDB89822BEA9F8A001C558E /* FavoritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDB89812BEA9F8A001C558E /* FavoritesViewController.swift */; };
 		4EDB89862BEAA118001C558E /* FavoritePlaceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDB89852BEAA118001C558E /* FavoritePlaceCell.swift */; };
 		4EDB89892BEAA6C0001C558E /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 4EDB89882BEAA6C0001C558E /* Toast */; };
+		4EE526412C36A55D00DD3355 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE526402C36A55D00DD3355 /* MainViewModel.swift */; };
+		4EE526432C36A83900DD3355 /* NearbyFacilitiesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE526422C36A83900DD3355 /* NearbyFacilitiesUseCase.swift */; };
+		4EE526452C36A86900DD3355 /* RecentPlacesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE526442C36A86900DD3355 /* RecentPlacesUseCase.swift */; };
+		4EE526472C36A92E00DD3355 /* RecentPlacesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE526462C36A92E00DD3355 /* RecentPlacesTableViewCell.swift */; };
 		4EF0BE222BCCE6350076074E /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF0BE212BCCE6350076074E /* Then */; };
 		4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */; };
 		4EF9312C2B1C912E00E5794B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9312B2B1C912E00E5794B /* AppDelegate.swift */; };
@@ -109,6 +115,8 @@
 		4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyFacilitiesViewModel.swift; sourceTree = "<group>"; };
 		4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacilityCollectionViewCell.swift; sourceTree = "<group>"; };
 		4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyFacilitiesTableViewCell.swift; sourceTree = "<group>"; };
+		4E3D700E2C370C570090EBDF /* RecentPlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlace.swift; sourceTree = "<group>"; };
+		4E3D70102C370D650090EBDF /* RecentPlacesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlacesManager.swift; sourceTree = "<group>"; };
 		4E52D97A2C19AE0D0007494A /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		4E8225912C29EB5400A0AE94 /* LoadingIndicatorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LoadingIndicatorManager.swift; path = ../JASS/Presentation/Controller/LoadingIndicatorManager.swift; sourceTree = "<group>"; };
 		4E8225962C29F73200A0AE94 /* FavoritePlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePlace.swift; sourceTree = "<group>"; };
@@ -137,6 +145,10 @@
 		4ECA89DF2BF11978006C6DEC /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastManager.swift; sourceTree = "<group>"; };
 		4EDB89812BEA9F8A001C558E /* FavoritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewController.swift; sourceTree = "<group>"; };
 		4EDB89852BEAA118001C558E /* FavoritePlaceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePlaceCell.swift; sourceTree = "<group>"; };
+		4EE526402C36A55D00DD3355 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		4EE526422C36A83900DD3355 /* NearbyFacilitiesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyFacilitiesUseCase.swift; sourceTree = "<group>"; };
+		4EE526442C36A86900DD3355 /* RecentPlacesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlacesUseCase.swift; sourceTree = "<group>"; };
+		4EE526462C36A92E00DD3355 /* RecentPlacesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlacesTableViewCell.swift; sourceTree = "<group>"; };
 		4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymDetailViewController.swift; sourceTree = "<group>"; };
 		4EF0BE252BCD2D750076074E /* GooglePlaces.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GooglePlaces.xcframework; path = Pods/GooglePlaces/Frameworks/GooglePlaces.xcframework; sourceTree = "<group>"; };
 		4EF931282B1C912E00E5794B /* JASS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JASS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -223,6 +235,25 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4E2D78412C3700A7007A7210 /* RecentPlaceView */ = {
+			isa = PBXGroup;
+			children = (
+				4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */,
+				4EE526462C36A92E00DD3355 /* RecentPlacesTableViewCell.swift */,
+			);
+			path = RecentPlaceView;
+			sourceTree = "<group>";
+		};
+		4E2D78422C3700D4007A7210 /* NearbyFacilities */ = {
+			isa = PBXGroup;
+			children = (
+				4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */,
+				4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */,
+				4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */,
+			);
+			path = NearbyFacilities;
+			sourceTree = "<group>";
+		};
 		4E7CB9642C0F3D5D00F5F3D7 /* Application */ = {
 			isa = PBXGroup;
 			children = (
@@ -280,10 +311,10 @@
 		4E97CAAA2C2D7D3100ECF24B /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */,
-				4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */,
 				4EF931912B46CB5E00E5794B /* MainViewController.swift */,
-				4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */,
+				4EE526402C36A55D00DD3355 /* MainViewModel.swift */,
+				4E2D78422C3700D4007A7210 /* NearbyFacilities */,
+				4E2D78412C3700A7007A7210 /* RecentPlaceView */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -350,6 +381,8 @@
 		4E97CAC22C30595E00ECF24B /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
+				4EE526422C36A83900DD3355 /* NearbyFacilitiesUseCase.swift */,
+				4EE526442C36A86900DD3355 /* RecentPlacesUseCase.swift */,
 				4E97CAC32C3059C300ECF24B /* GetFavoritesUseCase.swift */,
 				4E97CAC62C305CA300ECF24B /* PlaceUseCase.swift */,
 				4E97CAC82C305CA800ECF24B /* SearchPlacesUseCase.swift */,
@@ -390,7 +423,6 @@
 				4EF931892B3D5FEB00E5794B /* RecentSearchCell.swift */,
 				4EF931812B336EEB00E5794B /* SearchRecentViewModel.swift */,
 				4EF9317B2B29DB6400E5794B /* RecentSearchViewController.swift */,
-				4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */,
 			);
 			path = Recent;
 			sourceTree = "<group>";
@@ -401,6 +433,7 @@
 				4E8225912C29EB5400A0AE94 /* LoadingIndicatorManager.swift */,
 				4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */,
 				4E82259A2C29F82E00A0AE94 /* FavoriteManager.swift */,
+				4E3D70102C370D650090EBDF /* RecentPlacesManager.swift */,
 				4ECA89DF2BF11978006C6DEC /* ToastManager.swift */,
 				4E9966CD2BE141BF002E3763 /* LocationManager.swift */,
 			);
@@ -410,10 +443,17 @@
 		4EA17A022B7B743C006A1D51 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */,
 				4EF9318D2B3EA06E00E5794B /* Views */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		4ED9A6A02C36810A00970AC7 /* Filter */ = {
+			isa = PBXGroup;
+			children = (
+				4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */,
+			);
+			path = Filter;
 			sourceTree = "<group>";
 		};
 		4EF9311F2B1C912E00E5794B = {
@@ -481,6 +521,7 @@
 			isa = PBXGroup;
 			children = (
 				4E8225962C29F73200A0AE94 /* FavoritePlace.swift */,
+				4E3D700E2C370C570090EBDF /* RecentPlace.swift */,
 				4EF931832B3370A600E5794B /* SearchHistory.swift */,
 				4EF931682B21C00300E5794B /* Place.swift */,
 			);
@@ -490,6 +531,7 @@
 		4EF9318D2B3EA06E00E5794B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4ED9A6A02C36810A00970AC7 /* Filter */,
 				4E97CAAE2C2D7E8300ECF24B /* DetailView */,
 				4E97CAAD2C2D7E0800ECF24B /* Map */,
 				4E97CAAB2C2D7D6D00ECF24B /* Search */,
@@ -785,12 +827,15 @@
 				4E52D97B2C19AE0D0007494A /* SearchViewController.swift in Sources */,
 				4E97CAC72C305CA300ECF24B /* PlaceUseCase.swift in Sources */,
 				4E97CA922C2D773C00ECF24B /* SearchCoordinator.swift in Sources */,
+				4E3D700F2C370C570090EBDF /* RecentPlace.swift in Sources */,
+				4EE526412C36A55D00DD3355 /* MainViewModel.swift in Sources */,
 				4EDB89862BEAA118001C558E /* FavoritePlaceCell.swift in Sources */,
 				4E97CAA92C2D7CAB00ECF24B /* PlaceLocalDataSource.swift in Sources */,
 				4E97CAB62C2DE75A00ECF24B /* GooglePlaceApiService.swift in Sources */,
 				4EF9317C2B29DB6400E5794B /* RecentSearchViewController.swift in Sources */,
 				4E97CABC2C2DE7D600ECF24B /* DefaultPlaceUseCase.swift in Sources */,
 				4E97CA942C2D775B00ECF24B /* MapCoordinator.swift in Sources */,
+				4E3D70112C370D650090EBDF /* RecentPlacesManager.swift in Sources */,
 				4EF931842B3370A600E5794B /* SearchHistory.swift in Sources */,
 				4EF9316D2B21C32D00E5794B /* MapViewController.swift in Sources */,
 				4E97CAA72C2D7CA100ECF24B /* PlaceRemoteDataSource.swift in Sources */,
@@ -804,9 +849,12 @@
 				4EF931822B336EEB00E5794B /* SearchRecentViewModel.swift in Sources */,
 				4E82259B2C29F82E00A0AE94 /* FavoriteManager.swift in Sources */,
 				4E97CAC12C30586100ECF24B /* FavoritesRepository.swift in Sources */,
+				4EE526472C36A92E00DD3355 /* RecentPlacesTableViewCell.swift in Sources */,
 				4E97CA8E2C2D771900ECF24B /* MainCoordinator.swift in Sources */,
 				4E9966CE2BE141BF002E3763 /* LocationManager.swift in Sources */,
 				4E82259C2C29F92200A0AE94 /* FavoritePlace.swift in Sources */,
+				4EE526432C36A83900DD3355 /* NearbyFacilitiesUseCase.swift in Sources */,
+				4EE526452C36A86900DD3355 /* RecentPlacesUseCase.swift in Sources */,
 				4E97CA9A2C2D781B00ECF24B /* DefaultGetFavoritesUseCase.swift in Sources */,
 				4EF9318A2B3D5FEC00E5794B /* RecentSearchCell.swift in Sources */,
 				4EF931622B218AFC00E5794B /* GooglePlacesAPI.swift in Sources */,

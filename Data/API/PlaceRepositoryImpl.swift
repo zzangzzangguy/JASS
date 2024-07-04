@@ -4,6 +4,7 @@ import GoogleMaps
 
 class PlaceRepositoryImpl: PlaceRepository {
     private let apiService: GooglePlacesAPIService
+    private var recentPlaces: [Place] = [] 
 
     init(apiService: GooglePlacesAPIService) {
         self.apiService = apiService
@@ -52,5 +53,18 @@ class PlaceRepositoryImpl: PlaceRepository {
             "type": "gym"
         ]
         return apiService.searchNearby(parameters: parameters)
+    }
+
+    func getRecentPlaces() -> Observable<[Place]> { // 추가
+        return Observable.just(recentPlaces)
+    }
+
+    func addRecentPlace(_ place: Place) { // 추가
+        if !recentPlaces.contains(where: { $0.place_id == place.place_id }) {
+            recentPlaces.append(place)
+            if recentPlaces.count > 10 {
+                recentPlaces.removeFirst()
+            }
+        }
     }
 }
