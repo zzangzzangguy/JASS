@@ -11,4 +11,6 @@ protocol PlaceRepository {
     func getAutocomplete(query: String) -> Observable<[String]>
     func calculateDistances(from origin: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) -> Observable<String?>
     func searchNearbySportsFacilities(at location: CLLocationCoordinate2D) -> Observable<[Place]>
+    func getRecentPlaces() -> Observable<[Place]>
+    func addRecentPlace(_ place: Place) 
 }

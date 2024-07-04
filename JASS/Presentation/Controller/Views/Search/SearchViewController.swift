@@ -60,6 +60,11 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         return button
     }()
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -76,7 +81,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         view.backgroundColor = .white
         view.addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
-               make.top.equalTo(view.safeAreaLayoutGuide).offset(10)
+               make.top.equalTo(view.safeAreaLayoutGuide)
                make.leading.equalToSuperview().offset(20)
                make.width.height.equalTo(44)
            }

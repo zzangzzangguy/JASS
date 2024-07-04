@@ -17,6 +17,7 @@ class FavoritesViewController: UIViewController {
            fatalError("init(coder:) has not been implemented")
        }
     
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
@@ -26,6 +27,7 @@ class FavoritesViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
         tableView.reloadData()
     }
 
@@ -47,6 +49,8 @@ class FavoritesViewController: UIViewController {
     }
 
     private func setupNavigationBar() {
+//        navigationController?.navigationBar.barTintColor = .black
+//        navigationController?.navigationBar.tintColor = .white
         navigationItem.title = "즐겨찾기"
     }
 }

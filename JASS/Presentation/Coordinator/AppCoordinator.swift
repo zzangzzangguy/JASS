@@ -4,26 +4,25 @@ final class AppCoordinator: Coordinator {
     weak var delegate: CoordinatorDelegate?
     var childCoordinators = [Coordinator]()
     var navigationController: UINavigationController
+    var tabBarController: UITabBarController
 
-    init(navigationController: UINavigationController) {
-        self.navigationController = navigationController
+    init(window: UIWindow) {
+        self.navigationController = UINavigationController()
+        self.tabBarController = UITabBarController()
+
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
     }
 
     func start() {
-        showMainViewController()
-    }
-
-    private func showMainViewController() {
-        let tabBarController = UITabBarController()
         let placeRepository = PlaceRepositoryImpl(apiService: GooglePlacesAPIService())
-        let placeUseCase = DefaultPlaceUseCase(repository: placeRepository) 
-        let mainCoordinator = MainCoordinator(navigationController: navigationController, tabBarController: tabBarController, placeUseCase: placeUseCase)
+        let placeUseCase = DefaultPlaceUseCase(repository: placeRepository)
+        let recentPlacesManager = RecentPlacesManager()
+        let mainCoordinator = MainCoordinator(navigationController: navigationController, tabBarController: tabBarController, placeUseCase: placeUseCase, recentPlacesManager: recentPlacesManager)
         mainCoordinator.delegate = self
         childCoordinators.append(mainCoordinator)
         mainCoordinator.start()
-
         navigationController.setViewControllers([tabBarController], animated: false)
-//        navigationController.setNavigationBarHidden(true, animated: false)
     }
 }
 

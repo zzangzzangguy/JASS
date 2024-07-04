@@ -7,10 +7,12 @@ final class SearchCoordinator: Coordinator {
     var navigationController: UINavigationController
     var childCoordinators: [Coordinator] = []
     let placeUseCase: PlaceUseCase
+    let recentPlacesViewModel: RecentPlacesViewModel
 
-    init(navigationController: UINavigationController, placeUseCase: PlaceUseCase) {
+    init(navigationController: UINavigationController, placeUseCase: PlaceUseCase, recentPlacesViewModel: RecentPlacesViewModel) {
         self.navigationController = navigationController
         self.placeUseCase = placeUseCase
+        self.recentPlacesViewModel = recentPlacesViewModel
     }
 
     func start() {
@@ -24,7 +26,7 @@ final class SearchCoordinator: Coordinator {
     }
 
     func showSearchResults(from viewController: UIViewController, query: String, places: [Place], currentLocation: CLLocationCoordinate2D?) {
-        let searchResultsVC = SearchResultsViewController(placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase))
+        let searchResultsVC = SearchResultsViewController(placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase), recentPlacesViewModel: recentPlacesViewModel)
         searchResultsVC.searchQuery = query
         searchResultsVC.currentLocation = currentLocation
         searchResultsVC.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: searchResultsVC)

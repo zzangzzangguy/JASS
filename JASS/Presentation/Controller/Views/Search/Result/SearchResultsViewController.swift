@@ -60,7 +60,7 @@ class SearchResultsViewController: UIViewController {
             searchBar.text = searchQuery
         }
     }
-
+    var recentPlacesViewModel: RecentPlacesViewModel?
     var placeSearchViewModel: PlaceSearchViewModel?
     var viewModel: SearchResultsViewModel?
     weak var delegate: SearchResultsViewDelegate?
@@ -68,8 +68,9 @@ class SearchResultsViewController: UIViewController {
 
     // MARK: - Initializer
     // 초기화 메서드 추가
-    init(placeSearchViewModel: PlaceSearchViewModel) {
+    init(placeSearchViewModel: PlaceSearchViewModel, recentPlacesViewModel: RecentPlacesViewModel) {
         self.placeSearchViewModel = placeSearchViewModel
+        self.recentPlacesViewModel = recentPlacesViewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -273,6 +274,8 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let place = viewModel?.searchResults[indexPath.row],
               let placeSearchViewModel = placeSearchViewModel else { return }
+        recentPlacesViewModel?.addRecentPlace(place) // 최근 본 운동시설 추가
+        print("최근본 운동시설 추가 \(place)")
 
         delegate?.didSelectPlace(place)
         let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel))

@@ -5,6 +5,7 @@ import RxSwift
 
 class MainViewController: UIViewController {
     private let disposeBag = DisposeBag()
+
     let locationManager = CLLocationManager()
     let searchBar = UISearchBar()
     let findOnMapButton = UIButton()
@@ -12,23 +13,20 @@ class MainViewController: UIViewController {
     let tableView = UITableView()
     var currentLocation: CLLocationCoordinate2D?
     var nearbyFacilitiesViewModel: NearbyFacilitiesViewModel!
+    var recentPlacesViewModel: RecentPlacesViewModel!
     var viewModel: PlaceSearchViewModel!
     weak var coordinator: MainCoordinator?
-    private var hasFetchedInitialLocation = false // 초기 위치 업데이트 플래그
+    private var hasFetchedInitialLocation = false
 
-    init(viewModel: PlaceSearchViewModel, placeUseCase: PlaceUseCase) {
+    init(viewModel: PlaceSearchViewModel, placeUseCase: PlaceUseCase, recentPlacesViewModel: RecentPlacesViewModel) {
         self.viewModel = viewModel
         self.nearbyFacilitiesViewModel = NearbyFacilitiesViewModel(placeUseCase: placeUseCase)
+        self.recentPlacesViewModel = recentPlacesViewModel
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        configureNavigationBar()
     }
 
     override func viewDidLoad() {
@@ -41,18 +39,21 @@ class MainViewController: UIViewController {
         setupFindOnMapButton()
         setupTableView()
         setupRefreshButton()
+        configureNavigationBar()
 
         nearbyFacilitiesViewModel.reloadData = { [weak self] in
             self?.tableView.reloadData()
             self?.printFetchedPlaces()
         }
+
+        bindRecentPlaces()
     }
 
     private func configureNavigationBar() {
-        navigationController?.setNavigationBarHidden(false, animated: false)
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(refreshNearbyFacilities))
     }
 
     private func setupLocationManager() {
@@ -85,7 +86,7 @@ class MainViewController: UIViewController {
 
     private func setupFindOnMapButton() {
         findOnMapButton.setTitle("지도에서 찾기", for: .normal)
-        findOnMapButton.setTitleColor(UIColor.white, for: .normal)
+        findOnMapButton.setTitleColor(.white, for: .normal)
         findOnMapButton.imageView?.contentMode = .scaleAspectFit
         findOnMapButton.layer.cornerRadius = 10
         findOnMapButton.clipsToBounds = true
@@ -106,6 +107,7 @@ class MainViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(NearbyFacilitiesTableViewCell.self, forCellReuseIdentifier: NearbyFacilitiesTableViewCell.id)
+        tableView.register(RecentPlacesTableViewCell.self, forCellReuseIdentifier: RecentPlacesTableViewCell.id)
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.top.equalTo(findOnMapButton.snp.bottom).offset(20)
@@ -188,6 +190,15 @@ class MainViewController: UIViewController {
     private func printFetchedPlaces() {
         print("Fetched Places in MainViewController: \(nearbyFacilitiesViewModel.places.map { "\($0.name): \($0.formatted_address ?? "주소 없음")" })")
     }
+
+    private func bindRecentPlaces() {
+        recentPlacesViewModel.recentPlacesRelay
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.tableView.reloadData()
+            })
+            .disposed(by: disposeBag)
+    }
 }
 
 // MARK: - CLLocationManagerDelegate
@@ -195,6 +206,18 @@ extension MainViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last, !hasFetchedInitialLocation else { return }
         currentLocation = location.coordinate
+        updateLocationTitle(location: location)
+        hasFetchedInitialLocation = true
+        locationManager.stopUpdatingLocation()
+        fetchNearbyFacilities()
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Failed to find user's location: \(error.localizedDescription)")
+        self.navigationItem.title = "위치를 가져올 수 없습니다."
+    }
+
+    private func updateLocationTitle(location: CLLocation) {
         let geocoder = CLGeocoder()
         geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
             guard let self = self else { return }
@@ -204,16 +227,13 @@ extension MainViewController: CLLocationManagerDelegate {
                 return
             }
             if let placemark = placemarks?.first {
-                self.navigationItem.title = "\(placemark.locality ?? "") \(placemark.subLocality ?? "")"
+                let title = "\(placemark.locality ?? "") \(placemark.subLocality ?? "")"
+                DispatchQueue.main.async {
+                    self.navigationItem.title = title
+                    print("현재 위치: \(title)")
+                }
             }
         }
-        hasFetchedInitialLocation = true
-        locationManager.stopUpdatingLocation()
-        fetchNearbyFacilities()
-    }
-
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Failed to find user's location: \(error.localizedDescription)")
     }
 }
 
@@ -227,7 +247,7 @@ extension MainViewController: UISearchBarDelegate {
 // MARK: - UITableViewDelegate, UITableViewDataSource, FacilityCollectionViewCellDelegate
 extension MainViewController: UITableViewDelegate, UITableViewDataSource, FacilityCollectionViewCellDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -235,23 +255,42 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource, Facili
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: NearbyFacilitiesTableViewCell.id, for: indexPath) as? NearbyFacilitiesTableViewCell else {
-            return UITableViewCell()
+        if indexPath.section == 0 {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: RecentPlacesTableViewCell.id, for: indexPath) as? RecentPlacesTableViewCell else {
+                return UITableViewCell()
+            }
+
+            recentPlacesViewModel.recentPlaces
+                .observe(on: MainScheduler.instance)
+                .subscribe(onNext: { [weak self] places in
+                    cell.configure(with: places)
+                })
+                .disposed(by: disposeBag)
+
+            return cell
+        } else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: NearbyFacilitiesTableViewCell.id, for: indexPath) as? NearbyFacilitiesTableViewCell else {
+                return UITableViewCell()
+            }
+            cell.configure(with: nearbyFacilitiesViewModel.places)
+            cell.delegate = self
+            return cell
         }
-        cell.configure(with: nearbyFacilitiesViewModel.places)
-        cell.delegate = self
-        return cell
     }
 
+
     func didTapFacilityCell(_ cell: FacilityCollectionViewCell, place: Place) {
-        let gymDetailViewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: viewModel)
-        let gymDetailVC = GymDetailViewController(viewModel: gymDetailViewModel)
-        navigationController?.pushViewController(gymDetailVC, animated: true)
+        coordinator?.showPlaceDetails(from: self, for: place)
+        recentPlacesViewModel.addRecentPlace(place)
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerLabel = UILabel()
-        headerLabel.text = "내 주변 운동 시설"
+        if section == 0 {
+            headerLabel.text = "최근 본 운동시설"
+        } else {
+            headerLabel.text = "내 주변 운동 시설"
+        }
         headerLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         headerLabel.textAlignment = .left
         headerLabel.backgroundColor = .white
