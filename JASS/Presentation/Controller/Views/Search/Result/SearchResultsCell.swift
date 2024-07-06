@@ -54,6 +54,8 @@ class SearchResultCell: UITableViewCell {
 
     private let loadingIndicator = UIActivityIndicatorView(style: .medium)
 
+    private var distanceCalculationTask: DispatchWorkItem?
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
@@ -122,31 +124,8 @@ class SearchResultCell: UITableViewCell {
         addressLabel.text = place.formatted_address
         reviewsLabel.text = place.reviews?.compactMap { $0.text }.joined(separator: "\n\n") ?? "리뷰 없음"
 
-//        print("셀 구성: 이름: \(place.name), 주소: \(place.formatted_address ?? "주소 정보 없음"), 거리: \(place.distanceText ?? "거리 정보 없음")//, 리뷰: \(reviewsLabel.text ?? "리뷰 없음")")
+        updateDistanceLabel(for: place, currentLocation: currentLocation)
 
-        if let distanceText = place.distanceText {
-                updateDistanceText(distanceText)
-            } else if let currentLocation = currentLocation {
-                distanceLabel.text = "거리 계산 중..."
-                placeSearchViewModel?.calculateDistances(from: currentLocation, to: place.coordinate) { [weak self] distanceText in
-                    guard let self = self else { return }
-                    DispatchQueue.main.async {
-                        self.updateDistanceText(distanceText)
-                        self.delegate?.didUpdateDistance(for: self, distanceText: distanceText)
-                    }
-                }
-            } else {
-                distanceLabel.text = "위치 정보 없음"
-
-            if place.reviews == nil {
-                placeSearchViewModel?.fetchPlaceDetails(placeID: place.place_id) { [weak self] detailedPlace in
-                    guard let self = self else { return }
-                    DispatchQueue.main.async {
-                        self.reviewsLabel.text = detailedPlace?.reviews?.compactMap { $0.text }.joined(separator: "\n\n") ?? "리뷰 없음"
-                    }
-                }
-            }
-        }
         if let photoMetadatas = place.photos {
             loadingIndicator.startAnimating()
             loadFirstPhotoForPlace(place, photoMetadatas: photoMetadatas)
@@ -157,12 +136,47 @@ class SearchResultCell: UITableViewCell {
 
         let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
         updateFavoriteButton(isFavorite: isFavorite)
+
+        if place.reviews == nil {
+            fetchPlaceDetails(for: place)
+        }
+    }
+
+    private func updateDistanceLabel(for place: Place, currentLocation: CLLocationCoordinate2D?) {
+        distanceCalculationTask?.cancel()
+
+        if let distanceText = place.distanceText {
+            updateDistanceText(distanceText)
+        } else if let currentLocation = currentLocation {
+            distanceLabel.text = "거리 계산 중..."
+            let task = DispatchWorkItem { [weak self] in
+                self?.placeSearchViewModel?.calculateDistances(from: currentLocation, to: place.coordinate) { [weak self] distanceText in
+                    guard let self = self else { return }
+                    DispatchQueue.main.async {
+                        self.updateDistanceText(distanceText)
+                        self.delegate?.didUpdateDistance(for: self, distanceText: distanceText)
+                    }
+                }
+            }
+            distanceCalculationTask = task
+            DispatchQueue.global().async(execute: task)
+        } else {
+            distanceLabel.text = "위치 정보 없음"
+        }
     }
 
     func updateDistanceText(_ distanceText: String?) {
         distanceLabel.text = distanceText ?? "거리 정보 없음"
         self.place?.distanceText = distanceText
+    }
 
+    private func fetchPlaceDetails(for place: Place) {
+        placeSearchViewModel?.fetchPlaceDetails(placeID: place.place_id) { [weak self] detailedPlace in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.reviewsLabel.text = detailedPlace?.reviews?.compactMap { $0.text }.joined(separator: "\n\n") ?? "리뷰 없음"
+            }
+        }
     }
 
     private func loadFirstPhotoForPlace(_ place: Place, photoMetadatas: [Photo]) {
@@ -212,5 +226,14 @@ class SearchResultCell: UITableViewCell {
         let tintColor: UIColor = isFavorite ? .red : .gray
         favoriteButton.setImage(heartImage, for: .normal)
         favoriteButton.tintColor = tintColor
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        distanceCalculationTask?.cancel()
+        distanceCalculationTask = nil
+        distanceLabel.text = nil
+        placeImageView.image = nil
+        loadingIndicator.stopAnimating()
     }
 }

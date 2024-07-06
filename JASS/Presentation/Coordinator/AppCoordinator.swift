@@ -2,27 +2,25 @@ import UIKit
 
 final class AppCoordinator: Coordinator {
     weak var delegate: CoordinatorDelegate?
-    var childCoordinators = [Coordinator]()
-    var navigationController: UINavigationController
-    var tabBarController: UITabBarController
+    var childCoordinators: [Coordinator] = []
+    var window: UIWindow
 
     init(window: UIWindow) {
-        self.navigationController = UINavigationController()
-        self.tabBarController = UITabBarController()
-
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        self.window = window
     }
 
     func start() {
         let placeRepository = PlaceRepositoryImpl(apiService: GooglePlacesAPIService())
         let placeUseCase = DefaultPlaceUseCase(repository: placeRepository)
         let recentPlacesManager = RecentPlacesManager()
-        let mainCoordinator = MainCoordinator(navigationController: navigationController, tabBarController: tabBarController, placeUseCase: placeUseCase, recentPlacesManager: recentPlacesManager)
+
+        let mainCoordinator = MainCoordinator(placeUseCase: placeUseCase, recentPlacesManager: recentPlacesManager)
         mainCoordinator.delegate = self
         childCoordinators.append(mainCoordinator)
         mainCoordinator.start()
-        navigationController.setViewControllers([tabBarController], animated: false)
+
+        window.rootViewController = mainCoordinator.rootViewController
+        window.makeKeyAndVisible()
     }
 }
 

@@ -1,34 +1,46 @@
-import Foundation
-import GoogleMaps
+// LocationManager.swift
 
-class LocationManager: NSObject, GMSMapViewDelegate {
+import CoreLocation
+
+class LocationManager: NSObject, CLLocationManagerDelegate {
     static let shared = LocationManager()
-    private var mapView: GMSMapView?
-    private var currentLocation: CLLocationCoordinate2D?
+
+    private let locationManager = CLLocationManager()
+    private(set) var currentLocation: CLLocationCoordinate2D?
+
+    var onLocationUpdate: ((CLLocationCoordinate2D) -> Void)?
 
     private override init() {
         super.init()
+        setupLocationManager()
     }
 
-    func setMapView(_ mapView: GMSMapView) {
-        self.mapView = mapView
-        mapView.delegate = self
-        mapView.isMyLocationEnabled = true
-        mapView.settings.myLocationButton = true
+    private func setupLocationManager() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
     }
-    func setCurrentLocation(_ location: CLLocationCoordinate2D) {
-           self.currentLocation = location
-       }
+
+    func startUpdatingLocation() {
+        locationManager.startUpdatingLocation()
+    }
+
+    func stopUpdatingLocation() {
+        locationManager.stopUpdatingLocation()
+    }
 
     func getCurrentLocation() -> CLLocationCoordinate2D? {
-        if currentLocation == nil {
-                  print("현재 위치를 가져올 수 없습니다.")
-              }
-              return currentLocation
-          }
+        return currentLocation
+    }
 
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        currentLocation = location.coordinate
+        print("LocationManager - 현재 위치 업데이트: \(location.coordinate)")
+        onLocationUpdate?(location.coordinate)
+    }
 
-    func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
-        currentLocation = position.target
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("위치 업데이트 실패: \(error.localizedDescription)")
     }
 }

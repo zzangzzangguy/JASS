@@ -3,18 +3,18 @@ import CoreLocation
 
 final class MainCoordinator: Coordinator {
     weak var delegate: CoordinatorDelegate?
-    var navigationController: UINavigationController
     var childCoordinators: [Coordinator] = []
     let tabBarController: UITabBarController
     let placeUseCase: PlaceUseCase
     let recentPlacesViewModel: RecentPlacesViewModel
-    let recentPlacesManager: RecentPlacesManager
 
-    init(navigationController: UINavigationController, tabBarController: UITabBarController, placeUseCase: PlaceUseCase, recentPlacesManager: RecentPlacesManager) {
-        self.navigationController = navigationController
-        self.tabBarController = tabBarController
+    var rootViewController: UIViewController {
+        return tabBarController
+    }
+
+    init(placeUseCase: PlaceUseCase, recentPlacesManager: RecentPlacesManager) {
+        self.tabBarController = UITabBarController()
         self.placeUseCase = placeUseCase
-        self.recentPlacesManager = recentPlacesManager
         self.recentPlacesViewModel = RecentPlacesViewModel(recentPlacesManager: recentPlacesManager)
     }
 
@@ -23,20 +23,18 @@ final class MainCoordinator: Coordinator {
         mainVC.coordinator = self
         let mainNavController = UINavigationController(rootViewController: mainVC)
         configureNavigationBarAppearance(mainNavController)
-        mainVC.tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
+        mainNavController.tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
 
         let favoritesCoordinator = FavoritesCoordinator(navigationController: UINavigationController(), placeUseCase: placeUseCase)
         childCoordinators.append(favoritesCoordinator)
         favoritesCoordinator.start()
-        let favoritesVC = favoritesCoordinator.navigationController.viewControllers.first as! FavoritesViewController
-        configureNavigationBarAppearance(favoritesCoordinator.navigationController)
-        favoritesVC.tabBarItem = UITabBarItem(title: "즐겨찾기", image: UIImage(systemName: "heart"), selectedImage: UIImage(systemName: "heart.fill"))
+        let favoritesNavController = favoritesCoordinator.navigationController
+        configureNavigationBarAppearance(favoritesNavController)
+        favoritesNavController.tabBarItem = UITabBarItem(title: "즐겨찾기", image: UIImage(systemName: "heart"), selectedImage: UIImage(systemName: "heart.fill"))
 
-        tabBarController.viewControllers = [
-            mainNavController,
-            favoritesCoordinator.navigationController
-        ]
+        tabBarController.viewControllers = [mainNavController, favoritesNavController]
     }
+
 
     private func configureNavigationBarAppearance(_ navController: UINavigationController) {
         let appearance = UINavigationBarAppearance()
@@ -69,8 +67,8 @@ final class MainCoordinator: Coordinator {
     }
 
     func popViewController() {
-        navigationController.popViewController(animated: true)
-        navigationController.setNavigationBarHidden(false, animated: true)
+//        navigationController.popViewController(animated: true)
+//        navigationController.setNavigationBarHidden(false, animated: true)
     }
 
     func showMap() {
