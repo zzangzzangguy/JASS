@@ -1,3 +1,5 @@
+// SearchResultsViewController.swift
+
 import UIKit
 import SnapKit
 import Then
@@ -51,6 +53,7 @@ class SearchResultsViewController: UIViewController {
 
     var selectedCategories: Set<String> = []
     var currentLocation: CLLocationCoordinate2D?
+    private let locationManager = CLLocationManager()
     private let disposeBag = DisposeBag()
 
     private let defaultCategory = "헬스,필라테스,크로스핏,복싱,수영,골프,클라이밍"
@@ -85,12 +88,9 @@ class SearchResultsViewController: UIViewController {
         setupUI()
         setupBindings()
         setupActions()
+        setupLocationManager()
         performInitialSearch()
         print("SearchResultsViewController - 받은 현재 위치: \(String(describing: self.currentLocation))")  // 디버그 출력
-
-        if let currentLocation = self.currentLocation {
-            LocationManager.shared.setCurrentLocation(currentLocation)
-        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -158,6 +158,19 @@ class SearchResultsViewController: UIViewController {
         filterButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
     }
 
+    private func setupLocationManager() {
+        LocationManager.shared.onLocationUpdate = { [weak self] location in
+            self?.currentLocation = location
+            print("SearchResultsViewController - 업데이트된 현재 위치: \(location)")
+            if let places = self?.viewModel?.searchResults, !places.isEmpty {
+                self?.calculateDistances(for: places, from: location)
+            }
+        }
+        LocationManager.shared.startUpdatingLocation()
+    }
+
+
+
     // MARK: - Actions
 
     @objc private func backButtonTapped() {
@@ -190,6 +203,8 @@ class SearchResultsViewController: UIViewController {
             .disposed(by: disposeBag)
     }
 
+
+
     private func performInitialSearch() {
         guard let query = searchQuery else { return }
         placeSearchViewModel?.searchPlace(input: query, category: "all")
@@ -201,18 +216,17 @@ class SearchResultsViewController: UIViewController {
             .disposed(by: disposeBag)
     }
 
+
     func update(with places: [Place]) {
         print("SearchResultsViewController update with \(places.count) places")
         viewModel?.loadSearchResults(with: places)
-        tableView.reloadData()
-        if let currentLocation = LocationManager.shared.getCurrentLocation() {
+        if let currentLocation = self.currentLocation {
             calculateDistances(for: places, from: currentLocation)
         } else {
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
+            print("SearchResultsViewController - 현재 위치를 사용할 수 없습니다. 위치 업데이트를 기다리는 중입니다.")
         }
     }
+
 
     private func calculateDistances(for places: [Place], from currentLocation: CLLocationCoordinate2D) {
         let group = DispatchGroup()
@@ -233,6 +247,8 @@ class SearchResultsViewController: UIViewController {
             self?.tableView.reloadData()
         }
     }
+
+
 
     private func reloadCellForPlace(_ place: Place) {
         guard let indexPath = viewModel?.searchResults.firstIndex(where: { $0.place_id == place.place_id }).map({ IndexPath(row: $0, section: 0) }) else { return }
@@ -351,12 +367,12 @@ extension SearchResultsViewController: FilterViewDelegate {
                         self.showToast("필터링된 장소가 없습니다.")
                     }
 
-                    if let currentLocation = LocationManager.shared.getCurrentLocation() {
+                    if let currentLocation = self.currentLocation {
                         self.calculateDistances(for: places, from: currentLocation)
                     }
                 }
             }, onError: { error in
-                print("Error: \(error.localizedDescription)")
+                print("perform Search Error: \(error.localizedDescription)")
             })
             .disposed(by: disposeBag)
     }
@@ -365,3 +381,4 @@ extension SearchResultsViewController: FilterViewDelegate {
         view.makeToast(message)
     }
 }
+

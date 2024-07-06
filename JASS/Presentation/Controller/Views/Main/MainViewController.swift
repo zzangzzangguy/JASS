@@ -206,6 +206,7 @@ extension MainViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last, !hasFetchedInitialLocation else { return }
         currentLocation = location.coordinate
+        print("LocationManager - 현재 위치 업데이트: \(location.coordinate)")
         updateLocationTitle(location: location)
         hasFetchedInitialLocation = true
         locationManager.stopUpdatingLocation()

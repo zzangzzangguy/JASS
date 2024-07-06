@@ -6,9 +6,8 @@ protocol CoordinatorDelegate: AnyObject {
 
 protocol Coordinator: AnyObject {
     var delegate: CoordinatorDelegate? { get set }
-    var navigationController: UINavigationController { get set }
+//    var navigationController: UINavigationController { get set }
     var childCoordinators: [Coordinator] { get set }
-
     func start()
     func finish()
 }

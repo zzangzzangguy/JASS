@@ -15,7 +15,7 @@ class MapViewModel {
     var currentLocation: CLLocation? {
         didSet {
             guard let currentLocation = currentLocation else {
-                print("현재 위치를 가져올 수 없습니다.")
+                print("맵뷰 모델 현재 위치를 가져올 수 없습니다.")
                 return
             }
             print("현재 위치 설정됨: \(currentLocation.coordinate)")
