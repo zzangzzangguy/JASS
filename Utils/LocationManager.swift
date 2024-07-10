@@ -37,7 +37,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         guard let location = locations.last else { return }
         currentLocation = location.coordinate
         print("LocationManager - 현재 위치 업데이트: \(location.coordinate)")
-        onLocationUpdate?(location.coordinate)
+        onLocationUpdate?(location.coordinate)  
+        locationManager.stopUpdatingLocation()
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

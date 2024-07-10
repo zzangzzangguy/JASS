@@ -1,5 +1,3 @@
-// SearchResultsViewController.swift
-
 import UIKit
 import SnapKit
 import Then
@@ -7,6 +5,7 @@ import Kingfisher
 import CoreLocation
 import Toast
 import RxSwift
+import RxCocoa
 
 protocol SearchResultsViewDelegate: AnyObject {
     func didSelectPlace(_ place: Place)
@@ -53,7 +52,6 @@ class SearchResultsViewController: UIViewController {
 
     var selectedCategories: Set<String> = []
     var currentLocation: CLLocationCoordinate2D?
-    private let locationManager = CLLocationManager()
     private let disposeBag = DisposeBag()
 
     private let defaultCategory = "헬스,필라테스,크로스핏,복싱,수영,골프,클라이밍"
@@ -67,14 +65,14 @@ class SearchResultsViewController: UIViewController {
     var placeSearchViewModel: PlaceSearchViewModel?
     var viewModel: SearchResultsViewModel?
     weak var delegate: SearchResultsViewDelegate?
-    var mapViewModel: MapViewModel?
 
     // MARK: - Initializer
-    // 초기화 메서드 추가
     init(placeSearchViewModel: PlaceSearchViewModel, recentPlacesViewModel: RecentPlacesViewModel) {
         self.placeSearchViewModel = placeSearchViewModel
         self.recentPlacesViewModel = recentPlacesViewModel
         super.init(nibName: nil, bundle: nil)
+        print("DEBUG: placeSearchViewModel 초기화 완료")
+
     }
 
     required init?(coder: NSCoder) {
@@ -90,12 +88,10 @@ class SearchResultsViewController: UIViewController {
         setupActions()
         setupLocationManager()
         performInitialSearch()
-        print("SearchResultsViewController - 받은 현재 위치: \(String(describing: self.currentLocation))")  // 디버그 출력
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tableView.reloadData()
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
@@ -146,6 +142,11 @@ class SearchResultsViewController: UIViewController {
     private func setupBindings() {
         viewModel?.updateSearchResults = { [weak self] in
             DispatchQueue.main.async {
+                print("DEBUG: 검색 결과 업데이트 - 총 \(self?.viewModel?.searchResults.count ?? 0)개 장소")
+                self?.viewModel?.searchResults.forEach { place in
+                    print("DEBUG: 업데이트된 장소 - 이름: \(place.name), 거리: \(place.distanceText ?? "없음")")
+                }
+
                 self?.tableView.reloadData()
             }
         }
@@ -160,21 +161,17 @@ class SearchResultsViewController: UIViewController {
 
     private func setupLocationManager() {
         LocationManager.shared.onLocationUpdate = { [weak self] location in
+//            print("DEBUG: 현재 위치 업데이트 - 위도: \(location.latitude), 경도: \(location.longitude)")
+
             self?.currentLocation = location
-            print("SearchResultsViewController - 업데이트된 현재 위치: \(location)")
-            if let places = self?.viewModel?.searchResults, !places.isEmpty {
-                self?.calculateDistances(for: places, from: location)
-            }
+//            self?.updateDistancesForCurrentPlaces()
         }
         LocationManager.shared.startUpdatingLocation()
     }
 
-
-
     // MARK: - Actions
 
     @objc private func backButtonTapped() {
-        navigationController?.setNavigationBarHidden(false, animated: false)
         navigationController?.popViewController(animated: true)
     }
 
@@ -185,7 +182,7 @@ class SearchResultsViewController: UIViewController {
     @objc private func filterButtonTapped() {
         let filterVC = FilterViewController()
         filterVC.delegate = self
-        filterVC.selectedCategories = selectedCategories  // Set<String>을 그대로 전달
+        filterVC.selectedCategories = selectedCategories
         present(filterVC, animated: true, completion: nil)
     }
 
@@ -194,68 +191,38 @@ class SearchResultsViewController: UIViewController {
         let categoriesToUse = categories ?? Array(selectedCategories)
         let category = categoriesToUse.isEmpty ? "all" : categoriesToUse.joined(separator: ",")
 
-        placeSearchViewModel?.searchPlace(input: query, category: category)
+        LoadingIndicatorManager.shared.show(in: view)
+
+        placeSearchViewModel?.searchPlace(input: query, category: category, currentLocation: self.currentLocation)
+            .flatMap { [weak self] places -> Observable<[Place]> in
+                guard let self = self, let currentLocation = self.currentLocation else {
+                    return Observable.just(places)
+                }
+                return self.placeSearchViewModel?.calculateDistances(for: places, from: currentLocation) ?? Observable.just(places)
+            }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] places in
-                self?.update(with: places)
-            }, onError: { error in
-                print("Error: \(error.localizedDescription)")
+                guard let self = self else { return }
+                LoadingIndicatorManager.shared.hide()
+                self.viewModel?.loadSearchResults(with: places)
+                self.tableView.reloadData()
+                if places.isEmpty {
+                    self.showToast("검색 결과가 없습니다.")
+                }
+            }, onError: { [weak self] error in
+                self?.showToast("검색 중 오류가 발생했습니다: \(error.localizedDescription)")
+                LoadingIndicatorManager.shared.hide()
             })
             .disposed(by: disposeBag)
     }
-
-
-
     private func performInitialSearch() {
         guard let query = searchQuery else { return }
-        placeSearchViewModel?.searchPlace(input: query, category: "all")
-            .subscribe(onNext: { [weak self] places in
-                self?.update(with: places)
-            }, onError: { error in
-                print("Error: \(error.localizedDescription)")
-            })
-            .disposed(by: disposeBag)
+        performSearch(with: [defaultCategory])
     }
 
 
-    func update(with places: [Place]) {
-        print("SearchResultsViewController update with \(places.count) places")
-        viewModel?.loadSearchResults(with: places)
-        if let currentLocation = self.currentLocation {
-            calculateDistances(for: places, from: currentLocation)
-        } else {
-            print("SearchResultsViewController - 현재 위치를 사용할 수 없습니다. 위치 업데이트를 기다리는 중입니다.")
-        }
-    }
-
-
-    private func calculateDistances(for places: [Place], from currentLocation: CLLocationCoordinate2D) {
-        let group = DispatchGroup()
-        var updatedPlaces = [Place]()
-
-        for place in places {
-            group.enter()
-            placeSearchViewModel?.calculateDistances(from: currentLocation, to: place.coordinate) { [weak self] distance in
-                defer { group.leave() }
-                var updatedPlace = place
-                updatedPlace.distanceText = distance ?? "거리 정보 없음"
-                updatedPlaces.append(updatedPlace)
-            }
-        }
-
-        group.notify(queue: .main) { [weak self] in
-            self?.viewModel?.loadSearchResults(with: updatedPlaces)
-            self?.tableView.reloadData()
-        }
-    }
-
-
-
-    private func reloadCellForPlace(_ place: Place) {
-        guard let indexPath = viewModel?.searchResults.firstIndex(where: { $0.place_id == place.place_id }).map({ IndexPath(row: $0, section: 0) }) else { return }
-
-        if let cell = tableView.cellForRow(at: indexPath) as? SearchResultCell {
-            cell.updateDistanceText(place.distanceText)
-        }
+    private func showToast(_ message: String) {
+        view.makeToast(message)
     }
 }
 
@@ -271,15 +238,17 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
               let place = viewModel?.searchResults[indexPath.row] else {
             return UITableViewCell()
         }
-        cell.placeSearchViewModel = self.placeSearchViewModel
-        let currentLocation = LocationManager.shared.getCurrentLocation()
+
+        print("DEBUG: cellForRowAt - 장소: \(place.name), 거리: \(place.distanceText ?? "없음")")
         cell.configure(with: place, currentLocation: currentLocation)
         cell.delegate = self
 
         placeSearchViewModel?.fetchPlaceDetails(placeID: place.place_id) { [weak cell] detailedPlace in
             DispatchQueue.main.async {
                 if let detailedPlace = detailedPlace {
-                    cell?.configure(with: detailedPlace, currentLocation: currentLocation)
+                    var updatedPlace = detailedPlace
+                    updatedPlace.distanceText = place.distanceText  
+                    cell?.configure(with: updatedPlace, currentLocation: self.currentLocation)
                 }
             }
         }
@@ -290,9 +259,7 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let place = viewModel?.searchResults[indexPath.row],
               let placeSearchViewModel = placeSearchViewModel else { return }
-        recentPlacesViewModel?.addRecentPlace(place) // 최근 본 운동시설 추가
-        print("최근본 운동시설 추가 \(place)")
-
+        recentPlacesViewModel?.addRecentPlace(place)
         delegate?.didSelectPlace(place)
         let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel))
         navigationController?.pushViewController(gymDetailVC, animated: true)
@@ -302,26 +269,18 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
 // MARK: - SearchResultCellDelegate
 
 extension SearchResultsViewController: SearchResultCellDelegate {
-    func didUpdateDistance(for cell: SearchResultCell, distanceText: String?) {
-        guard let indexPath = tableView.indexPath(for: cell),
-              var place = viewModel?.searchResults[indexPath.row] else { return }
-
-        place.distanceText = distanceText
-        reloadCellForPlace(place)
-    }
-
+    
     func didTapFavoriteButton(for cell: SearchResultCell) {
         guard let indexPath = tableView.indexPath(for: cell),
               let place = viewModel?.searchResults[indexPath.row] else { return }
 
-        let wasFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id ?? "")
         viewModel?.updateFavoriteStatus(for: place)
 
         let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id ?? "")
         cell.updateFavoriteButton(isFavorite: isFavorite)
 
         let message = isFavorite ? "즐겨찾기에 추가되었습니다." : "즐겨찾기에서 제거되었습니다."
-        view.makeToast(message)
+        showToast(message)
     }
 }
 
@@ -333,6 +292,8 @@ extension SearchResultsViewController: UISearchBarDelegate {
     }
 }
 
+// MARK: - FilterViewDelegate
+
 extension SearchResultsViewController: FilterViewDelegate {
     func filterViewDidCancel(_ filterView: FilterViewController) {
         dismiss(animated: true, completion: nil)
@@ -340,45 +301,6 @@ extension SearchResultsViewController: FilterViewDelegate {
 
     func filterView(_ filterView: FilterViewController, didSelectCategories categories: Set<String>) {
         selectedCategories = categories.isEmpty ? [defaultCategory] : categories
-
-        guard let query = searchBar.text, !query.isEmpty else {
-            showToast("검색어를 입력해주세요.")
-            return
-        }
-
         performSearch(with: Array(categories))
     }
-
-    private func performSearch(with categories: [String]) {
-        LoadingIndicatorManager.shared.show(in: view)
-
-        let category = categories.first ?? defaultCategory
-        placeSearchViewModel?.searchPlace(input: searchBar.text ?? "", category: category)
-            .subscribe(onNext: { [weak self] places in
-                guard let self = self else { return }
-
-                DispatchQueue.main.async {
-                    LoadingIndicatorManager.shared.hide()
-
-                    self.viewModel?.loadSearchResults(with: places)
-                    self.tableView.reloadData()
-
-                    if places.isEmpty {
-                        self.showToast("필터링된 장소가 없습니다.")
-                    }
-
-                    if let currentLocation = self.currentLocation {
-                        self.calculateDistances(for: places, from: currentLocation)
-                    }
-                }
-            }, onError: { error in
-                print("perform Search Error: \(error.localizedDescription)")
-            })
-            .disposed(by: disposeBag)
-    }
-
-    private func showToast(_ message: String) {
-        view.makeToast(message)
-    }
 }
-

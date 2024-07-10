@@ -77,6 +77,13 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         loadRecentSearches()
         setupKeywordButtons()
         print("SearchViewController가 로드됨")
+        LocationManager.shared.onLocationUpdate = { [weak self] location in
+               print("SearchViewController - 위치 업데이트: \(location)")
+               self?.currentLocation = location
+           }
+           LocationManager.shared.startUpdatingLocation()  // 위치 업데이트 시작
+
+
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
@@ -240,10 +247,9 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         print("performSearch called with query: \(query)")
         print("SearchViewController - 현재 위치: \(String(describing: self.currentLocation))")
         searchRecentViewModel.saveSearchHistory(query: query)
-        placeSearchViewModel.searchPlace(input: query, category: "all")
+        placeSearchViewModel.searchPlace(input: query, category: "all", currentLocation: self.currentLocation)
             .subscribe(onNext: { [weak self] places in
                 guard let self = self else { return }
-                print("API returned \(places.count) places")
                 DispatchQueue.main.async {
                     self.coordinator?.showSearchResults(from: self, query: query, places: places, currentLocation: self.currentLocation)
                 }
@@ -259,7 +265,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
             print("검색어를 입력하세요.")
             return
         }
-        print("Search button clicked with query: \(query)")
+//        print("Search button clicked with query: \(query)")
         performSearch(query: query)
     }
 

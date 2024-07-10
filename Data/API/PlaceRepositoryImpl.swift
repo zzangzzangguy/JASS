@@ -42,8 +42,19 @@ class PlaceRepositoryImpl: PlaceRepository {
     func calculateDistances(from origin: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) -> Observable<String?> {
         let originString = "\(origin.latitude),\(origin.longitude)"
         let destinationString = "\(destination.latitude),\(destination.longitude)"
+//        print("DEBUG: 거리 계산 요청 파라미터")
+//           print("DEBUG: 출발지(origin): \(originString)")
+//           print("DEBUG: 목적지(destination): \(destinationString)")
         return apiService.calculateDistances(origins: originString, destinations: destinationString)
-    }
+              .do(onNext: { distances in
+//                  print("DEBUG: 거리 계산 결과: \(distances)")
+              }, onError: { error in
+                  print("DEBUG: 거리 계산 오류: \(error.localizedDescription)")
+              })
+              .map { distances -> String? in
+                  return distances.first ?? nil
+              }
+      }
 
     func searchNearbySportsFacilities(at location: CLLocationCoordinate2D) -> Observable<[Place]> {
         let radius = 5000

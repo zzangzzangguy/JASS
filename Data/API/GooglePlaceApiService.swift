@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import GoogleMaps
 import RxSwift
 import RxMoya
 import Moya
@@ -55,17 +56,26 @@ class GooglePlacesAPIService {
             .asObservable()
     }
 
-    func calculateDistances(origins: String, destinations: String) -> Observable<String?> {
+    func calculateDistances(origins: String, destinations: String) -> Observable<[String?]> {
+//        print("DEBUG: origins: \(origins)")
+//        print("DEBUG: destinations: \(destinations)")
+//        print("DEBUG: mode: transit")
+//        print("DEBUG: key: \(Bundle.apiKey)")
+
         return provider.rx.request(.distanceMatrix(origins: origins, destinations: destinations, mode: "transit", key: Bundle.apiKey))
             .filterSuccessfulStatusCodes()
             .map(DistanceMatrixResponse.self)
-            .map { response in
-                if let element = response.rows.first?.elements.first, let distance = element.distance {
-                    return distance.text
-                }
-                return nil
-            }
             .asObservable()
+            .do(onNext: { response in
+//                print("DEBUG: API 응답 전체: \(response)")
+            })
+            .map { response in
+                return response.rows.first?.elements.map { $0.distance?.text } ?? []
+            }
+            .catch { error in
+                print("DEBUG: API 오류 발생: \(error)")
+                return Observable.just([])
+            }
     }
 
     func searchNearby(parameters: [String: Any]) -> Observable<[Place]> {
