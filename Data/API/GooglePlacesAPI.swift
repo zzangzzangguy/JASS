@@ -60,7 +60,7 @@ extension GooglePlacesAPI: TargetType {
             newParameters["key"] = Bundle.apiKey
             return .requestParameters(parameters: newParameters, encoding: URLEncoding.queryString)
         case .distanceMatrix(let origins, let destinations, let mode, let key):
-            return .requestParameters(parameters: ["origins": origins, "destinations": destinations, "mode": mode, "key": key], encoding: URLEncoding.default)
+            return .requestParameters(parameters: ["origins": origins, "destinations": destinations, "mode": "transit", "key": key], encoding: URLEncoding.default)
         case .autocomplete(let input, let types, let components, let language, let location, let radius, let strictbounds, let sessiontoken):
             var parameters: [String: Any] = [
                 "input": input,

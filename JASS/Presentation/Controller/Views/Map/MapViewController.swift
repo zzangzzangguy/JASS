@@ -1,4 +1,5 @@
 import UIKit
+import CoreLocation
 import GoogleMaps
 import GooglePlaces
 import SnapKit
@@ -175,13 +176,13 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
             showToast("필터가 적용되지 않았습니다. 기본 카테고리로 검색합니다.")
         }
 
-        placeSearchViewModel.searchPlace(input: query, category: category)
+        placeSearchViewModel.searchPlace(input: query, category: category, currentLocation: locationManager.location?.coordinate)
+
             .subscribe(onNext: { [weak self] places in
                 guard let self = self else { return }
                 self.viewModel.places.accept(places)
 
                 if let currentLocation = self.locationManager.location?.coordinate {
-                    self.viewModel.calculateDistances()
                 } else {
                     self.updateMapMarkers(with: places)
                 }
@@ -274,8 +275,7 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         if let searchText = searchBar.text, !searchText.isEmpty {
             searchRecentViewModel.saveSearchHistory(query: searchText)
             showLoadingIndicator()
-            placeSearchViewModel.searchPlace(input: searchText, category: selectedCategory ?? defaultCategory)
-                .subscribe(onNext: { [weak self] places in
+            placeSearchViewModel.searchPlace(input: searchText, category: selectedCategory ?? defaultCategory, currentLocation: locationManager.location?.coordinate)                .subscribe(onNext: { [weak self] places in
                     guard let self = self, let firstPlace = places.first else {
                         self?.showToast("검색 결과가 없습니다.")
                         self?.hideLoadingIndicator()
@@ -386,8 +386,7 @@ extension MapViewController: FilterViewDelegate {
         selectedCategory = categories.first
         guard let category = selectedCategory else { return }
 
-        placeSearchViewModel.searchPlace(input: query, category: category)
-            .subscribe(onNext: { [weak self] places in
+        placeSearchViewModel.searchPlace(input: query, category: category, currentLocation: locationManager.location?.coordinate)            .subscribe(onNext: { [weak self] places in
                 guard let self = self else { return }
                 self.hideLoadingIndicator()
                 self.viewModel.places.accept(places)

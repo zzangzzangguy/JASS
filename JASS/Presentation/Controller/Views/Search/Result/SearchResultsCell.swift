@@ -7,7 +7,6 @@ import GooglePlaces
 
 protocol SearchResultCellDelegate: AnyObject {
     func didTapFavoriteButton(for cell: SearchResultCell)
-    func didUpdateDistance(for cell: SearchResultCell, distanceText: String?)
 }
 
 class SearchResultCell: UITableViewCell {
@@ -119,12 +118,20 @@ class SearchResultCell: UITableViewCell {
     }
 
     func configure(with place: Place, currentLocation: CLLocationCoordinate2D?) {
+        print("DEBUG: 셀 구성 시작 - 장소: \(place.name), 거리: \(place.distanceText ?? "없음")")
+
         self.place = place
         nameLabel.text = place.name
         addressLabel.text = place.formatted_address
         reviewsLabel.text = place.reviews?.compactMap { $0.text }.joined(separator: "\n\n") ?? "리뷰 없음"
 
-        updateDistanceLabel(for: place, currentLocation: currentLocation)
+        if let distanceText = place.distanceText {
+            distanceLabel.text = distanceText
+            distanceLabel.isHidden = false
+        } else {
+            distanceLabel.text = "거리 정보 없음"
+            distanceLabel.isHidden = false
+        }
 
         if let photoMetadatas = place.photos {
             loadingIndicator.startAnimating()
@@ -137,46 +144,7 @@ class SearchResultCell: UITableViewCell {
         let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id)
         updateFavoriteButton(isFavorite: isFavorite)
 
-        if place.reviews == nil {
-            fetchPlaceDetails(for: place)
-        }
-    }
-
-    private func updateDistanceLabel(for place: Place, currentLocation: CLLocationCoordinate2D?) {
-        distanceCalculationTask?.cancel()
-
-        if let distanceText = place.distanceText {
-            updateDistanceText(distanceText)
-        } else if let currentLocation = currentLocation {
-            distanceLabel.text = "거리 계산 중..."
-            let task = DispatchWorkItem { [weak self] in
-                self?.placeSearchViewModel?.calculateDistances(from: currentLocation, to: place.coordinate) { [weak self] distanceText in
-                    guard let self = self else { return }
-                    DispatchQueue.main.async {
-                        self.updateDistanceText(distanceText)
-                        self.delegate?.didUpdateDistance(for: self, distanceText: distanceText)
-                    }
-                }
-            }
-            distanceCalculationTask = task
-            DispatchQueue.global().async(execute: task)
-        } else {
-            distanceLabel.text = "위치 정보 없음"
-        }
-    }
-
-    func updateDistanceText(_ distanceText: String?) {
-        distanceLabel.text = distanceText ?? "거리 정보 없음"
-        self.place?.distanceText = distanceText
-    }
-
-    private func fetchPlaceDetails(for place: Place) {
-        placeSearchViewModel?.fetchPlaceDetails(placeID: place.place_id) { [weak self] detailedPlace in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                self.reviewsLabel.text = detailedPlace?.reviews?.compactMap { $0.text }.joined(separator: "\n\n") ?? "리뷰 없음"
-            }
-        }
+        print("DEBUG: 셀 구성 완료 - 장소: \(place.name), 거리: \(distanceLabel.text ?? "없음")")
     }
 
     private func loadFirstPhotoForPlace(_ place: Place, photoMetadatas: [Photo]) {
@@ -230,10 +198,11 @@ class SearchResultCell: UITableViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        distanceCalculationTask?.cancel()
-        distanceCalculationTask = nil
-        distanceLabel.text = nil
+        distanceLabel.text = "거리 정보 로딩 중..."
+        distanceLabel.isHidden = false
         placeImageView.image = nil
         loadingIndicator.stopAnimating()
+        distanceCalculationTask?.cancel()
+        distanceCalculationTask = nil
     }
 }

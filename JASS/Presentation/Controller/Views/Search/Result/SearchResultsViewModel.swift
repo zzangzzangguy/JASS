@@ -8,10 +8,13 @@ class SearchResultsViewModel {
     private let notificationCenter = NotificationCenter.default
     private weak var viewController: UIViewController?
     var searchResults: [Place] = [] {
-        didSet {
-            updateSearchResults?()
-        }
-    }
+           didSet {
+//               print("DEBUG: 검색 결과 업데이트 - 총 \(searchResults.count)개 장소")
+               searchResults.forEach { place in
+//                   print("DEBUG: 업데이트된 장소 - 이름: \(place.name), 거리: \(place.distanceText ?? "없음")")
+               }
+           }
+       }
     var updateSearchResults: (() -> Void)?
 
     init(favoritesManager: FavoritesManager, viewController: UIViewController? = nil) {
@@ -69,9 +72,11 @@ class SearchResultsViewModel {
 
 
     func loadSearchResults(with places: [Place]) {
-        print("Loading search results with \(places.count) places")
-
-        searchResults = places
+        print("DEBUG: 검색 결과 업데이트 - 총 \(places.count)개 장소")
+        self.searchResults = places
+        places.forEach { place in
+            print("DEBUG: 업데이트된 장소 - 이름: \(place.name), 거리: \(place.distanceText ?? "없음")")
+        }
         updateSearchResults?()
     }
 }

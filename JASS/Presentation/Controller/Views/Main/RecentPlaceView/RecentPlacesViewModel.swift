@@ -13,7 +13,7 @@ class RecentPlacesViewModel {
     }
 
     var recentPlaces: Observable<[Place]> {
-        return recentPlacesRelay.asObservable()
+        return recentPlacesRelay.asObservable().distinctUntilChanged()
     }
 
     func addRecentPlace(_ place: Place) {
