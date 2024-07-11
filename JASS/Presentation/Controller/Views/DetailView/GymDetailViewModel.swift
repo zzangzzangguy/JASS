@@ -1,4 +1,5 @@
 import Foundation
+import RxCocoa
 import RxSwift
 import UIKit
 
@@ -7,6 +8,8 @@ class GymDetailViewModel {
     private let placeID: String
     private let placeSearchViewModel: PlaceSearchViewModel
     private let disposeBag = DisposeBag()
+    let favoriteToggle = PublishRelay<String>() // 추가된 부분
+
 
     var placeDetails: Place? {
         didSet {

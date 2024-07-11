@@ -1,11 +1,14 @@
 import Foundation
 import RealmSwift
+import RxSwift
 
 class FavoritesManager {
     static let shared = FavoritesManager()
 
     private var realm: Realm?
     private var favorites: Results<FavoritePlace>?
+
+    let favoriteChanged = PublishSubject<String>()
 
     private init() {
         do {
@@ -19,17 +22,27 @@ class FavoritesManager {
     func addFavorite(place: Place) {
         guard let realm = realm else { return }
         let favorite = FavoritePlace(place: place)
-        try! realm.write {
-            realm.add(favorite, update: .modified)
-            NotificationCenter.default.post(name: .favoritesDidChange, object: place)
+        do {
+            try realm.write {
+                realm.add(favorite, update: .modified)
+                NotificationCenter.default.post(name: .favoritesDidChange, object: place)
+                favoriteChanged.onNext(place.place_id)
+            }
+        } catch {
+            print("Favorite 추가 실패: \(error)")
         }
     }
 
     func removeFavorite(place: Place) {
         guard let realm = realm, let favorite = realm.objects(FavoritePlace.self).filter("placeID == %@", place.place_id).first else { return }
-        try! realm.write {
-            realm.delete(favorite)
-            NotificationCenter.default.post(name: .favoritesDidChange, object: place)
+        do {
+            try realm.write {
+                realm.delete(favorite)
+                NotificationCenter.default.post(name: .favoritesDidChange, object: place)
+                favoriteChanged.onNext(place.place_id)
+            }
+        } catch {
+            print("Favorite 삭제 실패: \(error)")
         }
     }
 

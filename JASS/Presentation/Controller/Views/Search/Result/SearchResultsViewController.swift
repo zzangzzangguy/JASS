@@ -67,12 +67,12 @@ class SearchResultsViewController: UIViewController {
     weak var delegate: SearchResultsViewDelegate?
 
     // MARK: - Initializer
-    init(placeSearchViewModel: PlaceSearchViewModel, recentPlacesViewModel: RecentPlacesViewModel) {
+    init(placeSearchViewModel: PlaceSearchViewModel, recentPlacesViewModel: RecentPlacesViewModel, viewModel: SearchResultsViewModel) {
         self.placeSearchViewModel = placeSearchViewModel
         self.recentPlacesViewModel = recentPlacesViewModel
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         print("DEBUG: placeSearchViewModel 초기화 완료")
-
     }
 
     required init?(coder: NSCoder) {
@@ -84,10 +84,17 @@ class SearchResultsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupBindings()
+        bindViewModel()
         setupActions()
         setupLocationManager()
         performInitialSearch()
+
+        // 즐겨찾기 변경 이벤트 구독
+        FavoritesManager.shared.favoriteChanged
+            .subscribe(onNext: { [weak self] placeId in
+                self?.updateFavoriteUI(for: placeId)
+            })
+            .disposed(by: disposeBag)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -109,47 +116,75 @@ class SearchResultsViewController: UIViewController {
     }
 
     private func setupConstraints() {
-        backButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
-            make.width.height.equalTo(44)
+        backButton.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(16)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            $0.width.height.equalTo(44)
         }
 
-        searchBar.snp.makeConstraints { make in
-            make.leading.equalTo(backButton.snp.trailing).offset(8)
-            make.trailing.equalTo(searchButton.snp.leading).offset(-8)
-            make.centerY.equalTo(backButton)
+        searchBar.snp.makeConstraints {
+            $0.leading.equalTo(backButton.snp.trailing).offset(8)
+            $0.trailing.equalTo(searchButton.snp.leading).offset(-8)
+            $0.centerY.equalTo(backButton)
         }
 
-        searchButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-16)
-            make.centerY.equalTo(backButton)
-            make.width.height.equalTo(44)
+        searchButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().offset(-16)
+            $0.centerY.equalTo(backButton)
+            $0.width.height.equalTo(44)
         }
 
-        filterButton.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom).offset(10)
-            make.leading.equalToSuperview().offset(16)
-            make.height.equalTo(30)
+        filterButton.snp.makeConstraints {
+            $0.top.equalTo(searchBar.snp.bottom).offset(10)
+            $0.leading.equalToSuperview().offset(16)
+            $0.height.equalTo(30)
         }
 
-        tableView.snp.makeConstraints { make in
-            make.top.equalTo(filterButton.snp.bottom).offset(10)
-            make.leading.trailing.bottom.equalToSuperview()
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(filterButton.snp.bottom).offset(10)
+            $0.leading.trailing.bottom.equalToSuperview()
         }
     }
 
-    private func setupBindings() {
-        viewModel?.updateSearchResults = { [weak self] in
-            DispatchQueue.main.async {
-                print("DEBUG: 검색 결과 업데이트 - 총 \(self?.viewModel?.searchResults.count ?? 0)개 장소")
-                self?.viewModel?.searchResults.forEach { place in
-                    print("DEBUG: 업데이트된 장소 - 이름: \(place.name), 거리: \(place.distanceText ?? "없음")")
-                }
+    private func bindViewModel() {
+        guard let viewModel = viewModel else { return }
 
+        let input = SearchResultsViewModel.Input(
+            viewDidLoad: Observable.just(()),
+            searchTrigger: searchBar.rx.text.orEmpty.asObservable(),
+            filterTrigger: Observable.just(selectedCategories),
+            itemSelected: tableView.rx.itemSelected.map { $0.row }.asObservable(),
+            favoriteToggle: Observable.never()
+        )
+
+        let output = viewModel.transform(input: input)
+
+        output.isLoading
+            .drive(onNext: { isLoading in
+                print("DEBUG: isLoading - \(isLoading)")
+            })
+            .disposed(by: disposeBag)
+
+        output.searchResults
+            .drive(onNext: { [weak self] places in
+                print("DEBUG: 검색 결과 업데이트 - 총 \(places.count)개 장소")
                 self?.tableView.reloadData()
-            }
-        }
+            })
+            .disposed(by: disposeBag)
+
+        output.error
+            .drive(onNext: { [weak self] errorMessage in
+                guard let self = self, !errorMessage.isEmpty else { return }
+                self.showToast(errorMessage)
+            })
+            .disposed(by: disposeBag)
+
+        output.favoriteUpdated
+            .drive(onNext: { [weak self] place in
+                guard let self = self else { return }
+                self.updateFavoriteButton(for: place)
+            })
+            .disposed(by: disposeBag)
     }
 
     private func setupActions() {
@@ -161,10 +196,7 @@ class SearchResultsViewController: UIViewController {
 
     private func setupLocationManager() {
         LocationManager.shared.onLocationUpdate = { [weak self] location in
-//            print("DEBUG: 현재 위치 업데이트 - 위도: \(location.latitude), 경도: \(location.longitude)")
-
             self?.currentLocation = location
-//            self?.updateDistancesForCurrentPlaces()
         }
         LocationManager.shared.startUpdatingLocation()
     }
@@ -215,14 +247,30 @@ class SearchResultsViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
+
     private func performInitialSearch() {
         guard let query = searchQuery else { return }
         performSearch(with: [defaultCategory])
     }
 
-
     private func showToast(_ message: String) {
         view.makeToast(message)
+    }
+
+    private func updateFavoriteButton(for place: Place) {
+        guard let index = viewModel?.searchResultsRelay.value.firstIndex(where: { $0.place_id == place.place_id }),
+              let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? SearchResultCell else { return }
+
+        let isFavorite = viewModel?.favoritesManager.isFavorite(placeID: place.place_id ?? "") ?? false
+        cell.updateFavoriteButton(isFavorite: isFavorite)
+    }
+
+    private func updateFavoriteUI(for placeId: String) {  // 추가된 메서드
+        guard let index = viewModel?.searchResultsRelay.value.firstIndex(where: { $0.place_id == placeId }),
+              let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? SearchResultCell else { return }
+
+        let isFavorite = FavoritesManager.shared.isFavorite(placeID: placeId)
+        cell.updateFavoriteButton(isFavorite: isFavorite)
     }
 }
 
@@ -230,12 +278,12 @@ class SearchResultsViewController: UIViewController {
 
 extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel?.searchResults.count ?? 0
+        return viewModel?.searchResultsRelay.value.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchResultCell.reuseIdentifier, for: indexPath) as? SearchResultCell,
-              let place = viewModel?.searchResults[indexPath.row] else {
+              let place = viewModel?.searchResultsRelay.value[indexPath.row] else {
             return UITableViewCell()
         }
 
@@ -247,7 +295,7 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
             DispatchQueue.main.async {
                 if let detailedPlace = detailedPlace {
                     var updatedPlace = detailedPlace
-                    updatedPlace.distanceText = place.distanceText  
+                    updatedPlace.distanceText = place.distanceText
                     cell?.configure(with: updatedPlace, currentLocation: self.currentLocation)
                 }
             }
@@ -257,7 +305,7 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let place = viewModel?.searchResults[indexPath.row],
+        guard let place = viewModel?.searchResultsRelay.value[indexPath.row],
               let placeSearchViewModel = placeSearchViewModel else { return }
         recentPlacesViewModel?.addRecentPlace(place)
         delegate?.didSelectPlace(place)
@@ -269,14 +317,14 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
 // MARK: - SearchResultCellDelegate
 
 extension SearchResultsViewController: SearchResultCellDelegate {
-    
+
     func didTapFavoriteButton(for cell: SearchResultCell) {
         guard let indexPath = tableView.indexPath(for: cell),
-              let place = viewModel?.searchResults[indexPath.row] else { return }
+              let place = viewModel?.searchResultsRelay.value[indexPath.row] else { return }
 
         viewModel?.updateFavoriteStatus(for: place)
 
-        let isFavorite = FavoritesManager.shared.isFavorite(placeID: place.place_id ?? "")
+        let isFavorite = viewModel?.favoritesManager.isFavorite(placeID: place.place_id ?? "") ?? false
         cell.updateFavoriteButton(isFavorite: isFavorite)
 
         let message = isFavorite ? "즐겨찾기에 추가되었습니다." : "즐겨찾기에서 제거되었습니다."

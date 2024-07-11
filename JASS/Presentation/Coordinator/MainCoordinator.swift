@@ -57,6 +57,7 @@ final class MainCoordinator: Coordinator {
         }
     }
 
+
     func showPlaceDetails(from viewController: UIViewController, for place: Place) {
         let detailViewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase))
         let detailVC = GymDetailViewController(viewModel: detailViewModel)
@@ -80,10 +81,19 @@ final class MainCoordinator: Coordinator {
     }
 
     func showSearchResults(from viewController: UIViewController, query: String, places: [Place], currentLocation: CLLocationCoordinate2D?) {
-        let searchResultsVC = SearchResultsViewController(placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase), recentPlacesViewModel: recentPlacesViewModel)
+        let placeSearchViewModel = PlaceSearchViewModel(placeUseCase: placeUseCase)
+        let searchResultsViewModel = SearchResultsViewModel(
+            favoritesManager: FavoritesManager.shared,
+            placeSearchViewModel: placeSearchViewModel,
+            recentPlacesViewModel: recentPlacesViewModel
+        )
+        let searchResultsVC = SearchResultsViewController(
+            placeSearchViewModel: placeSearchViewModel,
+            recentPlacesViewModel: recentPlacesViewModel,
+            viewModel: searchResultsViewModel
+        )
         searchResultsVC.searchQuery = query
         searchResultsVC.currentLocation = currentLocation
-        searchResultsVC.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: searchResultsVC)
         searchResultsVC.viewModel?.loadSearchResults(with: places)
         viewController.navigationController?.pushViewController(searchResultsVC, animated: true)
     }

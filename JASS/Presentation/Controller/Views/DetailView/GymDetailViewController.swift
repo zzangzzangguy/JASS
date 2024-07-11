@@ -2,10 +2,13 @@ import UIKit
 import GooglePlaces
 import Then
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     var coordinator: MainCoordinator?
     var viewModel: GymDetailViewModel
+    private let disposeBag = DisposeBag()
     var scrollView: UIScrollView!
     var pageControl: UIPageControl!
     var images: [UIImage] = []
@@ -59,11 +62,9 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setupUI()
         setupBindings()
         viewModel.loadPlaceDetails()
-        
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -216,6 +217,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         guard let gym = viewModel.placeDetails else { return }
         FavoritesManager.shared.toggleFavorite(place: gym)
         updateFavoriteButton(showToast: true)
+        viewModel.favoriteToggle.accept(gym.place_id) // 추가된 부분
     }
 
     @objc private func backButtonTapped() {
