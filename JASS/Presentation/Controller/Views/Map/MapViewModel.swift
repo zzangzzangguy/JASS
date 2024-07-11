@@ -38,32 +38,6 @@ class MapViewModel {
     }
 
 
-//    func calculateDistances() {
-//        guard let currentLocation = currentLocation else { return }
-//        let group = DispatchGroup()
-//        var updatedPlaces = places.value
-//
-//        for (index, place) in places.value.enumerated() {
-//            group.enter()
-//            placeSearchViewModel.calculateDistances(from: currentLocation.coordinate, to: place.coordinate) { [weak self] distance in
-//                defer { group.leave() }
-//                if let distance = distance {
-//                    updatedPlaces[index].distanceText = distance
-//                } else {
-//                    print("거리 계산 실패")
-//                    updatedPlaces[index].distanceText = "거리 정보 없음"
-//                }
-//            }
-//        }
-//
-//        group.notify(queue: .main) { [weak self] in
-//            self?.places.accept(updatedPlaces)
-//            self?.filterPlaces()
-//            self?.updateMapMarkers()
-//        }
-//    }
-
-
     func filterPlaces() {
         if selectedCategories.isEmpty {
             filteredPlaces = places.value

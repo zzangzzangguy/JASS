@@ -26,11 +26,20 @@ final class SearchCoordinator: Coordinator {
     }
 
     func showSearchResults(from viewController: UIViewController, query: String, places: [Place], currentLocation: CLLocationCoordinate2D?) {
-        let searchResultsVC = SearchResultsViewController(placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase), recentPlacesViewModel: recentPlacesViewModel)
-        searchResultsVC.searchQuery = query
-        searchResultsVC.currentLocation = currentLocation
-        searchResultsVC.viewModel = SearchResultsViewModel(favoritesManager: FavoritesManager.shared, viewController: searchResultsVC)
-        searchResultsVC.viewModel?.loadSearchResults(with: places)
-        viewController.navigationController?.pushViewController(searchResultsVC, animated: true)
-    }
-}
+           let placeSearchViewModel = PlaceSearchViewModel(placeUseCase: placeUseCase)
+           let searchResultsViewModel = SearchResultsViewModel(
+               favoritesManager: FavoritesManager.shared,
+               placeSearchViewModel: placeSearchViewModel,
+               recentPlacesViewModel: recentPlacesViewModel
+           )
+           let searchResultsVC = SearchResultsViewController(
+               placeSearchViewModel: placeSearchViewModel,
+               recentPlacesViewModel: recentPlacesViewModel,
+               viewModel: searchResultsViewModel
+           )
+           searchResultsVC.searchQuery = query
+           searchResultsVC.currentLocation = currentLocation
+           searchResultsVC.viewModel?.loadSearchResults(with: places)
+           viewController.navigationController?.pushViewController(searchResultsVC, animated: true)
+       }
+   }

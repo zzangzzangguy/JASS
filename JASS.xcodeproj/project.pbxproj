@@ -14,6 +14,7 @@
 		4E21846D2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */; };
 		4E21846F2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */; };
 		4E2184712C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */; };
+		4E3BA4602C3EEB26004FEF29 /* ViewModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BA45F2C3EEB26004FEF29 /* ViewModelType.swift */; };
 		4E3D700F2C370C570090EBDF /* RecentPlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3D700E2C370C570090EBDF /* RecentPlace.swift */; };
 		4E3D70112C370D650090EBDF /* RecentPlacesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3D70102C370D650090EBDF /* RecentPlacesManager.swift */; };
 		4E52D97B2C19AE0D0007494A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E52D97A2C19AE0D0007494A /* SearchViewController.swift */; };
@@ -115,6 +116,7 @@
 		4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyFacilitiesViewModel.swift; sourceTree = "<group>"; };
 		4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacilityCollectionViewCell.swift; sourceTree = "<group>"; };
 		4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyFacilitiesTableViewCell.swift; sourceTree = "<group>"; };
+		4E3BA45F2C3EEB26004FEF29 /* ViewModelType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewModelType.swift; sourceTree = SOURCE_ROOT; };
 		4E3D700E2C370C570090EBDF /* RecentPlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlace.swift; sourceTree = "<group>"; };
 		4E3D70102C370D650090EBDF /* RecentPlacesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlacesManager.swift; sourceTree = "<group>"; };
 		4E52D97A2C19AE0D0007494A /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 		4E7CB9672C0F3D8700F5F3D7 /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
+				4E3BA45F2C3EEB26004FEF29 /* ViewModelType.swift */,
 				4E97CA882C2D76EA00ECF24B /* Coordinator */,
 				4EA17A022B7B743C006A1D51 /* Controller */,
 			);
@@ -854,6 +857,7 @@
 				4E9966CE2BE141BF002E3763 /* LocationManager.swift in Sources */,
 				4E82259C2C29F92200A0AE94 /* FavoritePlace.swift in Sources */,
 				4EE526432C36A83900DD3355 /* NearbyFacilitiesUseCase.swift in Sources */,
+				4E3BA4602C3EEB26004FEF29 /* ViewModelType.swift in Sources */,
 				4EE526452C36A86900DD3355 /* RecentPlacesUseCase.swift in Sources */,
 				4E97CA9A2C2D781B00ECF24B /* DefaultGetFavoritesUseCase.swift in Sources */,
 				4EF9318A2B3D5FEC00E5794B /* RecentSearchCell.swift in Sources */,

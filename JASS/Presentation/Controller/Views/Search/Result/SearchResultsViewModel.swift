@@ -1,82 +1,113 @@
 import Foundation
-import UIKit
-import Toast
+import RxCocoa
+import RxSwift
 
-class SearchResultsViewModel {
+final class SearchResultsViewModel: ViewModelType {
 
-    private let favoritesManager: FavoritesManager
-    private let notificationCenter = NotificationCenter.default
-    private weak var viewController: UIViewController?
-    var searchResults: [Place] = [] {
-           didSet {
-//               print("DEBUG: 검색 결과 업데이트 - 총 \(searchResults.count)개 장소")
-               searchResults.forEach { place in
-//                   print("DEBUG: 업데이트된 장소 - 이름: \(place.name), 거리: \(place.distanceText ?? "없음")")
-               }
-           }
-       }
-    var updateSearchResults: (() -> Void)?
+    struct Input {
+        let viewDidLoad: Observable<Void>
+        let searchTrigger: Observable<String>
+        let filterTrigger: Observable<Set<String>>
+        let itemSelected: Observable<Int>
+        let favoriteToggle: Observable<Place>
+    }
 
-    init(favoritesManager: FavoritesManager, viewController: UIViewController? = nil) {
+    struct Output {
+        let isLoading: Driver<Bool>
+        let searchResults: Driver<[Place]>
+        let error: Driver<String>
+        let favoriteUpdated: Driver<Place>
+    }
+
+    let favoritesManager: FavoritesManager
+    private let placeSearchViewModel: PlaceSearchViewModel
+    private let recentPlacesViewModel: RecentPlacesViewModel
+    var disposeBag = DisposeBag()
+
+    private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
+    private let errorRelay = PublishRelay<String>()
+    private let favoriteUpdatedRelay = PublishRelay<Place>()
+    let searchResultsRelay = BehaviorRelay<[Place]>(value: [])
+    let favoriteStatusChanged = PublishRelay<String>()
+
+
+    init(favoritesManager: FavoritesManager, placeSearchViewModel: PlaceSearchViewModel, recentPlacesViewModel: RecentPlacesViewModel) {
         self.favoritesManager = favoritesManager
-//        self.viewController = viewController
-
-        notificationCenter.addObserver(self, selector: #selector(favoritesDidChange(_:)), name: .favoritesDidChange, object: nil)
+        self.placeSearchViewModel = placeSearchViewModel
+        self.recentPlacesViewModel = recentPlacesViewModel
     }
 
-    deinit {
-        notificationCenter.removeObserver(self)
-    }
-
-    @objc private func favoritesDidChange(_ notification: Notification) {
-        guard let place = notification.object as? Place else {
-            return
-        }
-
-        let isFavorite = favoritesManager.isFavorite(placeID: place.place_id ?? "")
-
-        DispatchQueue.main.async {
-            if let viewController = self.viewController {
-                let message = isFavorite ? "즐겨찾기에서 제거되었습니다." : "즐겨찾기에 추가되었습니다."
-                viewController.view.makeToast(message)
+    func transform(input: Input) -> Output {
+        input.searchTrigger
+            .do(onNext: { [weak self] _ in self?.isLoadingRelay.accept(true) })
+            .flatMapLatest { [weak self] query -> Observable<[Place]> in
+                guard let self = self else { return Observable.just([]) }
+                return self.placeSearchViewModel.searchPlace(input: query, category: "", currentLocation: nil)
+                    .catch { error in
+                        self.errorRelay.accept(error.localizedDescription)
+                        return Observable.just([])
+                    }
             }
-        }
+            .do(onNext: { [weak self] places in
+                self?.isLoadingRelay.accept(false)
+                self?.searchResultsRelay.accept(places)
+            })
+            .subscribe()
+            .disposed(by: disposeBag)
+
+        input.favoriteToggle
+            .subscribe(onNext: { [weak self] place in
+                self?.updateFavoriteStatus(for: place)
+                self?.favoriteUpdatedRelay.accept(place)
+                self?.favoriteStatusChanged.accept(place.place_id)
+            })
+            .disposed(by: disposeBag)
+
+        input.itemSelected
+            .withLatestFrom(searchResultsRelay) { ($0, $1) }
+            .subscribe(onNext: { [weak self] index, places in
+                guard index < places.count else { return }
+                let place = places[index]
+                self?.recentPlacesViewModel.addRecentPlace(place)
+            })
+            .disposed(by: disposeBag)
+
+        return Output(
+            isLoading: isLoadingRelay.asDriver(),
+            searchResults: searchResultsRelay.asDriver(),
+            error: errorRelay.asDriver(onErrorJustReturn: "알 수 없는 오류가 발생했습니다."),
+            favoriteUpdated: favoriteUpdatedRelay.asDriver(onErrorJustReturn: Place(
+                name: "",
+                formatted_address: nil,
+                geometry: Place.Geometry(location: Place.Location(lat: 0, lng: 0)),
+                place_id: "",
+                types: nil,
+                phoneNumber: nil,
+                openingHours: nil,
+                photos: nil,
+                distanceText: nil,
+                reviews: nil
+            ))
+        )
     }
 
     func updateFavoriteStatus(for place: Place) {
-        let wasFavorite = favoritesManager.isFavorite(placeID: place.place_id ?? "")
+        let wasFavorite = favoritesManager.isFavorite(placeID: place.place_id)
+        favoritesManager.toggleFavorite(place: place)
 
-        if wasFavorite {
-            favoritesManager.removeFavorite(place: place)
-        } else {
-            favoritesManager.addFavorite(place: place)
+        if let index = searchResultsRelay.value.firstIndex(where: { $0.place_id == place.place_id }) {
+            var updatedPlaces = searchResultsRelay.value
+            updatedPlaces[index] = place
+            searchResultsRelay.accept(updatedPlaces)
         }
-
-        let message = wasFavorite ? "즐겨찾기에서 제거되었습니다." : "즐겨찾기에 추가되었습니다."
-        viewController?.view.makeToast(message)
+        favoriteStatusChanged.accept(place.place_id)
     }
-
-
-
-    func updatePlace(_ updatedPlace: Place) {
-        if let index = searchResults.firstIndex(where: { $0.place_id == updatedPlace.place_id }) {
-            searchResults[index] = updatedPlace
-            updateSearchResults?()
-        }
-        func setViewController(_ viewController: UIViewController) {
-               self.viewController = viewController
-           }
-
-    }
-
-
 
     func loadSearchResults(with places: [Place]) {
-        print("DEBUG: 검색 결과 업데이트 - 총 \(places.count)개 장소")
-        self.searchResults = places
-        places.forEach { place in
-            print("DEBUG: 업데이트된 장소 - 이름: \(place.name), 거리: \(place.distanceText ?? "없음")")
-        }
-        updateSearchResults?()
+        self.searchResultsRelay.accept(places)
+    }
+
+    func getRecentPlaces() -> [Place] {
+        return recentPlacesViewModel.loadRecentPlaces()
     }
 }
