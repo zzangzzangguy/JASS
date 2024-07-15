@@ -31,10 +31,10 @@ class ReviewTableViewCell: UITableViewCell {
         $0.layer.cornerRadius = 8
     }
 
-    let helpfulButton = UIButton(type: .system).then {
-        $0.setTitle("도움이 돼요", for: .normal)
-        $0.setTitleColor(.blue, for: .normal)
-    }
+//    let helpfulButton = UIButton(type: .system).then {
+//        $0.setTitle("도움이 돼요", for: .normal)
+//        $0.setTitleColor(.blue, for: .normal)
+//    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -51,7 +51,7 @@ class ReviewTableViewCell: UITableViewCell {
         contentView.addSubview(ratingLabel)
         contentView.addSubview(reviewTextLabel)
         contentView.addSubview(reviewImageView)
-        contentView.addSubview(helpfulButton)
+//        contentView.addSubview(helpfulButton)
 
         authorLabel.snp.makeConstraints {
             $0.top.leading.equalToSuperview().offset(16)
@@ -79,11 +79,11 @@ class ReviewTableViewCell: UITableViewCell {
             $0.trailing.equalToSuperview().offset(-16)
         }
 
-        helpfulButton.snp.makeConstraints {
-            $0.top.equalTo(reviewTextLabel.snp.bottom).offset(8)
-            $0.leading.equalTo(reviewTextLabel)
-            $0.bottom.equalToSuperview().offset(-16)
-        }
+//        helpfulButton.snp.makeConstraints {
+//            $0.top.equalTo(reviewTextLabel.snp.bottom).offset(8)
+//            $0.leading.equalTo(reviewTextLabel)
+//            $0.bottom.equalToSuperview().offset(-16)
+//        }
     }
 
     func configure(with review: Review) {
@@ -92,7 +92,7 @@ class ReviewTableViewCell: UITableViewCell {
         ratingLabel.text = String(repeating: "★", count: review.rating ?? 0)
         reviewTextLabel.text = review.text
         // 리뷰 이미지가 있을 경우 설정
-        // reviewImageView.image = UIImage(named: "sample_image")
+         reviewImageView.image = UIImage(named: "sample_image")
     }
 
     private func formatDate(timestamp: Int?) -> String? {

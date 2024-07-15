@@ -203,8 +203,10 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         addressLabel.text = place.formatted_address ?? "등록된 주소 정보가 없습니다"
         phoneLabel.text = "Phone: \(place.phoneNumber ?? "등록된 전화번호 정보가 없습니다")"
         openingHoursLabel.text = place.openingHours ?? "등록된 영업시간 정보가 없습니다"
-        reviewCountLabel.text = "총 \(place.userRatingsTotal ?? 0)개의 리뷰"
+        //        reviewCountLabel.text = "총 \(place.userRatingsTotal ?? 0)개의 리뷰"
         ratingLabel.text = "평점: \(place.rating ?? 0.0)"
+        let reviewCount = place.reviews?.count ?? 0
+        reviewCountLabel.text = "총 \(reviewCount)개의 리뷰"
     }
 
     private func setupImageViews() {
