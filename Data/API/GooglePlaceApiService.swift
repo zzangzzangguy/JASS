@@ -57,10 +57,6 @@ class GooglePlacesAPIService {
     }
 
     func calculateDistances(origins: String, destinations: String) -> Observable<[String?]> {
-//        print("DEBUG: origins: \(origins)")
-//        print("DEBUG: destinations: \(destinations)")
-//        print("DEBUG: mode: transit")
-//        print("DEBUG: key: \(Bundle.apiKey)")
 
         return provider.rx.request(.distanceMatrix(origins: origins, destinations: destinations, mode: "transit", key: Bundle.apiKey))
             .filterSuccessfulStatusCodes()

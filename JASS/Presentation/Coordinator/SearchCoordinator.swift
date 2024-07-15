@@ -3,7 +3,6 @@ import CoreLocation
 
 final class SearchCoordinator: Coordinator {
     weak var delegate: CoordinatorDelegate?
-
     var navigationController: UINavigationController
     var childCoordinators: [Coordinator] = []
     let placeUseCase: PlaceUseCase
@@ -21,17 +20,13 @@ final class SearchCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: false)
     }
 
-    func finish() {
-        delegate?.didFinish(childCoordinator: self)
-    }
-
     func showSearchResults(from viewController: UIViewController, query: String, places: [Place], currentLocation: CLLocationCoordinate2D?) {
-           let placeSearchViewModel = PlaceSearchViewModel(placeUseCase: placeUseCase)
-           let searchResultsViewModel = SearchResultsViewModel(
-               favoritesManager: FavoritesManager.shared,
-               placeSearchViewModel: placeSearchViewModel,
-               recentPlacesViewModel: recentPlacesViewModel
-           )
+        let placeSearchViewModel = PlaceSearchViewModel(placeUseCase: placeUseCase)
+        let searchResultsViewModel = SearchResultsViewModel(
+            favoritesManager: FavoritesManager.shared,
+            placeSearchViewModel: placeSearchViewModel,
+            recentPlacesViewModel: recentPlacesViewModel
+        )
            let searchResultsVC = SearchResultsViewController(
                placeSearchViewModel: placeSearchViewModel,
                recentPlacesViewModel: recentPlacesViewModel,

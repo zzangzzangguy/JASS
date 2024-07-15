@@ -45,6 +45,17 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         $0.numberOfLines = 0
     }
 
+    private let reviewCountLabel = UILabel().then {
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = .black
+        $0.isUserInteractionEnabled = true
+    }
+
+    private let ratingLabel = UILabel().then {
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = .black
+    }
+
     private let backButton = UIButton(type: .system).then {
         $0.setImage(UIImage(systemName: "chevron.left"), for: .normal)
         $0.tintColor = .black
@@ -54,17 +65,14 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     private let favoriteButton = UIButton(type: .system).then {
         $0.setImage(UIImage(systemName: "heart"), for: .normal)
         $0.tintColor = .gray
-        $0.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
     }
 
     private let loadingIndicator = UIActivityIndicatorView(style: .medium)
 
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupBindings()
-        viewModel.loadPlaceDetails()
+        bindViewModel()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -80,10 +88,8 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         coordinator?.popViewController()
     }
 
-    // MARK: - Setup
     private func setupUI() {
         view.backgroundColor = .white
-
         setupScrollView()
         setupPageControl()
         setupDetails()
@@ -119,7 +125,7 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     }
 
     private func setupDetails() {
-        let detailsStackView = UIStackView(arrangedSubviews: [nameLabel, addressLabel, phoneLabel, openingHoursLabel, favoriteButton])
+        let detailsStackView = UIStackView(arrangedSubviews: [nameLabel, addressLabel, phoneLabel, openingHoursLabel, reviewCountLabel, ratingLabel, favoriteButton])
         detailsStackView.axis = .vertical
         detailsStackView.spacing = 10
         detailsStackView.alignment = .leading
@@ -134,15 +140,20 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         addressLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         phoneLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         openingHoursLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        reviewCountLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        ratingLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         favoriteButton.setContentHuggingPriority(.defaultLow, for: .vertical)
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapReviewCountLabel))
+        reviewCountLabel.addGestureRecognizer(tapGesture)
     }
 
     private func setupBackButton() {
         view.addSubview(backButton)
-        backButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.width.height.equalTo(44)
+        backButton.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(16)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.width.height.equalTo(44)
         }
     }
 
@@ -153,27 +164,47 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         }
     }
 
-    private func setupBindings() {
-        viewModel.onPlaceDetailsUpdated = { [weak self] in
-            guard let self = self, let place = self.viewModel.placeDetails else { return }
-            self.populateData(with: place)
-        }
+    private func bindViewModel() {
+        let input = GymDetailViewModel.Input(
+            viewDidLoad: Observable.just(()),
+            favoriteButtonTapped: favoriteButton.rx.tap.asObservable(),
+            loadImages: Observable.just(())
+        )
+
+        let output = viewModel.transform(input: input)
+
+        output.placeDetails
+            .drive(onNext: { [weak self] place in
+                self?.populateData(with: place)
+            })
+            .disposed(by: disposeBag)
+
+        output.isLoading
+            .drive(loadingIndicator.rx.isAnimating)
+            .disposed(by: disposeBag)
+
+        output.favoriteStatus
+            .drive(onNext: { [weak self] isFavorite in
+                self?.updateFavoriteButton(isFavorite: isFavorite, showToast: true)
+            })
+            .disposed(by: disposeBag)
+
+        output.images
+            .drive(onNext: { [weak self] images in
+                self?.images = images
+                self?.setupImageViews()
+            })
+            .disposed(by: disposeBag)
     }
 
-    private func populateData(with place: Place) {
+    private func populateData(with place: Place?) {
+        guard let place = place else { return }
         nameLabel.text = place.name
         addressLabel.text = place.formatted_address ?? "등록된 주소 정보가 없습니다"
         phoneLabel.text = "Phone: \(place.phoneNumber ?? "등록된 전화번호 정보가 없습니다")"
         openingHoursLabel.text = place.openingHours ?? "등록된 영업시간 정보가 없습니다"
-        updateFavoriteButton(showToast: false)
-        loadImages()
-    }
-
-    private func loadImages() {
-        viewModel.loadImages { [weak self] images in
-            self?.images = images
-            self?.setupImageViews()
-        }
+        reviewCountLabel.text = "총 \(place.userRatingsTotal ?? 0)개의 리뷰"
+        ratingLabel.text = "평점: \(place.rating ?? 0.0)"
     }
 
     private func setupImageViews() {
@@ -184,9 +215,9 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
             noPhotoLabel.text = "등록된 사진이 없습니다"
             noPhotoLabel.textAlignment = .center
             scrollView.addSubview(noPhotoLabel)
-            noPhotoLabel.snp.makeConstraints { make in
-                make.center.equalToSuperview()
-                make.width.equalTo(scrollView)
+            noPhotoLabel.snp.makeConstraints {
+                $0.center.equalToSuperview()
+                $0.width.equalTo(scrollView)
             }
             pageControl.isHidden = true
         } else {
@@ -195,11 +226,11 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
                 imageView.contentMode = .scaleAspectFill
                 imageView.clipsToBounds = true
                 scrollView.addSubview(imageView)
-                imageView.snp.makeConstraints { make in
-                    make.leading.equalToSuperview().offset(CGFloat(index) * scrollView.frame.width)
-                    make.width.equalTo(scrollView.snp.width)
-                    make.height.equalTo(scrollView.snp.height)
-                    make.top.equalToSuperview()
+                imageView.snp.makeConstraints {
+                    $0.leading.equalToSuperview().offset(CGFloat(index) * scrollView.frame.width)
+                    $0.width.equalTo(scrollView.snp.width)
+                    $0.height.equalTo(scrollView.snp.height)
+                    $0.top.equalToSuperview()
                 }
             }
             scrollView.contentSize = CGSize(width: scrollView.frame.width * CGFloat(images.count), height: scrollView.frame.height)
@@ -213,21 +244,12 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
         pageControl.currentPage = Int(pageIndex)
     }
 
-    @objc private func toggleFavorite() {
-        guard let gym = viewModel.placeDetails else { return }
-        FavoritesManager.shared.toggleFavorite(place: gym)
-        updateFavoriteButton(showToast: true)
-        viewModel.favoriteToggle.accept(gym.place_id) // 추가된 부분
-    }
-
     @objc private func backButtonTapped() {
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationController?.popViewController(animated: true)
     }
 
-    private func updateFavoriteButton(showToast: Bool) {
-        guard let gym = viewModel.placeDetails else { return }
-        let isFavorite = FavoritesManager.shared.isFavorite(placeID: gym.place_id)
+    private func updateFavoriteButton(isFavorite: Bool, showToast: Bool) {
         let heartImage = isFavorite ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
         let tintColor: UIColor = isFavorite ? .red : .gray
         favoriteButton.setImage(heartImage, for: .normal)
@@ -241,5 +263,10 @@ class GymDetailViewController: UIViewController, UIScrollViewDelegate {
     private func showToastForFavorite(isFavorite: Bool) {
         let message = isFavorite ? "즐겨찾기에 추가되었습니다" : "즐겨찾기에서 제거되었습니다"
         view.makeToast(message)
+    }
+
+    @objc private func didTapReviewCountLabel() {
+        let reviewViewController = ReviewViewController(placeID: viewModel.placeID)
+        navigationController?.pushViewController(reviewViewController, animated: true)
     }
 }

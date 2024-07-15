@@ -35,9 +35,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func setupRealm() {
         let config = Realm.Configuration(
-            schemaVersion: 4,
+            schemaVersion: 5,
             migrationBlock: { migration, oldSchemaVersion in
-                if oldSchemaVersion < 4 {
+                if oldSchemaVersion < 5 {
                     migration.enumerateObjects(ofType: FavoritePlace.className()) { oldObject, newObject in
                         // 필요한 마이그레이션 로직 추가
                     }
