@@ -13,8 +13,9 @@ final class AppCoordinator: Coordinator {
         let placeRepository = PlaceRepositoryImpl(apiService: GooglePlacesAPIService())
         let placeUseCase = DefaultPlaceUseCase(repository: placeRepository)
         let recentPlacesManager = RecentPlacesManager()
+        let recentPlaceUseCase = DefaultRecentPlaceUseCase(recentPlacesManager: recentPlacesManager)
 
-        let mainCoordinator = MainCoordinator(placeUseCase: placeUseCase, recentPlacesManager: recentPlacesManager)
+        let mainCoordinator = MainCoordinator(placeUseCase: placeUseCase, recentPlaceUseCase: recentPlaceUseCase)
         mainCoordinator.delegate = self
         childCoordinators.append(mainCoordinator)
         mainCoordinator.start()

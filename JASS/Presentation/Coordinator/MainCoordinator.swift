@@ -12,10 +12,10 @@ final class MainCoordinator: Coordinator {
         return tabBarController
     }
 
-    init(placeUseCase: PlaceUseCase, recentPlacesManager: RecentPlacesManager) {
+    init(placeUseCase: PlaceUseCase, recentPlaceUseCase: RecentPlaceUseCase) {
         self.tabBarController = UITabBarController()
         self.placeUseCase = placeUseCase
-        self.recentPlacesViewModel = RecentPlacesViewModel(recentPlacesManager: recentPlacesManager)
+        self.recentPlacesViewModel = RecentPlacesViewModel(recentPlaceUseCase: recentPlaceUseCase)
     }
 
     func start() {
@@ -34,7 +34,6 @@ final class MainCoordinator: Coordinator {
 
         tabBarController.viewControllers = [mainNavController, favoritesNavController]
     }
-
 
     private func configureNavigationBarAppearance(_ navController: UINavigationController) {
         let appearance = UINavigationBarAppearance()
@@ -57,7 +56,6 @@ final class MainCoordinator: Coordinator {
         }
     }
 
-
     func showPlaceDetails(from viewController: UIViewController, for place: Place) {
         let detailViewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase))
         let detailVC = GymDetailViewController(viewModel: detailViewModel)
@@ -66,6 +64,7 @@ final class MainCoordinator: Coordinator {
         configureNavigationBarAppearance(detailNavController)
         viewController.present(detailNavController, animated: true, completion: nil)
     }
+
 
     func popViewController() {
 //        navigationController.popViewController(animated: true)

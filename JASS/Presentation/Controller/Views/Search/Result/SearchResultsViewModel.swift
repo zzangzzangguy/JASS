@@ -110,6 +110,6 @@ final class SearchResultsViewModel: ViewModelType {
     }
 
     func getRecentPlaces() -> [Place] {
-        return recentPlacesViewModel.loadRecentPlaces()
+        return recentPlacesViewModel.getRecentPlaces()
     }
 }

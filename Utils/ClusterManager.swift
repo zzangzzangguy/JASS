@@ -194,7 +194,4 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
         return markerImage
     }
 
-//    func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
-//        updateMarkersWithSelectedFilters()
-//    }
 }
