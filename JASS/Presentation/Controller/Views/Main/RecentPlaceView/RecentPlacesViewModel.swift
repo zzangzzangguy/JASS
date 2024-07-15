@@ -3,17 +3,24 @@ import RxSwift
 import RxCocoa
 
 class RecentPlacesViewModel {
-    let recentPlacesRelay = BehaviorRelay<[Place]>(value: [])
+    private let recentPlaceUseCase: RecentPlaceUseCase
+    private let disposeBag = DisposeBag()
     private let maxRecentPlaces = 5
-    private let recentPlacesManager: RecentPlacesManager
 
-    init(recentPlacesManager: RecentPlacesManager) {
-        self.recentPlacesManager = recentPlacesManager
-        self.recentPlacesRelay.accept(recentPlacesManager.getRecentPlaces())
+    let recentPlacesRelay = BehaviorRelay<[Place]>(value: [])
+
+    init(recentPlaceUseCase: RecentPlaceUseCase) {
+        self.recentPlaceUseCase = recentPlaceUseCase
+        loadRecentPlaces()
     }
 
-    var recentPlaces: Observable<[Place]> {
-        return recentPlacesRelay.asObservable().distinctUntilChanged()
+    func loadRecentPlaces() {
+        recentPlaceUseCase.getRecentPlaces()
+            .map { Array($0.prefix(self.maxRecentPlaces)) }
+            .subscribe(onNext: { [weak self] places in
+                self?.recentPlacesRelay.accept(places)
+            })
+            .disposed(by: disposeBag)
     }
 
     func addRecentPlace(_ place: Place) {
@@ -22,14 +29,20 @@ class RecentPlacesViewModel {
             currentPlaces.remove(at: index)
         }
         currentPlaces.insert(place, at: 0)
-        if currentPlaces.count > maxRecentPlaces {
-            currentPlaces.removeLast()
-        }
-        recentPlacesRelay.accept(currentPlaces)
-        recentPlacesManager.addRecentPlace(place)
+        currentPlaces = Array(currentPlaces.prefix(maxRecentPlaces))
+
+        recentPlaceUseCase.addRecentPlace(place)
+            .subscribe(onCompleted: { [weak self] in
+                self?.recentPlacesRelay.accept(currentPlaces)
+            })
+            .disposed(by: disposeBag)
     }
 
-    func loadRecentPlaces() -> [Place] {
+    var recentPlaces: Observable<[Place]> {
+        return recentPlacesRelay.asObservable()
+    }
+
+    func getRecentPlaces() -> [Place] {
         return recentPlacesRelay.value
     }
 }

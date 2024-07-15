@@ -33,7 +33,7 @@ class RecentPlacesTableViewCell: UITableViewCell {
     }
 
     func configure(with places: [Place]) {
-        self.places = places
+        self.places = Array(places.prefix(5))  
         collectionView.reloadData()
     }
 }

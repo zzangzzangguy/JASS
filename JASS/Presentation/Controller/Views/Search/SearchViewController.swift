@@ -64,12 +64,11 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,12 +77,10 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         setupKeywordButtons()
         print("SearchViewController가 로드됨")
         LocationManager.shared.onLocationUpdate = { [weak self] location in
-               print("SearchViewController - 위치 업데이트: \(location)")
-               self?.currentLocation = location
-           }
-           LocationManager.shared.startUpdatingLocation()  // 위치 업데이트 시작
-
-
+            print("SearchViewController - 위치 업데이트: \(location)")
+            self?.currentLocation = location
+        }
+        LocationManager.shared.startUpdatingLocation()  // 위치 업데이트 시작
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
@@ -94,10 +91,10 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         view.backgroundColor = .white
         view.addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
-               make.top.equalTo(view.safeAreaLayoutGuide)
-               make.leading.equalToSuperview().offset(20)
-               make.width.height.equalTo(44)
-           }
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.equalToSuperview().offset(20)
+            make.width.height.equalTo(44)
+        }
 
         searchBar.delegate = self
         view.addSubview(searchBar)
@@ -133,6 +130,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     private func setupKeywordButtons() {
         let scrollView = UIScrollView()
         scrollView.showsHorizontalScrollIndicator = false
+        scrollView.isUserInteractionEnabled = false
         view.addSubview(scrollView)
 
         let containerView = UIView()
@@ -145,48 +143,49 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         let horizontalSpacing: CGFloat = 8
         let maxWidth = view.frame.width - 40
 
-        for (index, keyword) in recommendedKeywords.enumerated() {
-            let button = UIButton(type: .system)
-            button.setTitle(keyword, for: .normal)
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-            button.backgroundColor = .systemGray6
-            button.setTitleColor(.black, for: .normal)
-            button.layer.cornerRadius = buttonHeight / 2
-            button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-            button.sizeToFit()
-            var buttonWidth = button.frame.width
+        for keyword in recommendedKeywords {
+                let button = UIButton(type: .system)
+                button.setTitle(keyword, for: .normal)
+                button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+                button.backgroundColor = .systemGray6
+                button.setTitleColor(.black, for: .normal)
+                button.layer.cornerRadius = buttonHeight / 2
+                button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+                button.sizeToFit()
+                button.addTarget(self, action: #selector(keywordButtonTapped(_:)), for: .touchUpInside) // 버튼 터치 이벤트 추가
 
-            buttonWidth = max(buttonWidth, 50)
+                var buttonWidth = button.frame.width
+                buttonWidth = max(buttonWidth, 50)
 
-            if xOffset + buttonWidth + horizontalSpacing > maxWidth {
-                xOffset = 0
-                yOffset += buttonHeight + verticalSpacing
+                if xOffset + buttonWidth + horizontalSpacing > maxWidth {
+                    xOffset = 0
+                    yOffset += buttonHeight + verticalSpacing
+                }
+
+                button.frame = CGRect(x: xOffset, y: yOffset, width: buttonWidth, height: buttonHeight)
+                containerView.addSubview(button)
+                keywordButtons.append(button)
+
+                xOffset += buttonWidth + horizontalSpacing
             }
 
-            button.frame = CGRect(x: xOffset, y: yOffset, width: buttonWidth, height: buttonHeight)
-            containerView.addSubview(button)
-            keywordButtons.append(button)
+            containerView.snp.makeConstraints { make in
+                make.edges.equalTo(scrollView.contentLayoutGuide)
+                make.width.equalTo(scrollView)
+                make.height.equalTo(yOffset + buttonHeight)
+            }
 
-            xOffset += buttonWidth + horizontalSpacing
-        }
+            scrollView.snp.makeConstraints { make in
+                make.top.equalTo(segmentedControl.snp.bottom).offset(20)
+                make.leading.trailing.equalToSuperview().inset(20)
+                make.height.equalTo(containerView.snp.height)
+            }
 
-        containerView.snp.makeConstraints { make in
-            make.edges.equalTo(scrollView.contentLayoutGuide)
-            make.width.equalTo(scrollView)
-            make.height.equalTo(yOffset + buttonHeight)
+            tableView.snp.remakeConstraints { make in
+                make.top.equalTo(scrollView.snp.bottom).offset(20)
+                make.leading.trailing.bottom.equalToSuperview()
+            }
         }
-
-        scrollView.snp.makeConstraints { make in
-            make.top.equalTo(segmentedControl.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(containerView.snp.height)
-        }
-
-        tableView.snp.remakeConstraints { make in
-            make.top.equalTo(scrollView.snp.bottom).offset(20)
-            make.leading.trailing.bottom.equalToSuperview()
-        }
-    }
 
     @objc private func closeButtonTapped() {
         dismiss(animated: true, completion: nil)
@@ -243,6 +242,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         view.layoutIfNeeded()
     }
 
+
     private func performSearch(query: String) {
         print("performSearch called with query: \(query)")
         print("SearchViewController - 현재 위치: \(String(describing: self.currentLocation))")
@@ -265,7 +265,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
             print("검색어를 입력하세요.")
             return
         }
-//        print("Search button clicked with query: \(query)")
         performSearch(query: query)
     }
 

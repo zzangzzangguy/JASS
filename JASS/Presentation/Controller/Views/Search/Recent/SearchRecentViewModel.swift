@@ -50,7 +50,6 @@ class SearchRecentViewModel {
             }
             print("검색 이력 저장 완료: \(query)")
 
-            // 캐시 업데이트
             cachedRecentSearches.removeAll(where: { $0 == query })
             cachedRecentSearches.insert(query, at: 0)
 
