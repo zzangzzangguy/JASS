@@ -53,7 +53,7 @@ extension GooglePlacesAPI: TargetType {
         case .photo(let reference, let maxWidth):
             return .requestParameters(parameters: ["maxwidth": maxWidth, "photoreference": reference, "key": Bundle.apiKey], encoding: URLEncoding.queryString)
         case .details(let placeID):
-            return .requestParameters(parameters: ["place_id": placeID, "fields": "place_id,reviews,name,geometry,formatted_address,photos", "key": Bundle.apiKey], encoding: URLEncoding.queryString)
+            return .requestParameters(parameters: ["place_id": placeID, "fields": "place_id,reviews,name,geometry,formatted_address,photos,user_ratings_total,rating", "key": Bundle.apiKey], encoding: URLEncoding.queryString)
 
         case .searchInBounds(let parameters), .nearbySearch(let parameters), .textSearch(let parameters):
             var newParameters = parameters

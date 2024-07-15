@@ -2,6 +2,8 @@ import RealmSwift
 import UIKit
 
 class SearchRecentViewModel {
+    static let shared = SearchRecentViewModel()
+
     let realm: Realm
     var updateRecentSearches: (() -> Void)?
     var handleError: ((Error) -> Void)?

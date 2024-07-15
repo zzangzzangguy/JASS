@@ -13,6 +13,9 @@ struct Place: Codable {
     let photos: [Photo]?
     var distanceText: String?
     var reviews: [Review]?
+    let userRatingsTotal: Int? // 총 리뷰 개수
+        let rating: Double? // 평점
+
 
     var isGym: Bool {
         guard let types = types else { return false }
@@ -52,6 +55,7 @@ struct Photo: Codable {
 
 struct PlaceDetailsResponse: Codable {
     let result: Place
+    
 }
 
 struct Review: Codable {
@@ -60,7 +64,7 @@ struct Review: Codable {
     let language: String?
     let profilePhotoUrl: String?
     let rating: Int?
-    let relativeTimeDescription: String?
+//    let relativeTimeDescription: String?
     let text: String?
     let time: Int?
 
@@ -69,7 +73,7 @@ struct Review: Codable {
         case authorUrl = "author_url"
         case language
         case profilePhotoUrl = "profile_photo_url"
-        case relativeTimeDescription = "relative_time_description"
+//        case relativeTimeDescription = "relative_time_description"
         case text, rating, time
     }
 }

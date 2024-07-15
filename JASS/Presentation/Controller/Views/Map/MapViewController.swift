@@ -6,7 +6,7 @@ import SnapKit
 import Toast
 import RxSwift
 
-class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManagerDelegate {
+class MapViewController: UIViewController, CLLocationManagerDelegate {
     private let disposeBag = DisposeBag()
     weak var coordinator: MapCoordinator?
     var mapView: GMSMapView!
@@ -24,6 +24,11 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
     private var filterView: FilterViewController?
     private let viewModel: MapViewModel
+    private var output: MapViewModel.Output!
+    private let filterSelectionSubject = BehaviorSubject<Set<String>>(value: ["헬스"])
+
+    private let mapIdleSubject = PublishSubject<GMSCameraPosition>()
+    private let markerTappedSubject = PublishSubject<GMSMarker>()
 
     init(
         viewModel: MapViewModel,
@@ -63,32 +68,47 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     }
 
     private func setupBindings() {
-        viewModel.places
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] places in
+        let input = MapViewModel.Input(
+            viewDidLoad: .just(()),
+            searchQuery: searchController.searchBar.rx.text.orEmpty
+                        .debounce(.milliseconds(300), scheduler: MainScheduler.instance) // 쓰로틀링 추가
+                        .distinctUntilChanged(),
+            filterSelection: filterSelectionSubject.asObservable(),
+            mapIdleAt: mapIdleSubject.asObservable(),
+            markerTapped: markerTappedSubject.asObservable(),
+            zoomIn: zoomInButton.rx.tap.asObservable(),
+            zoomOut: zoomOutButton.rx.tap.asObservable()
+            
+        )
+        mapView.delegate = self
+
+
+        output = viewModel.transform(input: input)
+        
+
+        output.places
+            .drive(onNext: { [weak self] places in
                 self?.updateMapMarkers(with: places)
             })
             .disposed(by: disposeBag)
 
-        viewModel.isLoading
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isLoading in
-                isLoading ? self?.showLoadingIndicator() : self?.hideLoadingIndicator()
-            })
+        output.isLoading
+            .drive(loadingIndicator.rx.isAnimating)
             .disposed(by: disposeBag)
 
-        viewModel.errorMessage
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] message in
-                self?.showToast(message ?? "")
+        output.errorMessage
+            .drive(onNext: { [weak self] message in
+                if let message = message {
+                    self?.showToast(message)
+                }
             })
             .disposed(by: disposeBag)
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = true
-        
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -130,9 +150,10 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
     @objc func dismissKeyboard() {
         searchController.searchBar.endEditing(true)
     }
+
     @objc private func closeButtonTapped() {
         dismiss(animated: true, completion: nil)
-            }
+    }
 
     private func setupNavigationBarItems() {
         let closeButton = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(closeButtonTapped))
@@ -177,10 +198,9 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         }
 
         placeSearchViewModel.searchPlace(input: query, category: category, currentLocation: locationManager.location?.coordinate)
-
             .subscribe(onNext: { [weak self] places in
                 guard let self = self else { return }
-                self.viewModel.places.accept(places)
+                self.updateMapMarkers(with: places)
 
                 if let currentLocation = self.locationManager.location?.coordinate {
                 } else {
@@ -190,16 +210,6 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
                 // 에러 처리
             })
             .disposed(by: disposeBag)
-    }
-
-    private func configureZoomButton(button: UIButton, systemName: String, action: Selector) {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium, scale: .large)
-        button.setImage(UIImage(systemName: systemName, withConfiguration: imageConfig), for: .normal)
-        button.tintColor = .white
-        button.backgroundColor = .blue
-        button.layer.cornerRadius = 20
-        button.addTarget(self, action: action, for: .touchUpInside)
-        view.addSubview(button)
     }
 
     private func setupZoomButtons() {
@@ -218,6 +228,16 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
         }
 
         updateZoomButtonsState()
+    }
+
+    private func configureZoomButton(button: UIButton, systemName: String, action: Selector) {
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium, scale: .large)
+        button.setImage(UIImage(systemName: systemName, withConfiguration: imageConfig), for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = .blue
+        button.layer.cornerRadius = 20
+        button.addTarget(self, action: action, for: .touchUpInside)
+        view.addSubview(button)
     }
 
     @objc private func zoomIn() {
@@ -246,61 +266,6 @@ class MapViewController: UIViewController, UISearchBarDelegate, CLLocationManage
 
         zoomInButton.backgroundColor = zoomInButton.isEnabled ? .systemBlue : .lightGray
         zoomOutButton.backgroundColor = zoomOutButton.isEnabled ? .systemBlue : .lightGray
-    }
-
-    func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
-        updateZoomButtonsState()
-        if selectedCategory == nil {
-            showToast("선택된 필터가 없습니다. 필터를 확인해주세요.")
-        }
-        clusterManager.updateMarkersWithSelectedFilters()
-        if viewModel.filteredPlaces.isEmpty {
-            showToast("현재 화면에 표시된 장소가 없습니다.")
-        }
-        showMarkersToast()
-    }
-
-    private func showMarkersToast() {
-        let visibleRegion = mapView.projection.visibleRegion()
-        let bounds = GMSCoordinateBounds(region: visibleRegion)
-        let visibleMarkers = viewModel.filteredPlaces.filter { place in
-            bounds.contains(place.coordinate)
-        }
-        if visibleMarkers.isEmpty {
-            showToast("현재 화면에 표시된 장소가 없습니다.")
-        }
-    }
-
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if let searchText = searchBar.text, !searchText.isEmpty {
-            searchRecentViewModel.saveSearchHistory(query: searchText)
-            showLoadingIndicator()
-            placeSearchViewModel.searchPlace(input: searchText, category: selectedCategory ?? defaultCategory, currentLocation: locationManager.location?.coordinate)                .subscribe(onNext: { [weak self] places in
-                    guard let self = self, let firstPlace = places.first else {
-                        self?.showToast("검색 결과가 없습니다.")
-                        self?.hideLoadingIndicator()
-                        return
-                    }
-                    self.hideLoadingIndicator()
-
-                    let camera = GMSCameraPosition.camera(withLatitude: firstPlace.geometry.location.lat,
-                                                          longitude: firstPlace.geometry.location.lng,
-                                                          zoom: 15.0)
-                    self.mapView.animate(to: camera)
-                }, onError: { error in
-                    // 에러 처리
-                    self.hideLoadingIndicator()
-                })
-                .disposed(by: disposeBag)
-        }
-    }
-
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.mapView.isHidden = false
-        zoomInButton.isHidden = false
-        zoomOutButton.isHidden = false
-        searchBar.text = ""
-        searchBar.resignFirstResponder()
     }
 
     func updateMapMarkers(with places: [Place]) {
@@ -340,12 +305,46 @@ extension MapViewController: GMSMapViewDelegate {
     }
 
     func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
+        mapIdleSubject.onNext(position)
         updateZoomButtonsState()
         clusterManager.updateMarkersWithSelectedFilters()
+        if viewModel.selectedCategories.isEmpty {
+               // 필터가 선택되지 않았으면 마커를 업데이트하지 않음
+               return
+           }
         let targetLocation = CLLocation(latitude: position.target.latitude, longitude: position.target.longitude)
         updateLocationTitle(location: targetLocation)
         throttleReverseGeocode(location: targetLocation)
         hideLoadingIndicator()
+    }
+
+    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
+        markerTappedSubject.onNext(marker)
+        guard let place = marker.userData as? Place else {
+            print("오류: 마커의 userData가 올바르게 설정되지 않았습니다.")
+            return false
+        }
+
+        let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel))
+        gymDetailVC.modalPresentationStyle = .fullScreen
+        present(gymDetailVC, animated: true, completion: nil)
+        return true
+    }
+
+    func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
+        updateZoomButtonsState()
+        if selectedCategory == nil {
+            showToast("선택된 필터가 없습니다. 필터를 확인해주세요.")
+        }
+        clusterManager.updateMarkersWithSelectedFilters()
+        output.filteredPlaces
+            .drive(onNext: { [weak self] places in
+                if places.isEmpty {
+                    self?.showToast("현재 화면에 표시된 장소가 없습니다.")
+                }
+            })
+            .disposed(by: disposeBag)
+        showMarkersToast()
     }
 
     func updateLocationTitle(location: CLLocation) {
@@ -363,76 +362,119 @@ extension MapViewController: GMSMapViewDelegate {
             }
         }
     }
+}
 
-    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
-        guard let place = marker.userData as? Place else {
-            print("오류: 마커의 userData가 올바르게 설정되지 않았습니다.")
-            return false
+extension MapViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let searchText = searchBar.text, !searchText.isEmpty {
+            searchRecentViewModel.saveSearchHistory(query: searchText)
+            showLoadingIndicator()
+            placeSearchViewModel.searchPlace(input: searchText, category: selectedCategory ?? defaultCategory, currentLocation: locationManager.location?.coordinate)
+                .subscribe(onNext: { [weak self] places in
+                    guard let self = self, let firstPlace = places.first else {
+                        self?.showToast("검색 결과가 없습니다.")
+                        self?.hideLoadingIndicator()
+                        return
+                    }
+                    self.hideLoadingIndicator()
+
+                    let camera = GMSCameraPosition.camera(withLatitude: firstPlace.geometry.location.lat,
+                                                          longitude: firstPlace.geometry.location.lng,
+                                                          zoom: 15.0)
+                    self.mapView.animate(to: camera)
+                }, onError: { error in
+                    // 에러 처리
+                    self.hideLoadingIndicator()
+                })
+                .disposed(by: disposeBag)
         }
+    }
 
-        let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel))
-        gymDetailVC.modalPresentationStyle = .fullScreen
-        present(gymDetailVC, animated: true, completion: nil)
-        return true
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.mapView.isHidden = false
+        zoomInButton.isHidden = false
+        zoomOutButton.isHidden = false
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
     }
 }
 
 extension MapViewController: FilterViewDelegate {
     func filterView(_ filterView: FilterViewController, didSelectCategories categories: Set<String>) {
-        viewModel.selectedCategories = categories.isEmpty ? [defaultCategory] : Set(categories)
+        filterSelectionSubject.onNext(categories)
+
         let query = categories.joined(separator: " ")
 
         showLoadingIndicator()
         selectedCategory = categories.first
-        guard let category = selectedCategory else { return }
+                guard let category = selectedCategory else { return }
 
-        placeSearchViewModel.searchPlace(input: query, category: category, currentLocation: locationManager.location?.coordinate)            .subscribe(onNext: { [weak self] places in
-                guard let self = self else { return }
-                self.hideLoadingIndicator()
-                self.viewModel.places.accept(places)
-                self.viewModel.filterPlaces()
-                self.clusterManager.updateMarkersWithSelectedFilters()
-                self.updateMapMarkers(with: places)
+                placeSearchViewModel.searchPlace(input: query, category: category, currentLocation: locationManager.location?.coordinate)
+                    .subscribe(onNext: { [weak self] places in
+                        guard let self = self else { return }
+                        self.hideLoadingIndicator()
+                        self.updateMapMarkers(with: places)
+                        self.clusterManager.updateMarkersWithSelectedFilters()
+                        self.updateMapMarkers(with: places)
 
-                if places.isEmpty {
-                    self.showToast("필터링된 장소가 없습니다.")
-                }
-            }, onError: { error in
-                // 에러 처리
-                self.hideLoadingIndicator()
-            })
-            .disposed(by: disposeBag)
-        dismiss(animated: true, completion: nil)
-    }
+                        if places.isEmpty {
+                            self.showToast("필터링된 장소가 없습니다.")
+                        }
+                    }, onError: { error in
+                        // 에러 처리
+                        self.hideLoadingIndicator()
+                    })
+                    .disposed(by: disposeBag)
+                dismiss(animated: true, completion: nil)
+            }
 
-    func filterViewDidCancel(_ filterView: FilterViewController) {
-        dismiss(animated: true, completion: nil)
-    }
-}
-
-extension MapViewController {
-    func showToast(_ message: String) {
-        view.makeToast(message)
-    }
-}
-
-extension MapViewController: ClusterManagerDelegate {
-    func searchPlacesInBounds(_ bounds: GMSCoordinateBounds, query: String, completion: @escaping ([Place]) -> Void) {
-        placeSearchViewModel.searchPlacesInBounds(bounds: bounds, query: query, completion: completion)
-    }
-
-    func selectedFilters() -> Set<String> {
-        return viewModel.selectedCategories
-    }
-
-    func showNoResultsMessage() {
-        if viewModel.filteredPlaces.isEmpty {
-            ToastManager.showToast(message: "현재 화면에 표시된 장소가 없습니다.", in: self)
+            func filterViewDidCancel(_ filterView: FilterViewController) {
+                dismiss(animated: true, completion: nil)
+            }
         }
-    }
 
-    func clusterManager(_ clusterManager: ClusterManager, didSelectPlace place: Place) {
-        let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel))
-        navigationController?.pushViewController(gymDetailVC, animated: true)
-    }
-}
+        extension MapViewController {
+            func showToast(_ message: String) {
+                view.makeToast(message)
+            }
+
+            private func showMarkersToast() {
+                let visibleRegion = mapView.projection.visibleRegion()
+                let bounds = GMSCoordinateBounds(region: visibleRegion)
+                output.filteredPlaces
+                    .drive(onNext: { [weak self] places in
+                        let visibleMarkers = places.filter { place in
+                            bounds.contains(place.coordinate)
+                        }
+                        if visibleMarkers.isEmpty {
+                            self?.showToast("현재 화면에 표시된 장소가 없습니다.")
+                        }
+                    })
+                    .disposed(by: disposeBag)
+            }
+        }
+
+        extension MapViewController: ClusterManagerDelegate {
+            func searchPlacesInBounds(_ bounds: GMSCoordinateBounds, query: String, completion: @escaping ([Place]) -> Void) {
+                placeSearchViewModel.searchPlacesInBounds(bounds: bounds, query: query, completion: completion)
+            }
+
+            func selectedFilters() -> Set<String> {
+                return viewModel.selectedCategories
+            }
+
+            func showNoResultsMessage() {
+                output.filteredPlaces
+                    .drive(onNext: { [weak self] places in
+                        if places.isEmpty {
+                            self?.showToast("현재 화면에 표시된 장소가 없습니다.")
+                        }
+                    })
+                    .disposed(by: disposeBag)
+            }
+
+            func clusterManager(_ clusterManager: ClusterManager, didSelectPlace place: Place) {
+                let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel))
+                navigationController?.pushViewController(gymDetailVC, animated: true)
+            }
+        }

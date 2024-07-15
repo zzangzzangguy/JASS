@@ -28,7 +28,11 @@ class FavoritePlace: Object {
             types: nil,
             phoneNumber: phoneNumber,
             openingHours: nil,
-            photos: nil
+            photos: nil,
+            distanceText: nil,
+            reviews: nil,
+            userRatingsTotal: nil,
+            rating: nil
         )
     }
 }

@@ -105,7 +105,7 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
         let selectedCategories = delegate?.selectedFilters() ?? []
 
         guard !selectedCategories.isEmpty else {
-            mapView.makeToast("선택된 필터가 없습니다. 필터를 선택해주세요.")
+//            mapView.makeToast("선택된 필터가 없습니다. 필터를 선택해주세요.")
             return
         }
 
@@ -194,7 +194,7 @@ class ClusterManager: NSObject, GMUClusterManagerDelegate, GMUClusterRendererDel
         return markerImage
     }
 
-    func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
-        updateMarkersWithSelectedFilters()
-    }
+//    func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
+//        updateMarkersWithSelectedFilters()
+//    }
 }

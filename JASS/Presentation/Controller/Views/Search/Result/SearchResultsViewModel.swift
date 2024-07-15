@@ -86,7 +86,9 @@ final class SearchResultsViewModel: ViewModelType {
                 openingHours: nil,
                 photos: nil,
                 distanceText: nil,
-                reviews: nil
+                reviews: nil,
+                userRatingsTotal: nil,
+                rating: nil
             ))
         )
     }
