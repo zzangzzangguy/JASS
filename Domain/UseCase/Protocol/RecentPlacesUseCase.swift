@@ -1,23 +1,35 @@
-import Foundation
 import RxSwift
 
-protocol RecentPlacesUseCase {
-    var recentPlaces: Observable<[Place]> { get }
-    func addRecentPlace(_ place: Place)
+protocol RecentPlaceUseCase {
+    func getRecentPlaces() -> Observable<[Place]>
+    func addRecentPlace(_ place: Place) -> Completable
+    func clearRecentPlaces() -> Completable
 }
 
-class DefaultRecentPlacesUseCase: RecentPlacesUseCase {
-    private let repository: PlaceRepository
+class DefaultRecentPlaceUseCase: RecentPlaceUseCase {
+    private let recentPlacesManager: RecentPlacesManager
 
-    init(repository: PlaceRepository) {
-        self.repository = repository
+    init(recentPlacesManager: RecentPlacesManager) {
+        self.recentPlacesManager = recentPlacesManager
     }
 
-    var recentPlaces: Observable<[Place]> {
-        return repository.getRecentPlaces()
+    func getRecentPlaces() -> Observable<[Place]> {
+        return Observable.just(recentPlacesManager.getRecentPlaces())
     }
 
-    func addRecentPlace(_ place: Place) {
-        repository.addRecentPlace(place)
+    func addRecentPlace(_ place: Place) -> Completable {
+        return Completable.create { completable in
+            self.recentPlacesManager.addRecentPlace(place)
+            completable(.completed)
+            return Disposables.create()
+        }
+    }
+
+    func clearRecentPlaces() -> Completable {
+        return Completable.create { completable in
+            self.recentPlacesManager.clearRecentPlaces()
+            completable(.completed)
+            return Disposables.create()
+        }
     }
 }
