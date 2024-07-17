@@ -18,14 +18,6 @@ class SearchResultsViewController: UIViewController {
     private let searchBar = UISearchBar().then {
         $0.backgroundImage = UIImage()
         $0.placeholder = "검색어를 입력하세요"
-        // 기존 코드
-        // $0.searchBarStyle = .minimal
-        // $0.layer.borderWidth = 1
-        // $0.layer.borderColor = UIColor.lightGray.cgColor
-        // $0.layer.cornerRadius = 10
-        // $0.clipsToBounds = true
-
-        // 수정된 코드
         $0.searchTextField.backgroundColor = .white
         $0.searchTextField.layer.cornerRadius = 18
         $0.searchTextField.layer.masksToBounds = true
@@ -65,6 +57,9 @@ class SearchResultsViewController: UIViewController {
         $0.register(SearchResultCell.self, forCellReuseIdentifier: SearchResultCell.reuseIdentifier)
     }
 
+    // 추가: 페이지네이션 로딩 인디케이터
+    private let activityIndicator = UIActivityIndicatorView(style: .medium)
+
     var selectedCategories: Set<String> = []
     var currentLocation: CLLocationCoordinate2D?
     private let loadNextPageSubject = PublishSubject<Void>()
@@ -103,6 +98,7 @@ class SearchResultsViewController: UIViewController {
         setupActions()
         setupLocationManager()
         performInitialSearch()
+        setupActivityIndicator()
 
         // 즐겨찾기 변경 이벤트 구독
         FavoritesManager.shared.favoriteChanged
@@ -126,9 +122,15 @@ class SearchResultsViewController: UIViewController {
 
     private func setupUI() {
         view.backgroundColor = .white
-        [backButton, searchBar, searchButton, filterButton, tableView].forEach { view.addSubview($0) }
+        view.addSubview(backButton)
+        view.addSubview(searchBar)
+        view.addSubview(searchButton)
+        view.addSubview(filterButton)
+        view.addSubview(tableView)
+        view.addSubview(activityIndicator) // 추가된 부분
         setupConstraints()
     }
+
 
     private func setupConstraints() {
         backButton.snp.makeConstraints {
@@ -141,10 +143,6 @@ class SearchResultsViewController: UIViewController {
             $0.leading.equalTo(backButton.snp.trailing).offset(8)
             $0.trailing.equalTo(searchButton.snp.leading).offset(-8)
             $0.centerY.equalTo(backButton)
-            // 기존 코드
-            // $0.height.equalTo(44)
-
-            // 수정된 코드
             $0.height.equalTo(36)
         }
 
@@ -164,6 +162,20 @@ class SearchResultsViewController: UIViewController {
             $0.top.equalTo(filterButton.snp.bottom).offset(10)
             $0.leading.trailing.bottom.equalToSuperview()
         }
+
+        // 추가: 액티비티 인디케이터 제약 조건
+        activityIndicator.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
+        }
+    }
+
+    private func setupActivityIndicator() {
+        view.addSubview(activityIndicator)
+        activityIndicator.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
+        }
     }
 
     private func bindViewModel() {
@@ -177,8 +189,6 @@ class SearchResultsViewController: UIViewController {
             favoriteToggle: Observable.never(),
             currentLocation: .just(self.currentLocation),
             loadNextPage: loadNextPageSubject.asObservable()
-
-
         )
 
         let output = viewModel.transform(input: input)
@@ -207,6 +217,17 @@ class SearchResultsViewController: UIViewController {
             .drive(onNext: { [weak self] (place: Place) in
                 guard let self = self else { return }
                 self.updateFavoriteButton(for: place)
+            })
+            .disposed(by: disposeBag)
+
+        // 추가: 페이지네이션 관련 바인딩
+        output.isLoadingNextPage
+            .drive(activityIndicator.rx.isAnimating)
+            .disposed(by: disposeBag)
+
+        output.endOfResults
+            .emit(onNext: { [weak self] in
+                self?.showToast("마지막 검색 결과입니다.")
             })
             .disposed(by: disposeBag)
     }
@@ -267,7 +288,9 @@ class SearchResultsViewController: UIViewController {
                 guard let self = self else { return }
                 LoadingIndicatorManager.shared.hide()
                 self.viewModel?.loadSearchResults(with: places)
-                self.tableView.reloadData()
+                UIView.transition(with: self.tableView, duration: 0.5, options: .transitionCrossDissolve, animations: {
+                    self.tableView.reloadData()
+                }, completion: nil)
                 if places.isEmpty {
                     self.showToast("검색 결과가 없습니다.")
                 }
@@ -297,7 +320,7 @@ class SearchResultsViewController: UIViewController {
         cell.updateFavoriteButton(isFavorite: isFavorite)
     }
 
-    private func updateFavoriteUI(for placeId: String) {  // 추가된 메서드
+    private func updateFavoriteUI(for placeId: String) {
         guard let index = viewModel?.searchResultsRelay.value.firstIndex(where: { $0.place_id == placeId }),
               let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? SearchResultCell else { return }
 
@@ -344,21 +367,20 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
         let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel))
         navigationController?.pushViewController(gymDetailVC, animated: true)
     }
+
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let totalCount = viewModel?.searchResultsRelay.value.count else { return }
+        guard let totalCount = viewModel?.searchResultsRelay.value.count,
+              viewModel?.placeSearchViewModel.hasNextPageRelay.value == true else { return }
         if indexPath.row == totalCount - 1 {
             print("DEBUG: 마지막 셀 도달, 다음 페이지 로드 시도")
             loadNextPageSubject.onNext(())
         }
     }
-
-
 }
 
 // MARK: - SearchResultCellDelegate
 
 extension SearchResultsViewController: SearchResultCellDelegate {
-
     func didTapFavoriteButton(for cell: SearchResultCell) {
         guard let indexPath = tableView.indexPath(for: cell),
               let place = viewModel?.searchResultsRelay.value[indexPath.row] else { return }
