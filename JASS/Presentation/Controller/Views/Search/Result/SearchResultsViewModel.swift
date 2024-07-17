@@ -24,10 +24,12 @@ final class SearchResultsViewModel: ViewModelType {
         let error: Driver<String>
         let favoriteUpdated: Driver<Place>
         let hasNextPage: Driver<Bool>
+        let isLoadingNextPage: Driver<Bool>  // 추가: 페이지네이션 로딩 상태
+        let endOfResults: Signal<Void>  // 추가: 페이지네이션 끝 알림
     }
 
     let favoritesManager: FavoritesManager
-    private let placeSearchViewModel: PlaceSearchViewModel
+    let placeSearchViewModel: PlaceSearchViewModel
     private let recentPlacesViewModel: RecentPlacesViewModel
     var disposeBag = DisposeBag()
 
@@ -36,6 +38,9 @@ final class SearchResultsViewModel: ViewModelType {
     private let favoriteUpdatedRelay = PublishRelay<Place>()
     let searchResultsRelay = BehaviorRelay<[Place]>(value: [])
     let favoriteStatusChanged = PublishRelay<String>()
+
+    private let isLoadingNextPageRelay = BehaviorRelay<Bool>(value: false)  // 추가
+    private let endOfResultsRelay = PublishRelay<Void>()  // 추가
 
     init(favoritesManager: FavoritesManager, placeSearchViewModel: PlaceSearchViewModel, recentPlacesViewModel: RecentPlacesViewModel) {
         self.favoritesManager = favoritesManager
@@ -64,22 +69,28 @@ final class SearchResultsViewModel: ViewModelType {
             })
 
         let nextPageResults = input.loadNextPage
+            .withLatestFrom(isLoadingNextPageRelay)
+            .filter { !$0 }
             .flatMapLatest { [weak self] _ -> Observable<[Place]> in
                 guard let self = self else { return .empty() }
+                self.isLoadingNextPageRelay.accept(true)
                 return self.placeSearchViewModel.loadNextPage()
+                    .do(onNext: { [weak self] places in
+                        self?.isLoadingNextPageRelay.accept(false)
+                        if places.isEmpty {
+                            self?.endOfResultsRelay.accept(())
+                        }
+                    }, onError: { [weak self] _ in
+                        self?.isLoadingNextPageRelay.accept(false)
+                    })
             }
-            .do(onNext: { [weak self] places in
-                print("DEBUG: 다음 페이지 로드 완료, \(places.count)개 추가")
-                var currentPlaces = self?.searchResultsRelay.value ?? []
-                currentPlaces.append(contentsOf: places)
-                self?.searchResultsRelay.accept(currentPlaces)
-            })
 
         Observable.merge(searchResults, nextPageResults)
+            .scan(into: [Place]()) { accumulated, new in
+                accumulated.append(contentsOf: new)
+            }
             .bind(to: searchResultsRelay)
             .disposed(by: disposeBag)
-
-
 
         input.favoriteToggle
             .subscribe(onNext: { [weak self] place in
@@ -116,8 +127,9 @@ final class SearchResultsViewModel: ViewModelType {
                 userRatingsTotal: nil,
                 rating: nil
             )),
-            hasNextPage: placeSearchViewModel.hasNextPageRelay.asDriver()
-
+            hasNextPage: placeSearchViewModel.hasNextPageRelay.asDriver(),
+            isLoadingNextPage: isLoadingNextPageRelay.asDriver(),  // 추가
+            endOfResults: endOfResultsRelay.asSignal()  // 추가
         )
     }
 

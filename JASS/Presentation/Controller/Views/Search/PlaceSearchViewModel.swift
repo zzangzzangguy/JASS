@@ -34,6 +34,7 @@ class PlaceSearchViewModel: ViewModelType {
     var autoCompleteResults: BehaviorRelay<[String]> = BehaviorRelay(value: [])
     var showError: PublishRelay<String> = PublishRelay()
     var cachedPlaces: [String: Place] = [:]
+    private var lastQuery: String = ""
 
     private var nextPageToken: String?
 //    private let pageSize = 10
@@ -112,16 +113,18 @@ class PlaceSearchViewModel: ViewModelType {
     public func loadNextPage() -> Observable<[Place]> {
         guard let token = nextPageToken else {
             print("DEBUG: 다음 페이지 토큰이 없음")
+            hasNextPageRelay.accept(false)
             return .just([])
         }
 
         isSearching.accept(true)
         print("DEBUG: 다음 페이지 로드 - 토큰: \(token)")
 
-        return placeUseCase.searchPlaces(query: "", pageToken: token)
+//        return placeUseCase.searchPlaces(query: "", pageToken: token)
+        return placeUseCase.searchPlaces(query: lastQuery, pageToken: token)
             .do(onNext: { [weak self] (places, nextPageToken) in
                 self?.isSearching.accept(false)
-                self?.searchResults.accept((self?.searchResults.value ?? []) + places)
+//                self?.searchResults.accept((self?.searchResults.value ?? []) + places)
                 self?.nextPageToken = nextPageToken
                 print("DEBUG: 다음 페이지 로드 완료 - \(places.count)개 결과, 다음 토큰: \(nextPageToken ?? "없음")")
                 self?.hasNextPageRelay.accept(nextPageToken != nil)

@@ -254,40 +254,10 @@
             filePath = "JASS/Presentation/Controller/Views/Search/PlaceSearchViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "112"
-            endingLineNumber = "112"
+            startingLineNumber = "113"
+            endingLineNumber = "113"
             landmarkName = "loadNextPage()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "F6C8C321-B4BA-4B89-9B2A-FBE352C14B47 - 5f40e344b05b1318"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "JASS.PlaceSearchViewModel.loadNextPage() -&gt; RxSwift.Observable&lt;Swift.Array&lt;JASS.Place&gt;&gt;"
-                  moduleName = "JASS"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ganghoseong/JASS/JASS/Presentation/Controller/Views/Search/PlaceSearchViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "113"
-                  endingLineNumber = "113">
-               </Location>
-               <Location
-                  uuid = "F6C8C321-B4BA-4B89-9B2A-FBE352C14B47 - 5f40e344b05b137b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "JASS.PlaceSearchViewModel.loadNextPage() -&gt; RxSwift.Observable&lt;Swift.Array&lt;JASS.Place&gt;&gt;"
-                  moduleName = "JASS"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ganghoseong/JASS/JASS/Presentation/Controller/Views/Search/PlaceSearchViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "112"
-                  endingLineNumber = "112">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
