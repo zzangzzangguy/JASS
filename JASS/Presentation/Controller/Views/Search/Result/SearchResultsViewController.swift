@@ -18,6 +18,21 @@ class SearchResultsViewController: UIViewController {
     private let searchBar = UISearchBar().then {
         $0.backgroundImage = UIImage()
         $0.placeholder = "검색어를 입력하세요"
+        // 기존 코드
+        // $0.searchBarStyle = .minimal
+        // $0.layer.borderWidth = 1
+        // $0.layer.borderColor = UIColor.lightGray.cgColor
+        // $0.layer.cornerRadius = 10
+        // $0.clipsToBounds = true
+
+        // 수정된 코드
+        $0.searchTextField.backgroundColor = .white
+        $0.searchTextField.layer.cornerRadius = 18
+        $0.searchTextField.layer.masksToBounds = true
+        $0.searchTextField.leftView = nil
+        if let searchIcon = $0.searchTextField.leftView as? UIImageView {
+            searchIcon.image = UIImage(systemName: "magnifyingglass")
+        }
     }
 
     private let backButton = UIButton(type: .system).then {
@@ -52,8 +67,8 @@ class SearchResultsViewController: UIViewController {
 
     var selectedCategories: Set<String> = []
     var currentLocation: CLLocationCoordinate2D?
+    private let loadNextPageSubject = PublishSubject<Void>()
     private let disposeBag = DisposeBag()
-
     private let defaultCategory = "헬스,필라테스,크로스핏,복싱,수영,골프,클라이밍"
 
     var searchQuery: String? {
@@ -126,6 +141,11 @@ class SearchResultsViewController: UIViewController {
             $0.leading.equalTo(backButton.snp.trailing).offset(8)
             $0.trailing.equalTo(searchButton.snp.leading).offset(-8)
             $0.centerY.equalTo(backButton)
+            // 기존 코드
+            // $0.height.equalTo(44)
+
+            // 수정된 코드
+            $0.height.equalTo(36)
         }
 
         searchButton.snp.makeConstraints {
@@ -154,7 +174,11 @@ class SearchResultsViewController: UIViewController {
             searchTrigger: searchBar.rx.text.orEmpty.asObservable(),
             filterTrigger: Observable.just(selectedCategories),
             itemSelected: tableView.rx.itemSelected.map { $0.row }.asObservable(),
-            favoriteToggle: Observable.never()
+            favoriteToggle: Observable.never(),
+            currentLocation: .just(self.currentLocation),
+            loadNextPage: loadNextPageSubject.asObservable()
+
+
         )
 
         let output = viewModel.transform(input: input)
@@ -166,21 +190,21 @@ class SearchResultsViewController: UIViewController {
             .disposed(by: disposeBag)
 
         output.searchResults
-            .drive(onNext: { [weak self] places in
+            .drive(onNext: { [weak self] (places: [Place]) in
                 print("DEBUG: 검색 결과 업데이트 - 총 \(places.count)개 장소")
                 self?.tableView.reloadData()
             })
             .disposed(by: disposeBag)
 
         output.error
-            .drive(onNext: { [weak self] errorMessage in
+            .drive(onNext: { [weak self] (errorMessage: String) in
                 guard let self = self, !errorMessage.isEmpty else { return }
                 self.showToast(errorMessage)
             })
             .disposed(by: disposeBag)
 
         output.favoriteUpdated
-            .drive(onNext: { [weak self] place in
+            .drive(onNext: { [weak self] (place: Place) in
                 guard let self = self else { return }
                 self.updateFavoriteButton(for: place)
             })
@@ -221,16 +245,22 @@ class SearchResultsViewController: UIViewController {
     private func performSearch(with categories: [String]? = nil) {
         guard let query = searchBar.text, !query.isEmpty else { return }
         let categoriesToUse = categories ?? Array(selectedCategories)
-        let category = categoriesToUse.isEmpty ? "all" : categoriesToUse.joined(separator: ",")
+        let category = categoriesToUse.isEmpty ? defaultCategory : categoriesToUse.joined(separator: ",")
 
         LoadingIndicatorManager.shared.show(in: view)
 
-        placeSearchViewModel?.searchPlace(input: query, category: category, currentLocation: self.currentLocation)
+        guard let placeSearchViewModel = placeSearchViewModel else {
+            showToast("검색 기능을 초기화하는 데 문제가 발생했습니다.")
+            LoadingIndicatorManager.shared.hide()
+            return
+        }
+
+        placeSearchViewModel.searchPlace(input: query, filters: selectedCategories, currentLocation: self.currentLocation)
             .flatMap { [weak self] places -> Observable<[Place]> in
                 guard let self = self, let currentLocation = self.currentLocation else {
                     return Observable.just(places)
                 }
-                return self.placeSearchViewModel?.calculateDistances(for: places, from: currentLocation) ?? Observable.just(places)
+                return placeSearchViewModel.calculateDistances(for: places, from: currentLocation)
             }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] places in
@@ -241,9 +271,11 @@ class SearchResultsViewController: UIViewController {
                 if places.isEmpty {
                     self.showToast("검색 결과가 없습니다.")
                 }
+                print("DEBUG: 검색 완료 - 쿼리: \(query), 카테고리: \(category), 결과 수: \(places.count)")
             }, onError: { [weak self] error in
                 self?.showToast("검색 중 오류가 발생했습니다: \(error.localizedDescription)")
                 LoadingIndicatorManager.shared.hide()
+                print("DEBUG: 검색 오류 - \(error.localizedDescription)")
             })
             .disposed(by: disposeBag)
     }
@@ -312,6 +344,15 @@ extension SearchResultsViewController: UITableViewDelegate, UITableViewDataSourc
         let gymDetailVC = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: placeSearchViewModel))
         navigationController?.pushViewController(gymDetailVC, animated: true)
     }
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let totalCount = viewModel?.searchResultsRelay.value.count else { return }
+        if indexPath.row == totalCount - 1 {
+            print("DEBUG: 마지막 셀 도달, 다음 페이지 로드 시도")
+            loadNextPageSubject.onNext(())
+        }
+    }
+
+
 }
 
 // MARK: - SearchResultCellDelegate
@@ -349,6 +390,6 @@ extension SearchResultsViewController: FilterViewDelegate {
 
     func filterView(_ filterView: FilterViewController, didSelectCategories categories: Set<String>) {
         selectedCategories = categories.isEmpty ? [defaultCategory] : categories
-        performSearch(with: Array(categories))
+        performSearch(with: Array(selectedCategories))
     }
 }

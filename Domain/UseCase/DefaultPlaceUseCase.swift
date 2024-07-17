@@ -6,13 +6,23 @@ import UIKit
 
 class DefaultPlaceUseCase: PlaceUseCase {
     private let repository: PlaceRepository
+    private let defaultCategory = "헬스장"
 
     init(repository: PlaceRepository) {
         self.repository = repository
     }
 
-    func searchPlaces(query: String) -> Observable<[Place]> {
-        return repository.searchPlaces(query: query)
+    func searchPlaces(query: String, pageToken: String?) -> Observable<([Place], String?)> {
+        let finalQuery = query.isEmpty ? defaultCategory : "\(query) \(defaultCategory)"
+        print("DEBUG: API 호출 쿼리 - \(finalQuery), 페이지 토큰 - \(pageToken ?? "없음")")
+
+        return repository.searchPlaces(query: finalQuery, pageToken: pageToken)
+            .map { response in
+                let places = response.places
+                let nextPageToken = response.nextPageToken
+                print("DEBUG: 검색 결과 - \(places.count)개, 다음 페이지 토큰 - \(String(describing: nextPageToken))")
+                return (places, nextPageToken)
+            }
     }
 
     func searchPlacesInBounds(bounds: GMSCoordinateBounds, query: String) -> Observable<[Place]> {

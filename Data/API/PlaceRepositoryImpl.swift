@@ -1,19 +1,30 @@
 import Foundation
 import RxSwift
+import RxCocoa
 import GoogleMaps
 
 class PlaceRepositoryImpl: PlaceRepository {
     private let apiService: GooglePlacesAPIService
-    private var recentPlaces: [Place] = [] 
+    private var recentPlaces: [Place] = []
 
     init(apiService: GooglePlacesAPIService) {
         self.apiService = apiService
     }
 
-    func searchPlaces(query: String) -> Observable<[Place]> {
-        return apiService.searchPlaces(query: query)
+//    func searchPlaces(query: String, pageToken: String?) -> Observable<(places: [Place], nextPageToken: String?)> {
+//        return apiService.searchPlaces(query: query, pageToken: pageToken)
+//            .map { results in
+//                print("DEBUG: Repository 검색 결과 - \(results.0.count)개, 다음 페이지 토큰 - \(String(describing: results.1))")
+//                return (places: results.0, nextPageToken: results.1)
+//            }
+//    }
+    func searchPlaces(query: String, pageToken: String?) -> Observable<(places: [Place], nextPageToken: String?)> {
+        return apiService.searchPlaces(query: query, pageToken: pageToken)
+            .map { results in
+                print("DEBUG: Repository 검색 결과 - \(results.0.count)개, 다음 페이지 토큰 - \(String(describing: results.1))")
+                return (places: results.0, nextPageToken: results.1)
+            }
     }
-
     func searchPlacesInBounds(bounds: GMSCoordinateBounds, query: String) -> Observable<[Place]> {
         let center = CLLocationCoordinate2D(latitude: (bounds.northEast.latitude + bounds.southWest.latitude) / 2,
                                             longitude: (bounds.northEast.longitude + bounds.southWest.longitude) / 2)
@@ -43,14 +54,14 @@ class PlaceRepositoryImpl: PlaceRepository {
         let originString = "\(origin.latitude),\(origin.longitude)"
         let destinationString = "\(destination.latitude),\(destination.longitude)"
         return apiService.calculateDistances(origins: originString, destinations: destinationString)
-              .do(onNext: { distances in
-              }, onError: { error in
-                  print("DEBUG: 거리 계산 오류: \(error.localizedDescription)")
-              })
-              .map { distances -> String? in
-                  return distances.first ?? nil
-              }
-      }
+            .do(onNext: { distances in
+            }, onError: { error in
+                print("DEBUG: 거리 계산 오류: \(error.localizedDescription)")
+            })
+            .map { distances -> String? in
+                return distances.first ?? nil
+            }
+    }
 
     func searchNearbySportsFacilities(at location: CLLocationCoordinate2D) -> Observable<[Place]> {
         let radius = 5000
@@ -62,11 +73,11 @@ class PlaceRepositoryImpl: PlaceRepository {
         return apiService.searchNearby(parameters: parameters)
     }
 
-    func getRecentPlaces() -> Observable<[Place]> { // 추가
+    func getRecentPlaces() -> Observable<[Place]> {
         return Observable.just(recentPlaces)
     }
 
-    func addRecentPlace(_ place: Place) { // 추가
+    func addRecentPlace(_ place: Place) {
         if !recentPlaces.contains(where: { $0.place_id == place.place_id }) {
             recentPlaces.append(place)
             if recentPlaces.count > 10 {

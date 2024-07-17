@@ -18,6 +18,7 @@
 		4E3D700F2C370C570090EBDF /* RecentPlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3D700E2C370C570090EBDF /* RecentPlace.swift */; };
 		4E3D70112C370D650090EBDF /* RecentPlacesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3D70102C370D650090EBDF /* RecentPlacesManager.swift */; };
 		4E52D97B2C19AE0D0007494A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E52D97A2C19AE0D0007494A /* SearchViewController.swift */; };
+		4E56EB932C4530CA00A10724 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E56EB922C4530C900A10724 /* FilterCollectionViewCell.swift */; };
 		4E7CB96B2C10139E00F5F3D7 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96A2C10139E00F5F3D7 /* RxCocoa */; };
 		4E7CB96D2C10139E00F5F3D7 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96C2C10139E00F5F3D7 /* RxRelay */; };
 		4E7CB96F2C10139E00F5F3D7 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96E2C10139E00F5F3D7 /* RxSwift */; };
@@ -26,6 +27,7 @@
 		4E8225972C29F73500A0AE94 /* LoadingIndicatorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8225912C29EB5400A0AE94 /* LoadingIndicatorManager.swift */; };
 		4E82259B2C29F82E00A0AE94 /* FavoriteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E82259A2C29F82E00A0AE94 /* FavoriteManager.swift */; };
 		4E82259C2C29F92200A0AE94 /* FavoritePlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8225962C29F73200A0AE94 /* FavoritePlace.swift */; };
+		4E8551FA2C477BAC0033BC72 /* PlaceRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E97CAB92C2DE7C300ECF24B /* PlaceRepositoryImpl.swift */; };
 		4E8A694D2C32B828007DDBC1 /* KakaoMapsSDK-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4E8A694C2C32B828007DDBC1 /* KakaoMapsSDK-SPM */; };
 		4E97CA8E2C2D771900ECF24B /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E97CA8D2C2D771900ECF24B /* MainCoordinator.swift */; };
 		4E97CA902C2D772900ECF24B /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E97CA8F2C2D772900ECF24B /* AppCoordinator.swift */; };
@@ -122,6 +124,7 @@
 		4E3D700E2C370C570090EBDF /* RecentPlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlace.swift; sourceTree = "<group>"; };
 		4E3D70102C370D650090EBDF /* RecentPlacesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlacesManager.swift; sourceTree = "<group>"; };
 		4E52D97A2C19AE0D0007494A /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		4E56EB922C4530C900A10724 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FilterCollectionViewCell.swift; path = /Users/ganghoseong/JASS/JASS/Presentation/Controller/Views/Filter/FilterCollectionViewCell.swift; sourceTree = "<absolute>"; };
 		4E8225912C29EB5400A0AE94 /* LoadingIndicatorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LoadingIndicatorManager.swift; path = ../JASS/Presentation/Controller/LoadingIndicatorManager.swift; sourceTree = "<group>"; };
 		4E8225962C29F73200A0AE94 /* FavoritePlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePlace.swift; sourceTree = "<group>"; };
 		4E82259A2C29F82E00A0AE94 /* FavoriteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteManager.swift; sourceTree = "<group>"; };
@@ -469,6 +472,7 @@
 			isa = PBXGroup;
 			children = (
 				4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */,
+				4E56EB922C4530C900A10724 /* FilterCollectionViewCell.swift */,
 			);
 			path = Filter;
 			sourceTree = "<group>";
@@ -846,6 +850,7 @@
 				4E97CA922C2D773C00ECF24B /* SearchCoordinator.swift in Sources */,
 				4E3D700F2C370C570090EBDF /* RecentPlace.swift in Sources */,
 				4EE526412C36A55D00DD3355 /* MainViewModel.swift in Sources */,
+				4E56EB932C4530CA00A10724 /* FilterCollectionViewCell.swift in Sources */,
 				4EDB89862BEAA118001C558E /* FavoritePlaceCell.swift in Sources */,
 				4E97CAA92C2D7CAB00ECF24B /* PlaceLocalDataSource.swift in Sources */,
 				4E97CAB62C2DE75A00ECF24B /* GooglePlaceApiService.swift in Sources */,
@@ -912,6 +917,7 @@
 			files = (
 				4EF9314D2B1C913000E5794B /* JASSUITests.swift in Sources */,
 				4EF9314F2B1C913000E5794B /* JASSUITestsLaunchTests.swift in Sources */,
+				4E8551FA2C477BAC0033BC72 /* PlaceRepositoryImpl.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

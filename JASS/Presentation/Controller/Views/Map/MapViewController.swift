@@ -197,7 +197,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             showToast("필터가 적용되지 않았습니다. 기본 카테고리로 검색합니다.")
         }
 
-        placeSearchViewModel.searchPlace(input: query, category: category, currentLocation: locationManager.location?.coordinate)
+        placeSearchViewModel.searchPlace(input: query, filters: viewModel.selectedCategories, currentLocation: locationManager.location?.coordinate)
+
+
             .subscribe(onNext: { [weak self] places in
                 guard let self = self else { return }
                 self.updateMapMarkers(with: places)
@@ -309,7 +311,6 @@ extension MapViewController: GMSMapViewDelegate {
         updateZoomButtonsState()
         clusterManager.updateMarkersWithSelectedFilters()
         if viewModel.selectedCategories.isEmpty {
-               // 필터가 선택되지 않았으면 마커를 업데이트하지 않음
                return
            }
         let targetLocation = CLLocation(latitude: position.target.latitude, longitude: position.target.longitude)
@@ -369,7 +370,10 @@ extension MapViewController: UISearchBarDelegate {
         if let searchText = searchBar.text, !searchText.isEmpty {
             searchRecentViewModel.saveSearchHistory(query: searchText)
             showLoadingIndicator()
-            placeSearchViewModel.searchPlace(input: searchText, category: selectedCategory ?? defaultCategory, currentLocation: locationManager.location?.coordinate)
+            placeSearchViewModel.searchPlace(input: searchText, filters: viewModel.selectedCategories, currentLocation: locationManager.location?.coordinate)
+
+
+
                 .subscribe(onNext: { [weak self] places in
                     guard let self = self, let firstPlace = places.first else {
                         self?.showToast("검색 결과가 없습니다.")
@@ -383,7 +387,6 @@ extension MapViewController: UISearchBarDelegate {
                                                           zoom: 15.0)
                     self.mapView.animate(to: camera)
                 }, onError: { error in
-                    // 에러 처리
                     self.hideLoadingIndicator()
                 })
                 .disposed(by: disposeBag)
@@ -409,8 +412,9 @@ extension MapViewController: FilterViewDelegate {
         selectedCategory = categories.first
                 guard let category = selectedCategory else { return }
 
-                placeSearchViewModel.searchPlace(input: query, category: category, currentLocation: locationManager.location?.coordinate)
-                    .subscribe(onNext: { [weak self] places in
+        placeSearchViewModel.searchPlace(input: query, filters: viewModel.selectedCategories, currentLocation: locationManager.location?.coordinate)
+
+                  .subscribe(onNext: { [weak self] places in
                         guard let self = self else { return }
                         self.hideLoadingIndicator()
                         self.updateMapMarkers(with: places)
