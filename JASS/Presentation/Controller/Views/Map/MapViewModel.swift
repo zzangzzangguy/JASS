@@ -124,7 +124,7 @@ class MapViewModel: ViewModelType {
 
     private func searchPlaces(query: String) -> Observable<[Place]> {
         isLoadingRelay.accept(true)
-        return placeSearchViewModel.searchPlace(input: query, category: selectedCategories.joined(separator: ","), currentLocation: mapView.camera.target)
+        return placeSearchViewModel.searchPlace(input: query, filters: selectedCategories, currentLocation: mapView.camera.target)
             .do(onNext: { [weak self] _ in
                 self?.isLoadingRelay.accept(false)
             }, onError: { [weak self] error in
@@ -134,9 +134,9 @@ class MapViewModel: ViewModelType {
     }
 
     private func filterPlaces() {
-        let filtered = selectedCategories.isEmpty ? placesRelay.value : placesRelay.value.filter { place in
+        let filtered = placesRelay.value.filter { place in
             guard let types = place.types else { return false }
-            return !Set(types).isDisjoint(with: selectedCategories)
+            return selectedCategories.isEmpty || !Set(types).isDisjoint(with: selectedCategories)
         }
         filteredPlacesRelay.accept(filtered)
     }

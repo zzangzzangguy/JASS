@@ -1,8 +1,8 @@
 import Foundation
 import RxSwift
 import RxCocoa
-import GoogleMaps
 import CoreLocation
+import GoogleMaps
 
 class PlaceSearchViewModel: ViewModelType {
     struct Input {
@@ -12,6 +12,8 @@ class PlaceSearchViewModel: ViewModelType {
         let keywordSelected: Observable<String>
         let segmentChanged: Observable<Int>
         let currentLocation: Observable<CLLocationCoordinate2D?>
+        let loadNextPage: Observable<Void>
+        let filterTrigger: Observable<Set<String>>  // 필터 추가
     }
 
     struct Output {
@@ -20,6 +22,7 @@ class PlaceSearchViewModel: ViewModelType {
         let searchResults: Driver<[Place]>
         let isLoading: Driver<Bool>
         let error: Driver<String>
+        let hasNextPage: Driver<Bool>
     }
 
     private let placeUseCase: PlaceUseCase
@@ -32,54 +35,103 @@ class PlaceSearchViewModel: ViewModelType {
     var showError: PublishRelay<String> = PublishRelay()
     var cachedPlaces: [String: Place] = [:]
 
+    private var nextPageToken: String?
+//    private let pageSize = 10
+    public let hasNextPageRelay = BehaviorRelay<Bool>(value: false)
+
+
+    private let sportKeywords = ["헬스장", "피트니스", "요가", "필라테스", "크로스핏", "수영장", "복싱", "주짓수"]
+
     init(placeUseCase: PlaceUseCase) {
         self.placeUseCase = placeUseCase
         self.searchRecentViewModel = SearchRecentViewModel.shared
     }
 
     func transform(input: Input) -> Output {
-        let recentSearches = input.viewDidLoad
-            .flatMapLatest { _ in
-                Observable.just(self.searchRecentViewModel.loadRecentSearches())
-            }
-            .asDriver(onErrorJustReturn: [])
+        let searchTrigger: Observable<Void> = Observable.merge(
+            input.searchButtonClicked,
+            input.filterTrigger.map { _ in () }
+        )
 
-        let autoCompleteSuggestions = input.searchText
-            .debounce(.milliseconds(300), scheduler: MainScheduler.instance)
-            .flatMapLatest { [weak self] query in
-                self?.searchAutoComplete(for: query) ?? .just([])
+        let searchResults: Observable<[Place]> = searchTrigger
+            .withLatestFrom(Observable.combineLatest(input.searchText, input.filterTrigger, input.currentLocation))
+            .flatMapLatest { [weak self] (query, filters, location) -> Observable<[Place]> in
+                guard let self = self else { return .just([]) }
+                return self.searchPlace(input: query, filters: filters, currentLocation: location)
             }
-            .asDriver(onErrorJustReturn: [])
+            .share(replay: 1)
 
-        let searchResults = Observable.combineLatest(input.searchButtonClicked, input.searchText, input.currentLocation)
-            .flatMapLatest { [weak self] _, query, location in
-                self?.searchPlace(input: query, category: "all", currentLocation: location) ?? .just([])
+        let nextPageResults: Observable<[Place]> = input.loadNextPage
+            .flatMapLatest { [weak self] () -> Observable<[Place]> in
+                guard let self = self else { return .just([]) }
+                return self.loadNextPage()
             }
-            .asDriver(onErrorJustReturn: [])
+
+        let allResults: Observable<[Place]> = Observable.merge(searchResults, nextPageResults)
+            .scan(into: [Place]()) { accumulated, new in
+                accumulated.append(contentsOf: new)
+            }
+            .share(replay: 1)
 
         return Output(
-            recentSearches: recentSearches,
-            autoCompleteSuggestions: autoCompleteSuggestions,
-            searchResults: searchResults,
+            recentSearches: input.viewDidLoad.flatMapLatest { [weak self] _ in
+                Observable.just(self?.searchRecentViewModel.loadRecentSearches() ?? [])
+            }.asDriver(onErrorJustReturn: []),
+            autoCompleteSuggestions: input.searchText.flatMapLatest { [weak self] query in
+                self?.searchAutoComplete(for: query) ?? .just([])
+            }.asDriver(onErrorJustReturn: []),
+            searchResults: allResults.asDriver(onErrorJustReturn: []),
             isLoading: isSearching.asDriver(),
-            error: showError.asDriver(onErrorJustReturn: "Unknown error")
+            error: showError.asDriver(onErrorJustReturn: "알 수 없는 오류가 발생했습니다."),
+            hasNextPage: hasNextPageRelay.asDriver()
         )
     }
-
-    func searchPlace(input: String, category: String, currentLocation: CLLocationCoordinate2D?) -> Observable<[Place]> {
+    func searchPlace(input: String, filters: Set<String>, currentLocation: CLLocationCoordinate2D?) -> Observable<[Place]> {
         isSearching.accept(true)
-        return placeUseCase.searchPlaces(query: input + "헬스,필라테스,수영장,요가,크로스핏,복싱,G.X,주짓수,골프,수영")
-            .map { places in
-                places.filter { $0.isGym }
-            }
-            .do(onNext: { [weak self] places in
+        nextPageToken = nil
+        let category = filters.joined(separator: ",")
+        let query = category.isEmpty ? input : "\(input) (\(category))"
+        print("DEBUG: 최종 검색 쿼리 - \(query)")
+
+
+        return placeUseCase.searchPlaces(query: query, pageToken: nil)
+            .do(onNext: { [weak self] (places, nextPageToken) in
                 self?.isSearching.accept(false)
-                self?.searchResults.accept(places)
+                
+                self?.searchResults.accept((self?.searchResults.value ?? []) + places)
+//                self?.searchResults.accept(places)
+                self?.nextPageToken = nextPageToken
+                self?.hasNextPageRelay.accept(nextPageToken != nil)
             }, onError: { [weak self] error in
                 self?.showError.accept(error.localizedDescription)
                 self?.isSearching.accept(false)
             })
+            .map { $0.0 }
     }
+
+    public func loadNextPage() -> Observable<[Place]> {
+        guard let token = nextPageToken else {
+            print("DEBUG: 다음 페이지 토큰이 없음")
+            return .just([])
+        }
+
+        isSearching.accept(true)
+        print("DEBUG: 다음 페이지 로드 - 토큰: \(token)")
+
+        return placeUseCase.searchPlaces(query: "", pageToken: token)
+            .do(onNext: { [weak self] (places, nextPageToken) in
+                self?.isSearching.accept(false)
+                self?.searchResults.accept((self?.searchResults.value ?? []) + places)
+                self?.nextPageToken = nextPageToken
+                print("DEBUG: 다음 페이지 로드 완료 - \(places.count)개 결과, 다음 토큰: \(nextPageToken ?? "없음")")
+                self?.hasNextPageRelay.accept(nextPageToken != nil)
+            }, onError: { [weak self] error in
+                self?.showError.accept(error.localizedDescription)
+                self?.isSearching.accept(false)
+            })
+            .map { $0.0 }
+    }
+
 
     func searchAutoComplete(for query: String) -> Observable<[String]> {
         return placeUseCase.getAutocomplete(query: query)
@@ -110,54 +162,37 @@ class PlaceSearchViewModel: ViewModelType {
             .disposed(by: disposeBag)
     }
 
-//    func searchAutoComplete(for query: String) -> Observable<[String]> {
-//        return placeUseCase.getAutocomplete(query: query)
-//            .map { suggestions in
-//                return suggestions.filter { !$0.contains("대한민국") }
-//            }
-//            .do(onNext: { [weak self] suggestions in
-//                self?.autoCompleteResults.accept(suggestions)
-//            }, onError: { [weak self] error in
-//                self?.showError.accept(error.localizedDescription)
-//            })
-//    }
     func fetchPlacePhoto(reference: String, maxWidth: Int) -> Observable<UIImage?> {
-            return placeUseCase.getPlacePhotos(reference: reference, maxWidth: maxWidth)
-                .map { $0 as UIImage? }
-                .do(onError: { [weak self] error in
-                    self?.showError.accept(error.localizedDescription)
-                })
-        }
+        return placeUseCase.getPlacePhotos(reference: reference, maxWidth: maxWidth)
+            .map { $0 as UIImage? }
+            .do(onError: { [weak self] error in
+                self?.showError.accept(error.localizedDescription)
+            })
+    }
 
-        func calculateDistances(for places: [Place], from origin: CLLocationCoordinate2D) -> Observable<[Place]> {
-            print("DEBUG: 거리 계산 시작 - 장소 수: \(places.count)")
-            return Observable.from(places)
-                .flatMap { place -> Observable<Place> in
-                    return self.placeUseCase.calculateDistances(from: origin, to: place.coordinate)
-                        .map { distance -> Place in
-                            var updatedPlace = place
-                            updatedPlace.distanceText = distance ?? "거리 정보 없음"
-                            print("DEBUG: 거리 계산 결과 - 장소: \(place.name), 거리: \(updatedPlace.distanceText)")
-                            return updatedPlace
-                        }
-                        .catchAndReturn(place)
-                }
-                .toArray()
-                .asObservable()
-                .do(onNext: { places in
-                    print("DEBUG: 모든 거리 계산 완료 - 총 \(places.count)개 장소")
-                })
-        }
-
+    func calculateDistances(for places: [Place], from origin: CLLocationCoordinate2D) -> Observable<[Place]> {
+        return Observable.from(places)
+            .flatMap { place -> Observable<Place> in
+                self.placeUseCase.calculateDistances(from: origin, to: place.coordinate)
+                    .map { distance -> Place in
+                        var updatedPlace = place
+                        updatedPlace.distanceText = distance ?? "거리 정보 없음"
+                        return updatedPlace
+                    }
+                    .catchAndReturn(place)
+            }
+            .toArray()
+            .asObservable()
+    }
 
     func searchNearbySportsFacilities(at location: CLLocationCoordinate2D) -> Observable<[Place]> {
-            return placeUseCase.searchNearbySportsFacilities(at: location)
-                .do(onNext: { [weak self] places in
-                    self?.searchResults.accept(places)
-                }, onError: { [weak self] error in
-                    self?.showError.accept(error.localizedDescription)
-                })
-        }
+        return placeUseCase.searchNearbySportsFacilities(at: location)
+            .do(onNext: { [weak self] places in
+                self?.searchResults.accept(places)
+            }, onError: { [weak self] error in
+                self?.showError.accept(error.localizedDescription)
+            })
+    }
 
     func searchPlacesInBounds(bounds: GMSCoordinateBounds, query: String, completion: @escaping ([Place]) -> Void) {
         placeUseCase.searchPlacesInBounds(bounds: bounds, query: query)
@@ -168,5 +203,4 @@ class PlaceSearchViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
     }
-    
 }

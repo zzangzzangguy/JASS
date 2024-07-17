@@ -1,8 +1,12 @@
 import Foundation
 import RxCocoa
 import RxSwift
+import CoreLocation
 
 final class SearchResultsViewModel: ViewModelType {
+
+    private var nextPageToken: String?
+    private let loadNextPageSubject = PublishSubject<Void>()
 
     struct Input {
         let viewDidLoad: Observable<Void>
@@ -10,6 +14,8 @@ final class SearchResultsViewModel: ViewModelType {
         let filterTrigger: Observable<Set<String>>
         let itemSelected: Observable<Int>
         let favoriteToggle: Observable<Place>
+        let currentLocation: Observable<CLLocationCoordinate2D?>
+        let loadNextPage: Observable<Void>
     }
 
     struct Output {
@@ -17,6 +23,7 @@ final class SearchResultsViewModel: ViewModelType {
         let searchResults: Driver<[Place]>
         let error: Driver<String>
         let favoriteUpdated: Driver<Place>
+        let hasNextPage: Driver<Bool>
     }
 
     let favoritesManager: FavoritesManager
@@ -30,7 +37,6 @@ final class SearchResultsViewModel: ViewModelType {
     let searchResultsRelay = BehaviorRelay<[Place]>(value: [])
     let favoriteStatusChanged = PublishRelay<String>()
 
-
     init(favoritesManager: FavoritesManager, placeSearchViewModel: PlaceSearchViewModel, recentPlacesViewModel: RecentPlacesViewModel) {
         self.favoritesManager = favoritesManager
         self.placeSearchViewModel = placeSearchViewModel
@@ -38,11 +44,15 @@ final class SearchResultsViewModel: ViewModelType {
     }
 
     func transform(input: Input) -> Output {
-        input.searchTrigger
+        let searchResults = input.searchTrigger
+            .withLatestFrom(Observable.combineLatest(input.searchTrigger, input.filterTrigger, input.currentLocation))
             .do(onNext: { [weak self] _ in self?.isLoadingRelay.accept(true) })
-            .flatMapLatest { [weak self] query -> Observable<[Place]> in
+            .flatMapLatest { [weak self] query, filters, location -> Observable<[Place]> in
                 guard let self = self else { return Observable.just([]) }
-                return self.placeSearchViewModel.searchPlace(input: query, category: "", currentLocation: nil)
+                return self.placeSearchViewModel.searchPlace(input: query, filters: filters, currentLocation: location)
+                    .do(onNext: { [weak self] places in
+                        self?.nextPageToken = nil  // Reset next page token for new search
+                    })
                     .catch { error in
                         self.errorRelay.accept(error.localizedDescription)
                         return Observable.just([])
@@ -52,8 +62,24 @@ final class SearchResultsViewModel: ViewModelType {
                 self?.isLoadingRelay.accept(false)
                 self?.searchResultsRelay.accept(places)
             })
-            .subscribe()
+
+        let nextPageResults = input.loadNextPage
+            .flatMapLatest { [weak self] _ -> Observable<[Place]> in
+                guard let self = self else { return .empty() }
+                return self.placeSearchViewModel.loadNextPage()
+            }
+            .do(onNext: { [weak self] places in
+                print("DEBUG: 다음 페이지 로드 완료, \(places.count)개 추가")
+                var currentPlaces = self?.searchResultsRelay.value ?? []
+                currentPlaces.append(contentsOf: places)
+                self?.searchResultsRelay.accept(currentPlaces)
+            })
+
+        Observable.merge(searchResults, nextPageResults)
+            .bind(to: searchResultsRelay)
             .disposed(by: disposeBag)
+
+
 
         input.favoriteToggle
             .subscribe(onNext: { [weak self] place in
@@ -89,7 +115,9 @@ final class SearchResultsViewModel: ViewModelType {
                 reviews: nil,
                 userRatingsTotal: nil,
                 rating: nil
-            ))
+            )),
+            hasNextPage: placeSearchViewModel.hasNextPageRelay.asDriver()
+
         )
     }
 

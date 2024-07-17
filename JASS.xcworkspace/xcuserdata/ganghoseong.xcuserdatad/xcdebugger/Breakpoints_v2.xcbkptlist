@@ -247,49 +247,47 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "57DD8D62-5862-4E94-B051-6AC054988919"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Data/API/PlaceRepositoryImpl.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "42"
-            endingLineNumber = "42"
-            landmarkName = "calculateDistances(from:to:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DDB4B5F9-F01F-452D-8A7C-3D3CAE161AB3"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Domain/UseCase/DefaultPlaceUseCase.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
-            landmarkName = "calculateDistances(from:to:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "56A6CFDC-830C-41E9-BAC6-6308C1C7D067"
+            uuid = "F6C8C321-B4BA-4B89-9B2A-FBE352C14B47"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JASS/Presentation/Controller/Views/Search/PlaceSearchViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "113"
-            endingLineNumber = "113"
-            landmarkName = "PlaceSearchViewModel"
-            landmarkType = "3">
+            startingLineNumber = "112"
+            endingLineNumber = "112"
+            landmarkName = "loadNextPage()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "F6C8C321-B4BA-4B89-9B2A-FBE352C14B47 - 5f40e344b05b1318"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "JASS.PlaceSearchViewModel.loadNextPage() -&gt; RxSwift.Observable&lt;Swift.Array&lt;JASS.Place&gt;&gt;"
+                  moduleName = "JASS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ganghoseong/JASS/JASS/Presentation/Controller/Views/Search/PlaceSearchViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "113"
+                  endingLineNumber = "113">
+               </Location>
+               <Location
+                  uuid = "F6C8C321-B4BA-4B89-9B2A-FBE352C14B47 - 5f40e344b05b137b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "JASS.PlaceSearchViewModel.loadNextPage() -&gt; RxSwift.Observable&lt;Swift.Array&lt;JASS.Place&gt;&gt;"
+                  moduleName = "JASS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ganghoseong/JASS/JASS/Presentation/Controller/Views/Search/PlaceSearchViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "112"
+                  endingLineNumber = "112">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

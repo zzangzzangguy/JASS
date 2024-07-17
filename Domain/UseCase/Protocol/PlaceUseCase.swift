@@ -5,7 +5,7 @@ import GoogleMaps
 import UIKit
 
 protocol PlaceUseCase {
-    func searchPlaces(query: String) -> Observable<[Place]>
+    func searchPlaces(query: String, pageToken: String?) -> Observable<([Place], String?)>
     func searchPlacesInBounds(bounds: GMSCoordinateBounds, query: String) -> Observable<[Place]>
     func getPlaceDetails(placeID: String) -> Observable<Place>
     func getPlacePhotos(reference: String, maxWidth: Int) -> Observable<UIImage>

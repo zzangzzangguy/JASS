@@ -9,10 +9,10 @@ class DefaultSearchPlacesUseCase: SearchPlacesUseCase {
         self.repository = repository
     }
 
-    func execute(query: String, completion: @escaping (Result<[Place], Error>) -> Void) {
-        repository.searchPlaces(query: query)
-            .subscribe(onNext: { places in
-                completion(.success(places))
+    func execute(query: String, pageToken: String? = nil, pageSize: Int = 10, completion: @escaping (Result<([Place], String?), Error>) -> Void) {
+        repository.searchPlaces(query: query, pageToken: pageToken)
+            .subscribe(onNext: { places, nextPageToken in
+                completion(.success((places, nextPageToken)))
             }, onError: { error in
                 completion(.failure(error))
             })

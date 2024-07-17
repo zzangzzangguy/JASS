@@ -1,5 +1,6 @@
 import UIKit
 import SnapKit
+import SDWebImage
 
 class ReviewTableViewCell: UITableViewCell {
     static let identifier = "ReviewTableViewCell"
@@ -31,11 +32,6 @@ class ReviewTableViewCell: UITableViewCell {
         $0.layer.cornerRadius = 8
     }
 
-//    let helpfulButton = UIButton(type: .system).then {
-//        $0.setTitle("도움이 돼요", for: .normal)
-//        $0.setTitleColor(.blue, for: .normal)
-//    }
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
@@ -51,7 +47,6 @@ class ReviewTableViewCell: UITableViewCell {
         contentView.addSubview(ratingLabel)
         contentView.addSubview(reviewTextLabel)
         contentView.addSubview(reviewImageView)
-//        contentView.addSubview(helpfulButton)
 
         authorLabel.snp.makeConstraints {
             $0.top.leading.equalToSuperview().offset(16)
@@ -71,19 +66,15 @@ class ReviewTableViewCell: UITableViewCell {
             $0.top.equalTo(ratingLabel.snp.bottom).offset(8)
             $0.leading.equalToSuperview().offset(16)
             $0.width.height.equalTo(100)
+            $0.bottom.lessThanOrEqualToSuperview().offset(-16)
         }
 
         reviewTextLabel.snp.makeConstraints {
             $0.top.equalTo(reviewImageView.snp.top)
             $0.leading.equalTo(reviewImageView.snp.trailing).offset(8)
             $0.trailing.equalToSuperview().offset(-16)
+            $0.bottom.lessThanOrEqualToSuperview().offset(-16)
         }
-
-//        helpfulButton.snp.makeConstraints {
-//            $0.top.equalTo(reviewTextLabel.snp.bottom).offset(8)
-//            $0.leading.equalTo(reviewTextLabel)
-//            $0.bottom.equalToSuperview().offset(-16)
-//        }
     }
 
     func configure(with review: Review) {
@@ -91,8 +82,11 @@ class ReviewTableViewCell: UITableViewCell {
         dateLabel.text = formatDate(timestamp: review.time)
         ratingLabel.text = String(repeating: "★", count: review.rating ?? 0)
         reviewTextLabel.text = review.text
-        // 리뷰 이미지가 있을 경우 설정
-         reviewImageView.image = UIImage(named: "sample_image")
+        if let photoUrl = review.profilePhotoUrl, let url = URL(string: photoUrl) {
+            reviewImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "sample_image"))
+        } else {
+            reviewImageView.image = UIImage(named: "sample_image")
+        }
     }
 
     private func formatDate(timestamp: Int?) -> String? {

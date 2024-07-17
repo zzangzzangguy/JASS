@@ -1,9 +1,8 @@
-// Data/API/GooglePlacesAPI.swift
 import Foundation
 import Moya
 
 enum GooglePlacesAPI {
-    case placeSearch(input: String)
+    case placeSearch(parameters: [String: Any])
     case searchInBounds(parameters: [String: Any])
     case nearbySearch(parameters: [String: Any])
     case textSearch(parameters: [String: Any])
@@ -48,19 +47,18 @@ extension GooglePlacesAPI: TargetType {
 
     var task: Task {
         switch self {
-        case .placeSearch(let input):
-            return .requestParameters(parameters: ["key": Bundle.apiKey, "query": input], encoding: URLEncoding.queryString)
+        case .placeSearch(let parameters):
+            return .requestParameters(parameters: parameters.merging(["key": Bundle.apiKey]) { (_, new) in new }, encoding: URLEncoding.queryString)
         case .photo(let reference, let maxWidth):
             return .requestParameters(parameters: ["maxwidth": maxWidth, "photoreference": reference, "key": Bundle.apiKey], encoding: URLEncoding.queryString)
         case .details(let placeID):
             return .requestParameters(parameters: ["place_id": placeID, "fields": "place_id,reviews,name,geometry,formatted_address,photos,user_ratings_total,rating", "key": Bundle.apiKey], encoding: URLEncoding.queryString)
-
         case .searchInBounds(let parameters), .nearbySearch(let parameters), .textSearch(let parameters):
             var newParameters = parameters
             newParameters["key"] = Bundle.apiKey
             return .requestParameters(parameters: newParameters, encoding: URLEncoding.queryString)
         case .distanceMatrix(let origins, let destinations, let mode, let key):
-            return .requestParameters(parameters: ["origins": origins, "destinations": destinations, "mode": "transit", "key": key], encoding: URLEncoding.default)
+            return .requestParameters(parameters: ["origins": origins, "destinations": destinations, "mode": mode, "key": key], encoding: URLEncoding.default)
         case .autocomplete(let input, let types, let components, let language, let location, let radius, let strictbounds, let sessiontoken):
             var parameters: [String: Any] = [
                 "input": input,

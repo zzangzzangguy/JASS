@@ -7,63 +7,9 @@ protocol FilterViewDelegate: AnyObject {
     func filterViewDidCancel(_ filterView: FilterViewController)
 }
 
-class FilterCollectionViewCell: UICollectionViewCell {
-    static let identifier = "FilterCollectionViewCell"
-
-    private lazy var nameLabel: UILabel = {
-        
-        let label = UILabel()
-        label.textColor = .black
-        label.textAlignment = .center
-        return label
-    }()
-
-    private lazy var checkboxImageView: UIImageView = {
-        let imageView = UIImageView()
-        return imageView
-    }()
-
-    var isChecked: Bool = false {
-        didSet {
-            let checkboxImageName = isChecked ? "checkmark.square.fill" : "square"
-            checkboxImageView.image = UIImage(systemName: checkboxImageName)
-            checkboxImageView.tintColor = isChecked ? .blue : .gray
-        }
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupViews()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func setupViews() {
-        addSubview(nameLabel)
-        addSubview(checkboxImageView)
-
-        nameLabel.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(10)
-            make.centerY.equalToSuperview()
-        }
-
-        checkboxImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(20)
-            make.right.equalToSuperview().inset(10)
-            make.centerY.equalToSuperview()
-        }
-    }
-
-    func configure(with name: String) {
-        nameLabel.text = name
-    }
-}
-
 class FilterViewController: UIViewController {
     private var categories = ["헬스", "필라테스", "복싱", "크로스핏", "골프", "수영", "클라이밍"]
-    var selectedCategories: Set<String> = []  // Array<String>에서 Set<String>으로 변경
+    var selectedCategories: Set<String> = []
 
     weak var delegate: FilterViewDelegate?
 
@@ -81,6 +27,17 @@ class FilterViewController: UIViewController {
         $0.layer.cornerRadius = 10
     }
 
+    private let allCategoriesButton = UIButton().then {
+        $0.setTitle("전체 선택", for: .normal)
+        $0.setTitleColor(.blue, for: .normal)
+    }
+
+    private var isAllSelected = false {
+        didSet {
+            allCategoriesButton.setTitle(isAllSelected ? "전체 해제" : "전체 선택", for: .normal)
+        }
+    }
+
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -90,6 +47,7 @@ class FilterViewController: UIViewController {
         collectionView.backgroundColor = .white
         return collectionView
     }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -98,12 +56,18 @@ class FilterViewController: UIViewController {
     }
 
     private func setupViews() {
+        view.addSubview(allCategoriesButton)
         view.addSubview(collectionView)
         view.addSubview(applyButton)
         view.addSubview(cancelButton)
 
+        allCategoriesButton.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            make.right.equalToSuperview().inset(20)
+        }
+
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.top.equalTo(allCategoriesButton.snp.bottom).offset(10)
             make.left.right.equalToSuperview()
             make.bottom.equalTo(applyButton.snp.top).offset(-10)
         }
@@ -126,19 +90,34 @@ class FilterViewController: UIViewController {
     private func setupActions() {
         applyButton.addTarget(self, action: #selector(applyButtonTapped), for: .touchUpInside)
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+        allCategoriesButton.addTarget(self, action: #selector(allCategoriesButtonTapped), for: .touchUpInside)
     }
 
     @objc private func applyButtonTapped() {
-        let selectedCategoriesArray = Array(selectedCategories)
+        if selectedCategories.isEmpty {
+            selectedCategories = Set(categories)
+        }
         delegate?.filterView(self, didSelectCategories: selectedCategories)
-         dismiss(animated: true, completion: nil)
-     }
+        dismiss(animated: true, completion: nil)
+    }
 
     @objc private func cancelButtonTapped() {
         delegate?.filterViewDidCancel(self)
+        dismiss(animated: true, completion: nil)
+    }
+
+    @objc private func allCategoriesButtonTapped() {
+        isAllSelected.toggle()
+        if isAllSelected {
+            selectedCategories = Set(categories)
+        } else {
+            selectedCategories.removeAll()
+        }
+        collectionView.reloadData()
     }
 }
 
+// MARK: - UICollectionViewDataSource
 extension FilterViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return categories.count
@@ -155,6 +134,7 @@ extension FilterViewController: UICollectionViewDataSource {
     }
 }
 
+// MARK: - UICollectionViewDelegate
 extension FilterViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let category = categories[indexPath.item]
@@ -163,10 +143,12 @@ extension FilterViewController: UICollectionViewDelegate {
         } else {
             selectedCategories.insert(category)
         }
+        isAllSelected = selectedCategories.count == categories.count
         collectionView.reloadItems(at: [indexPath])
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
 extension FilterViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let numberOfColumns: CGFloat = 2
