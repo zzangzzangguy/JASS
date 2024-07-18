@@ -269,6 +269,7 @@
 				4EF9312D2B1C912E00E5794B /* SceneDelegate.swift */,
 				4EF9312B2B1C912E00E5794B /* AppDelegate.swift */,
 				4EF931362B1C913000E5794B /* LaunchScreen.storyboard */,
+				4E97CA8F2C2D772900ECF24B /* AppCoordinator.swift */,
 				4EF931342B1C913000E5794B /* Assets.xcassets */,
 				4EF9315B2B1DC92900E5794B /* Secrets.xcconfig */,
 			);
@@ -297,7 +298,6 @@
 		4E97CA882C2D76EA00ECF24B /* Coordinator */ = {
 			isa = PBXGroup;
 			children = (
-				4E97CA8F2C2D772900ECF24B /* AppCoordinator.swift */,
 				4E97CA8D2C2D771900ECF24B /* MainCoordinator.swift */,
 				4E97CA912C2D773C00ECF24B /* SearchCoordinator.swift */,
 				4E97CA932C2D775B00ECF24B /* MapCoordinator.swift */,

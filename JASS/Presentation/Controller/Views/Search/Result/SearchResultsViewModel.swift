@@ -39,8 +39,8 @@ final class SearchResultsViewModel: ViewModelType {
     let searchResultsRelay = BehaviorRelay<[Place]>(value: [])
     let favoriteStatusChanged = PublishRelay<String>()
 
-    private let isLoadingNextPageRelay = BehaviorRelay<Bool>(value: false)  // 추가
-    private let endOfResultsRelay = PublishRelay<Void>()  // 추가
+    private lazy var isLoadingNextPageRelay = BehaviorRelay<Bool>(value: false)
+    private lazy var endOfResultsRelay = PublishRelay<Void>()
 
     init(favoritesManager: FavoritesManager, placeSearchViewModel: PlaceSearchViewModel, recentPlacesViewModel: RecentPlacesViewModel) {
         self.favoritesManager = favoritesManager
@@ -128,8 +128,8 @@ final class SearchResultsViewModel: ViewModelType {
                 rating: nil
             )),
             hasNextPage: placeSearchViewModel.hasNextPageRelay.asDriver(),
-            isLoadingNextPage: isLoadingNextPageRelay.asDriver(),  // 추가
-            endOfResults: endOfResultsRelay.asSignal()  // 추가
+            isLoadingNextPage: isLoadingNextPageRelay.asDriver(), 
+            endOfResults: endOfResultsRelay.asSignal()
         )
     }
 
