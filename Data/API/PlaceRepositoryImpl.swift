@@ -11,13 +11,6 @@ class PlaceRepositoryImpl: PlaceRepository {
         self.apiService = apiService
     }
 
-//    func searchPlaces(query: String, pageToken: String?) -> Observable<(places: [Place], nextPageToken: String?)> {
-//        return apiService.searchPlaces(query: query, pageToken: pageToken)
-//            .map { results in
-//                print("DEBUG: Repository 검색 결과 - \(results.0.count)개, 다음 페이지 토큰 - \(String(describing: results.1))")
-//                return (places: results.0, nextPageToken: results.1)
-//            }
-//    }
     func searchPlaces(query: String, pageToken: String?) -> Observable<(places: [Place], nextPageToken: String?)> {
         return apiService.searchPlaces(query: query, pageToken: pageToken)
             .map { results in
