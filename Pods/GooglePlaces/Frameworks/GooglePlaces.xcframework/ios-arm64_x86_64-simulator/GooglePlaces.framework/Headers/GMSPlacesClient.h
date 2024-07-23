@@ -19,12 +19,17 @@
 @class GMSAutocompleteFilter;
 @class GMSAutocompletePrediction;
 @class GMSAutocompleteSessionToken;
+@class GMSAutocompleteRequest;
+@class GMSAutocompleteSuggestion;
 @class GMSPlace;
 @class GMSPlaceLikelihood;
 @class GMSPlaceLikelihoodList;
 @class GMSPlacePhotoMetadata;
 @class GMSPlacePhotoMetadataList;
 @class GMSPlaceSearchByTextRequest;
+@class GMSFetchPlaceRequest;
+@class GMSFetchPhotoRequest;
+@class GMSPlaceSearchNearbyRequest;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -114,6 +119,39 @@ typedef void (^GMSPlaceSearchByTextResultCallback)(NSArray<GMSPlace *> *_Nullabl
                                                    NSError *_Nullable error);
 
 /**
+ * Callback type for receiving a photo. |photoImage| is a |UIImage|
+ * representing the resulting photo matching the specified request.
+ * If an error occurred, |photoImage| will be nil and |error| will contain
+ * information about the error.
+ * @param photoImage A |UIImage| result.
+ *
+ * @related GMSPlacesClient
+ */
+
+typedef void (^GMSFetchPhotoResultCallback)(UIImage *_Nullable photoImage,
+                                            NSError *_Nullable error);
+
+/**
+ * Callback type for autocomplete results.
+ * @param results An array of @c GMSAutocompleteSuggestion.
+ * @param error The error that occurred, if any.
+ *
+ * @related GMSPlacesClient
+ */
+typedef void (^GMSAutocompleteSuggestionsCallback)(
+    NSArray<GMSAutocompleteSuggestion *> *_Nullable results, NSError *_Nullable error);
+
+/**
+ * Callback type for receiving search nearby results.
+ * @param places An array of @c GMSPlace
+ * @param error The error that occurred, if any.
+ *
+ * @related GMSPlacesClient
+ */
+typedef void (^GMSPlaceSearchNearbyResultCallback)(NSArray<GMSPlace *> *_Nullable places,
+                                                   NSError *_Nullable error);
+
+/**
  * Main interface to the Places SDK. Used for searching and getting details about places. This class
  * should be accessed through the [GMSPlacesClient sharedClient] method.
  *
@@ -162,8 +200,23 @@ typedef void (^GMSPlaceSearchByTextResultCallback)(NSArray<GMSPlace *> *_Nullabl
  * @param placeID The place ID to lookup.
  * @param callback The callback to invoke with the lookup result.
  */
-- (void)lookUpPlaceID:(NSString *)placeID callback:(GMSPlaceResultCallback)callback;
+- (void)lookUpPlaceID:(NSString *)placeID
+             callback:(GMSPlaceResultCallback)callback __GMS_AVAILABLE_BUT_DEPRECATED_MSG(
+                          "This method is replaced by <code>fetchPlaceWithRequest:callback:</code> "
+                          "and will be removed in a future release.");
 
+/**
+ * Find Autocomplete suggestions from text query. Results may optionally be biased towards a
+ * certain location or restricted to an area. This method is non-blocking.
+ *
+ * The supplied callback will be invoked with an array of autocompletion suggestions upon success
+ * and an NSError upon an error.
+ *
+ * @param request The @c GMSAutocompleteRequest request for autocomplete.
+ * @param callback The callback to invoke with the suggestions.
+ */
+- (void)fetchAutocompleteSuggestionsFromRequest:(GMSAutocompleteRequest *)request
+                                       callback:(GMSAutocompleteSuggestionsCallback)callback;
 
 /**
  * Gets the metadata for up to 10 photos associated with a place.
@@ -268,7 +321,9 @@ typedef void (^GMSPlaceSearchByTextResultCallback)(NSArray<GMSPlace *> *_Nullabl
 - (void)fetchPlaceFromPlaceID:(NSString *)placeID
                   placeFields:(GMSPlaceField)placeFields
                  sessionToken:(nullable GMSAutocompleteSessionToken *)sessionToken
-                     callback:(GMSPlaceResultCallback)callback;
+                     callback:(GMSPlaceResultCallback)callback __GMS_AVAILABLE_BUT_DEPRECATED_MSG(
+                                  "This method is replaced by <code>fetchPlaceWithRequest:callback:"
+                                  "callback:</code> and will be removed in a future release.");
 
 /**
  * Find place likelihoods using the user's current location. This method is non-blocking.
@@ -334,6 +389,33 @@ typedef void (^GMSPlaceSearchByTextResultCallback)(NSArray<GMSPlace *> *_Nullabl
 - (void)searchByTextWithRequest:(GMSPlaceSearchByTextRequest *)textSearchRequest
                        callback:(GMSPlaceSearchByTextResultCallback)callback;
 
+/**
+ * Get a place using a request object. This method is non-blocking.
+ * @param fetchPlaceRequest |GMSFetchPlaceRequest| The fetch place request to use for the query.
+ * @param callback The callback to invoke with the place result.
+ */
+
+- (void)fetchPlaceWithRequest:(GMSFetchPlaceRequest *)fetchPlaceRequest
+                     callback:(GMSPlaceResultCallback)callback;
+
+/**
+ * Request a photo using fetch photo request. This method is non-blocking.
+ * @param fetchPhotoRequest |GMSFetchPhotoRequest| The photo request to use.
+ * @param callback The callback to invoke with the |NSURL| result.
+ */
+
+- (void)fetchPhotoWithRequest:(GMSFetchPhotoRequest *)fetchPhotoRequest
+                     callback:(GMSFetchPhotoResultCallback)callback;
+
+
+/**
+ * Search for places near a location and restriction. This method is non-blocking.
+ * @param searchNearbyRequest @c GMSPlaceSearchNearbyRequest The search nearby request to use for
+ * the query.
+ * @param callback The callback to invoke with the lookup result.
+ */
+- (void)searchNearbyWithRequest:(GMSPlaceSearchNearbyRequest *)searchNearbyRequest
+                       callback:(GMSPlaceSearchNearbyResultCallback)callback;
 
 @end
 

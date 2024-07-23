@@ -73,45 +73,45 @@ class SearchResultCell: UITableViewCell {
         contentView.addSubview(reviewsLabel)
         contentView.addSubview(loadingIndicator)
 
-        placeImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(16)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(100)
+        placeImageView.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(16)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(100)
         }
 
-        nameLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(16)
-            make.leading.equalTo(placeImageView.snp.trailing).offset(10)
-            make.trailing.equalTo(favoriteButton.snp.leading).offset(-10)
+        nameLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(16)
+            $0.leading.equalTo(placeImageView.snp.trailing).offset(10)
+            $0.trailing.equalTo(favoriteButton.snp.leading).offset(-10)
         }
 
-        addressLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameLabel.snp.bottom).offset(5)
-            make.leading.equalTo(nameLabel.snp.leading)
-            make.trailing.equalTo(nameLabel.snp.trailing)
+        addressLabel.snp.makeConstraints {
+            $0.top.equalTo(nameLabel.snp.bottom).offset(5)
+            $0.leading.equalTo(nameLabel.snp.leading)
+            $0.trailing.equalTo(nameLabel.snp.trailing)
         }
 
-        distanceLabel.snp.makeConstraints { make in
-            make.top.equalTo(addressLabel.snp.bottom).offset(5)
-            make.leading.equalTo(nameLabel.snp.leading)
-            make.trailing.equalTo(nameLabel.snp.trailing)
+        distanceLabel.snp.makeConstraints {
+            $0.top.equalTo(addressLabel.snp.bottom).offset(5)
+            $0.leading.equalTo(nameLabel.snp.leading)
+            $0.trailing.equalTo(nameLabel.snp.trailing)
         }
 
-        favoriteButton.snp.makeConstraints { make in
-            make.centerY.equalTo(placeImageView.snp.centerY)
-            make.trailing.equalToSuperview().inset(20)
-            make.width.height.equalTo(24)
+        favoriteButton.snp.makeConstraints {
+            $0.centerY.equalTo(placeImageView.snp.centerY)
+            $0.trailing.equalToSuperview().inset(20)
+            $0.width.height.equalTo(24)
         }
 
-        reviewsLabel.snp.makeConstraints { make in
-            make.top.equalTo(distanceLabel.snp.bottom).offset(8)
-            make.leading.equalTo(nameLabel.snp.leading)
-            make.trailing.equalToSuperview().inset(16)
-            make.bottom.lessThanOrEqualToSuperview().inset(16)
+        reviewsLabel.snp.makeConstraints {
+            $0.top.equalTo(distanceLabel.snp.bottom).offset(8)
+            $0.leading.equalTo(nameLabel.snp.leading)
+            $0.trailing.equalToSuperview().inset(16)
+            $0.bottom.lessThanOrEqualToSuperview().inset(16)
         }
 
-        loadingIndicator.snp.makeConstraints { make in
-            make.center.equalTo(placeImageView)
+        loadingIndicator.snp.makeConstraints {
+            $0.center.equalTo(placeImageView)
         }
 
         favoriteButton.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)

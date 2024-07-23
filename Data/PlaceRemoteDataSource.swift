@@ -12,7 +12,10 @@ class DefaultPlaceRemoteDataSource: PlaceRemoteDataSource {
 
     func searchPlaces(query: String, pageToken: String?, pageSize: Int) -> Observable<([Place], String?)> {
         return Observable.create { observer in
-            self.provider.request(.placeSearch(parameters: ["query": query, "pageToken": pageToken, "pageSize": pageSize])) { result in
+            self.provider.request(.placeSearch(parameters: [
+                "query": query,
+                "pageToken": pageToken,
+                "pageSize": pageSize])) { result in
                 switch result {
                 case .success(let response):
                     do {

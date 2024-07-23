@@ -75,6 +75,8 @@ class SearchResultsViewController: UIViewController {
     var placeSearchViewModel: PlaceSearchViewModel?
     var viewModel: SearchResultsViewModel?
     weak var delegate: SearchResultsViewDelegate?
+    weak var coordinator: SearchCoordinator?
+
 
     // MARK: - Initializer
     init(placeSearchViewModel: PlaceSearchViewModel, recentPlacesViewModel: RecentPlacesViewModel, viewModel: SearchResultsViewModel) {
@@ -163,18 +165,17 @@ class SearchResultsViewController: UIViewController {
             $0.leading.trailing.bottom.equalToSuperview()
         }
 
-        // 추가: 액티비티 인디케이터 제약 조건
-        activityIndicator.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
+        activityIndicator.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
         }
     }
 
     private func setupActivityIndicator() {
         view.addSubview(activityIndicator)
-        activityIndicator.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
+        activityIndicator.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
         }
     }
 

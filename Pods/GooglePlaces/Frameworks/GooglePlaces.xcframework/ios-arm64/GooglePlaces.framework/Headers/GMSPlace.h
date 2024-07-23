@@ -135,6 +135,9 @@ typedef NS_ENUM(NSInteger, GMSBooleanPlaceAttribute) {
  */
 @property(nonatomic, readonly, assign) float rating;
 
+/** An array of |GMSPlaceReview| objects representing the user reviews of the place. */
+@property(nonatomic, copy, readonly, nullable) NSArray<GMSPlaceReview *> *reviews;
+
 
 /**
  * Price level for this place, as integers from 0 to 4.

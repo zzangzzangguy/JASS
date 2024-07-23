@@ -198,7 +198,7 @@ third-party archives.
 
 ## GoogleMaps
 
-Copyright 2024 Google LLC
+Copyright 2023 Google
 
 ## GooglePlaces
 

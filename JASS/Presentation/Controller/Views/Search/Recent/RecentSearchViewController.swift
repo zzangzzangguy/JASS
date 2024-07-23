@@ -71,7 +71,6 @@ extension RecentSearchesViewController: UITableViewDelegate, UITableViewDataSour
             guard let self = self else { return }
             let query = recentSearches[indexPath.row]
             self.searchRecentViewModel.deleteSearchHistory(query: query)
-//            self.updateSearchHistoryViews()
         }
         return cell
     }

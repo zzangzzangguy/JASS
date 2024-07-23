@@ -24,8 +24,8 @@ class NearbyFacilitiesTableViewCell: UITableViewCell {
 
     private func setupUI() {
         contentView.addSubview(collectionView)
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(10)
+        collectionView.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(10)
         }
 
         collectionView.delegate = self

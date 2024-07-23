@@ -57,17 +57,19 @@ final class MainCoordinator: Coordinator {
     }
 
     func showPlaceDetails(from viewController: UIViewController, for place: Place) {
-        let detailViewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase))
-        let detailVC = GymDetailViewController(viewModel: detailViewModel)
-        detailVC.coordinator = self
-        let detailNavController = UINavigationController(rootViewController: detailVC)
-        configureNavigationBarAppearance(detailNavController)
-        viewController.present(detailNavController, animated: true, completion: nil)
-    }
+          let detailViewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase))
+          let detailVC = GymDetailViewController(viewModel: detailViewModel)
+          detailVC.coordinator = self
+          detailVC.hidesBottomBarWhenPushed = true
+          viewController.navigationController?.pushViewController(detailVC, animated: true)
+          viewController.navigationController?.setNavigationBarHidden(true, animated: false)
+      }
 
 
     func popViewController() {
-//        navigationController.popViewController(animated: true)
+        if let navController = tabBarController.selectedViewController as? UINavigationController {
+            navController.popViewController(animated: true)
+        }
 //        navigationController.setNavigationBarHidden(false, animated: true)
     }
 

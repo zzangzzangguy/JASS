@@ -54,23 +54,23 @@ final class FacilityCollectionViewCell: UICollectionViewCell {
     }
 
     private func setupConstraints() {
-        imageView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(10)
-            make.height.equalTo(80)
+        imageView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview().inset(10)
+            $0.height.equalTo(80)
         }
 
-        nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(imageView.snp.bottom).offset(5)
-            make.leading.trailing.equalToSuperview().inset(10)
+        nameLabel.snp.makeConstraints {
+            $0.top.equalTo(imageView.snp.bottom).offset(5)
+            $0.leading.trailing.equalToSuperview().inset(10)
         }
 
-        addressLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameLabel.snp.bottom).offset(5)
-            make.leading.trailing.bottom.equalToSuperview().inset(10)
+        addressLabel.snp.makeConstraints {
+            $0.top.equalTo(nameLabel.snp.bottom).offset(5)
+            $0.leading.trailing.bottom.equalToSuperview().inset(10)
         }
 
-        loadingIndicator.snp.makeConstraints { make in
-            make.center.equalTo(imageView)
+        loadingIndicator.snp.makeConstraints {
+            $0.center.equalTo(imageView)
         }
     }
 
