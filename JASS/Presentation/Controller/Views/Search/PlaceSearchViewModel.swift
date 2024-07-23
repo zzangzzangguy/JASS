@@ -13,7 +13,7 @@ class PlaceSearchViewModel: ViewModelType {
         let segmentChanged: Observable<Int>
         let currentLocation: Observable<CLLocationCoordinate2D?>
         let loadNextPage: Observable<Void>
-        let filterTrigger: Observable<Set<String>>  // 필터 추가
+        let filterTrigger: Observable<Set<String>>
     }
 
     struct Output {
@@ -100,7 +100,6 @@ class PlaceSearchViewModel: ViewModelType {
                 self?.isSearching.accept(false)
                 
                 self?.searchResults.accept((self?.searchResults.value ?? []) + places)
-//                self?.searchResults.accept(places)
                 self?.nextPageToken = nextPageToken
                 self?.hasNextPageRelay.accept(nextPageToken != nil)
             }, onError: { [weak self] error in
@@ -120,11 +119,9 @@ class PlaceSearchViewModel: ViewModelType {
         isSearching.accept(true)
         print("DEBUG: 다음 페이지 로드 - 토큰: \(token)")
 
-//        return placeUseCase.searchPlaces(query: "", pageToken: token)
         return placeUseCase.searchPlaces(query: lastQuery, pageToken: token)
             .do(onNext: { [weak self] (places, nextPageToken) in
                 self?.isSearching.accept(false)
-//                self?.searchResults.accept((self?.searchResults.value ?? []) + places)
                 self?.nextPageToken = nextPageToken
                 print("DEBUG: 다음 페이지 로드 완료 - \(places.count)개 결과, 다음 토큰: \(nextPageToken ?? "없음")")
                 self?.hasNextPageRelay.accept(nextPageToken != nil)

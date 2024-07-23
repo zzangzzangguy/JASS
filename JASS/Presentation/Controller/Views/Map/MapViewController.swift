@@ -209,7 +209,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
                     self.updateMapMarkers(with: places)
                 }
             }, onError: { error in
-                // 에러 처리
             })
             .disposed(by: disposeBag)
     }

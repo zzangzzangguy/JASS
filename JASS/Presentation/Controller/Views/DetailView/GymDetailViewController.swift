@@ -6,7 +6,7 @@ import RxSwift
 import RxCocoa
 
 class GymDetailViewController: UIViewController, UIScrollViewDelegate {
-    var coordinator: MainCoordinator?
+    weak var coordinator: Coordinator?
     var viewModel: GymDetailViewModel
     private let disposeBag = DisposeBag()
     var scrollView: UIScrollView!

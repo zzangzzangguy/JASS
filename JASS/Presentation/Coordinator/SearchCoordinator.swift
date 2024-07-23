@@ -27,14 +27,32 @@ final class SearchCoordinator: Coordinator {
             placeSearchViewModel: placeSearchViewModel,
             recentPlacesViewModel: recentPlacesViewModel
         )
-           let searchResultsVC = SearchResultsViewController(
-               placeSearchViewModel: placeSearchViewModel,
-               recentPlacesViewModel: recentPlacesViewModel,
-               viewModel: searchResultsViewModel
-           )
-           searchResultsVC.searchQuery = query
-           searchResultsVC.currentLocation = currentLocation
-           searchResultsVC.viewModel?.loadSearchResults(with: places)
-           viewController.navigationController?.pushViewController(searchResultsVC, animated: true)
-       }
-   }
+        let searchResultsVC = SearchResultsViewController(
+            placeSearchViewModel: placeSearchViewModel,
+            recentPlacesViewModel: recentPlacesViewModel,
+            viewModel: searchResultsViewModel
+        )
+        searchResultsVC.coordinator = self
+        searchResultsVC.searchQuery = query
+        searchResultsVC.currentLocation = currentLocation
+        searchResultsVC.viewModel?.loadSearchResults(with: places)
+        navigationController.pushViewController(searchResultsVC, animated: true)
+    }
+
+    func showPlaceDetails(from viewController: UIViewController, for place: Place) {
+        let detailViewModel = GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase))
+        let detailVC = GymDetailViewController(viewModel: detailViewModel)
+        detailVC.coordinator = self  
+        detailVC.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(detailVC, animated: true)
+        navigationController.setNavigationBarHidden(true, animated: false)
+    }
+
+    func dismiss() {
+        navigationController.dismiss(animated: true, completion: nil)
+    }
+    
+    func popViewController() {
+          navigationController.popViewController(animated: true)
+      }
+}

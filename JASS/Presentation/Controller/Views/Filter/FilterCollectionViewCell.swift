@@ -37,15 +37,15 @@ class FilterCollectionViewCell: UICollectionViewCell {
         addSubview(nameLabel)
         addSubview(checkboxImageView)
 
-        nameLabel.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(10)
-            make.centerY.equalToSuperview()
+        nameLabel.snp.makeConstraints {
+            $0.left.equalToSuperview().offset(10)
+            $0.centerY.equalToSuperview()
         }
 
-        checkboxImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(20)
-            make.right.equalToSuperview().inset(10)
-            make.centerY.equalToSuperview()
+        checkboxImageView.snp.makeConstraints {
+            $0.width.height.equalTo(20)
+            $0.right.equalToSuperview().inset(10)
+            $0.centerY.equalToSuperview()
         }
     }
 

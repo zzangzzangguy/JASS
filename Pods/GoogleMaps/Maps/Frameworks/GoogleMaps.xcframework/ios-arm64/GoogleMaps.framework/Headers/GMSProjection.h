@@ -11,7 +11,6 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <CoreLocation/CoreLocation.h>
 
-
 /**
  * GMSVisibleRegion contains the four points defining the polygon that is visible in a map's camera.
  *
@@ -49,7 +48,6 @@ typedef struct {
 
 /** Maps an Earth coordinate to a point coordinate in the map's view. */
 - (CGPoint)pointForCoordinate:(CLLocationCoordinate2D)coordinate;
-
 
 /** Maps a point coordinate in the map's view to an Earth coordinate. */
 - (CLLocationCoordinate2D)coordinateForPoint:(CGPoint)point;

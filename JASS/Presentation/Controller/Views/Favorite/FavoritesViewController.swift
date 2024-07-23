@@ -8,7 +8,7 @@ class FavoritesViewController: UIViewController {
     var tableView: UITableView!
     var favoritesManager: FavoritesManager!
 
-    init(viewModel: PlaceSearchViewModel) { // 초기화 인자 추가
+    init(viewModel: PlaceSearchViewModel) {
            self.placeSearchViewModel = viewModel
            super.init(nibName: nil, bundle: nil)
        }
@@ -27,7 +27,7 @@ class FavoritesViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+//        navigationController?.setNavigationBarHidden(true, animated: animated)
         tableView.reloadData()
     }
 

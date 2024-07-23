@@ -4,6 +4,7 @@ class RecentPlacesTableViewCell: UITableViewCell {
     static let id = "RecentPlacesTableViewCell"
     private let collectionView: UICollectionView
     private var places: [Place] = []
+
     weak var delegate: FacilityCollectionViewCellDelegate?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -22,8 +23,8 @@ class RecentPlacesTableViewCell: UITableViewCell {
 
     private func setupUI() {
         contentView.addSubview(collectionView)
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(10)
+        collectionView.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(10)
         }
 
         collectionView.delegate = self

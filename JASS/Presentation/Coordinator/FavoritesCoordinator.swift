@@ -2,6 +2,7 @@
 import UIKit
 
 final class FavoritesCoordinator: Coordinator {
+    weak var coordinator: Coordinator?
     weak var delegate: CoordinatorDelegate?
     var navigationController: UINavigationController
     var childCoordinators: [Coordinator] = []
@@ -21,7 +22,7 @@ final class FavoritesCoordinator: Coordinator {
 
     func showPlaceDetails(_ place: Place) {
            let detailViewController = GymDetailViewController(viewModel: GymDetailViewModel(placeID: place.place_id, placeSearchViewModel: PlaceSearchViewModel(placeUseCase: placeUseCase)))
-           navigationController.setNavigationBarHidden(true, animated: true)
+//           navigationController.setNavigationBarHidden(true, animated: true)
            navigationController.pushViewController(detailViewController, animated: true)
        }
    }

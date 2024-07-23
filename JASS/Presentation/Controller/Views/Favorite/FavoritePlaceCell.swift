@@ -49,34 +49,34 @@ class FavoritePlaceCell: UITableViewCell {
         favoriteButton.setImage(UIImage(systemName: "heart"), for: .normal)
         favoriteButton.tintColor = .gray
 
-        placeImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(16)
-            make.top.equalToSuperview().inset(16)
-            make.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(placeImageView.snp.width).multipliedBy(0.75) // 종횡비를 조정
+        placeImageView.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(16)
+            $0.top.equalToSuperview().inset(16)
+            $0.trailing.equalToSuperview().inset(16)
+            $0.height.equalTo(placeImageView.snp.width).multipliedBy(0.75) // 종횡비를 조정
         }
 
-        nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(placeImageView.snp.bottom).offset(10)
-            make.leading.equalTo(placeImageView.snp.leading)
-            make.trailing.equalTo(favoriteButton.snp.leading).offset(-10)
+        nameLabel.snp.makeConstraints {
+            $0.top.equalTo(placeImageView.snp.bottom).offset(10)
+            $0.leading.equalTo(placeImageView.snp.leading)
+            $0.trailing.equalTo(favoriteButton.snp.leading).offset(-10)
         }
 
-        addressLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameLabel.snp.bottom).offset(5)
-            make.leading.equalTo(nameLabel.snp.leading)
-            make.trailing.equalTo(nameLabel.snp.trailing)
-            make.bottom.equalToSuperview().inset(16)
+        addressLabel.snp.makeConstraints {
+            $0.top.equalTo(nameLabel.snp.bottom).offset(5)
+            $0.leading.equalTo(nameLabel.snp.leading)
+            $0.trailing.equalTo(nameLabel.snp.trailing)
+            $0.bottom.equalToSuperview().inset(16)
         }
 
-        favoriteButton.snp.makeConstraints { make in
-            make.centerY.equalTo(nameLabel.snp.centerY)
-            make.trailing.equalToSuperview().inset(20)
-            make.width.height.equalTo(24)
+        favoriteButton.snp.makeConstraints {
+            $0.centerY.equalTo(nameLabel.snp.centerY)
+            $0.trailing.equalToSuperview().inset(20)
+            $0.width.height.equalTo(24)
         }
 
-        loadingIndicator.snp.makeConstraints { make in
-            make.center.equalTo(placeImageView)
+        loadingIndicator.snp.makeConstraints {
+            $0.center.equalTo(placeImageView)
         }
 
         favoriteButton.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)

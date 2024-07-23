@@ -61,29 +61,29 @@ class FilterViewController: UIViewController {
         view.addSubview(applyButton)
         view.addSubview(cancelButton)
 
-        allCategoriesButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
-            make.right.equalToSuperview().inset(20)
+        allCategoriesButton.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            $0.right.equalToSuperview().inset(20)
         }
 
-        collectionView.snp.makeConstraints { make in
-            make.top.equalTo(allCategoriesButton.snp.bottom).offset(10)
-            make.left.right.equalToSuperview()
-            make.bottom.equalTo(applyButton.snp.top).offset(-10)
+        collectionView.snp.makeConstraints {
+            $0.top.equalTo(allCategoriesButton.snp.bottom).offset(10)
+            $0.left.right.equalToSuperview()
+            $0.bottom.equalTo(applyButton.snp.top).offset(-10)
         }
 
-        applyButton.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(20)
-            make.right.equalTo(view.snp.centerX).offset(-5)
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(20)
-            make.height.equalTo(50)
+        applyButton.snp.makeConstraints {
+            $0.left.equalToSuperview().offset(20)
+            $0.right.equalTo(view.snp.centerX).offset(-5)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(20)
+            $0.height.equalTo(50)
         }
 
-        cancelButton.snp.makeConstraints { make in
-            make.right.equalToSuperview().inset(20)
-            make.left.equalTo(view.snp.centerX).offset(5)
-            make.bottom.equalTo(applyButton.snp.bottom)
-            make.height.equalTo(50)
+        cancelButton.snp.makeConstraints {
+            $0.right.equalToSuperview().inset(20)
+            $0.left.equalTo(view.snp.centerX).offset(5)
+            $0.bottom.equalTo(applyButton.snp.bottom)
+            $0.height.equalTo(50)
         }
     }
 

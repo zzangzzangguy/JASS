@@ -91,25 +91,25 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     private func setupUI() {
         view.backgroundColor = .white
         view.addSubview(closeButton)
-        closeButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.leading.equalToSuperview().offset(20)
-            make.width.height.equalTo(44)
+        closeButton.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.equalToSuperview().offset(20)
+            $0.width.height.equalTo(44)
         }
 
         searchBar.delegate = self
         view.addSubview(searchBar)
-        searchBar.snp.makeConstraints { make in
-            make.top.equalTo(closeButton.snp.bottom).offset(10)
-            make.leading.trailing.equalToSuperview().inset(20)
+        searchBar.snp.makeConstraints {
+            $0.top.equalTo(closeButton.snp.bottom).offset(10)
+            $0.leading.trailing.equalToSuperview().inset(20)
         }
 
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.addTarget(self, action: #selector(segmentChanged), for: .valueChanged)
         view.addSubview(segmentedControl)
-        segmentedControl.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(20)
+        segmentedControl.snp.makeConstraints {
+            $0.top.equalTo(searchBar.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview().inset(20)
         }
 
         tableView = UITableView()
@@ -117,14 +117,14 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         view.addSubview(tableView)
-        tableView.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom).offset(10)
-            make.leading.trailing.bottom.equalToSuperview()
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(searchBar.snp.bottom).offset(10)
+            $0.leading.trailing.bottom.equalToSuperview()
         }
 
         view.addSubview(noResultsLabel)
-        noResultsLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+        noResultsLabel.snp.makeConstraints {
+            $0.center.equalToSuperview()
         }
     }
 
@@ -163,7 +163,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
 
             button.frame = CGRect(x: xOffset, y: yOffset, width: buttonWidth, height: buttonHeight)
 
-            // 버튼에 탭 이벤트 추가
             button.addTarget(self, action: #selector(keywordButtonTapped(_:)), for: .touchUpInside)
 
             containerView.addSubview(button)
@@ -172,21 +171,21 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
             xOffset += buttonWidth + horizontalSpacing
         }
 
-        containerView.snp.makeConstraints { make in
-            make.edges.equalTo(scrollView.contentLayoutGuide)
-            make.width.equalTo(scrollView)
-            make.height.equalTo(yOffset + buttonHeight)
+        containerView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalTo(scrollView)
+            $0.height.equalTo(yOffset + buttonHeight)
         }
 
-        scrollView.snp.makeConstraints { make in
-            make.top.equalTo(segmentedControl.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(containerView.snp.height)
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(segmentedControl.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(containerView.snp.height)
         }
 
-        tableView.snp.remakeConstraints { make in
-            make.top.equalTo(scrollView.snp.bottom).offset(20)
-            make.leading.trailing.bottom.equalToSuperview()
+        tableView.snp.remakeConstraints {
+            $0.top.equalTo(scrollView.snp.bottom).offset(20)
+            $0.leading.trailing.bottom.equalToSuperview()
         }
     }
 
@@ -222,22 +221,22 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         if isSearching {
             segmentedControl.isHidden = true
             keywordButtons.forEach { $0.isHidden = true }
-            tableView.snp.remakeConstraints { make in
-                make.top.equalTo(searchBar.snp.bottom).offset(10)
-                make.leading.trailing.bottom.equalToSuperview()
+            tableView.snp.remakeConstraints {
+                $0.top.equalTo(searchBar.snp.bottom).offset(10)
+                $0.leading.trailing.bottom.equalToSuperview()
             }
         } else {
             segmentedControl.isHidden = false
             keywordButtons.forEach { $0.isHidden = !isRecommendedKeywordsSegment }
             if isRecommendedKeywordsSegment {
-                tableView.snp.remakeConstraints { make in
-                    make.top.equalTo(segmentedControl.snp.bottom).offset(20)
-                    make.leading.trailing.bottom.equalToSuperview()
+                tableView.snp.remakeConstraints {
+                    $0.top.equalTo(segmentedControl.snp.bottom).offset(20)
+                    $0.leading.trailing.bottom.equalToSuperview()
                 }
             } else {
-                tableView.snp.remakeConstraints { make in
-                    make.top.equalTo(segmentedControl.snp.bottom).offset(10)
-                    make.leading.trailing.bottom.equalToSuperview()
+                tableView.snp.remakeConstraints {
+                    $0.top.equalTo(segmentedControl.snp.bottom).offset(10)
+                    $0.leading.trailing.bottom.equalToSuperview()
                 }
             }
         }

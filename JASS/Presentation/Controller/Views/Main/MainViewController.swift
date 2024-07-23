@@ -66,10 +66,10 @@ class MainViewController: UIViewController {
     private func setupHeaderView() {
         headerView.backgroundColor = .white
         view.addSubview(headerView)
-        headerView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.leading.trailing.equalToSuperview()
-            make.height.equalTo(60)
+        headerView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(60)
         }
     }
 
@@ -78,9 +78,9 @@ class MainViewController: UIViewController {
         searchBar.searchBarStyle = .minimal
         searchBar.delegate = self
         view.addSubview(searchBar)
-        searchBar.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.leading.trailing.equalToSuperview().inset(16)
+        searchBar.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.trailing.equalToSuperview().inset(16)
         }
     }
 
@@ -95,11 +95,12 @@ class MainViewController: UIViewController {
         findOnMapButton.setBackgroundImage(UIImage(named: "sungyeop"), for: .normal)
         findOnMapButton.addTarget(self, action: #selector(findOnMapButtonTapped), for: .touchUpInside)
         view.addSubview(findOnMapButton)
-        findOnMapButton.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom).offset(20)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(150)
-            make.height.equalTo(100)
+
+        findOnMapButton.snp.makeConstraints {
+            $0.top.equalTo(searchBar.snp.bottom).offset(20)
+            $0.centerX.equalToSuperview()
+            $0.width.equalTo(150)
+            $0.height.equalTo(100)
         }
     }
 
@@ -109,9 +110,9 @@ class MainViewController: UIViewController {
         tableView.register(NearbyFacilitiesTableViewCell.self, forCellReuseIdentifier: NearbyFacilitiesTableViewCell.id)
         tableView.register(RecentPlacesTableViewCell.self, forCellReuseIdentifier: RecentPlacesTableViewCell.id)
         view.addSubview(tableView)
-        tableView.snp.makeConstraints { make in
-            make.top.equalTo(findOnMapButton.snp.bottom).offset(20)
-            make.leading.trailing.bottom.equalToSuperview()
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(findOnMapButton.snp.bottom).offset(20)
+            $0.leading.trailing.bottom.equalToSuperview()
         }
     }
 
@@ -257,7 +258,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource, Facili
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: RecentPlacesTableViewCell.id, for: indexPath) as? RecentPlacesTableViewCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: RecentPlacesTableViewCell.id, for: indexPath)
+                    as? RecentPlacesTableViewCell else {
                 return UITableViewCell()
             }
 
@@ -268,9 +270,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource, Facili
                 })
                 .disposed(by: disposeBag)
 
+            cell.delegate = self  // 여기에 delegate 설정을 추가합니다.
+
             return cell
         } else {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: NearbyFacilitiesTableViewCell.id, for: indexPath) as? NearbyFacilitiesTableViewCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: NearbyFacilitiesTableViewCell.id, for: indexPath)
+                    as? NearbyFacilitiesTableViewCell else {
                 return UITableViewCell()
             }
             cell.configure(with: nearbyFacilitiesViewModel.places)
@@ -279,10 +284,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource, Facili
         }
     }
 
-
     func didTapFacilityCell(_ cell: FacilityCollectionViewCell, place: Place) {
         coordinator?.showPlaceDetails(from: self, for: place)
-        recentPlacesViewModel.addRecentPlace(place)
+
+        if !(cell.superview?.superview is RecentPlacesTableViewCell) {
+            recentPlacesViewModel.addRecentPlace(place)
+        }
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
