@@ -11,6 +11,9 @@
 		4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */; };
 		4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */; };
 		4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */; };
+		4E18DFDB2C50D09F004FEDF8 /* NanumOenSonJabIDoYeBbeo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E18DFDA2C50D09F004FEDF8 /* NanumOenSonJabIDoYeBbeo.ttf */; };
+		4E18DFDF2C50DF29004FEDF8 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 4E18DFDE2C50DF29004FEDF8 /* Secrets.xcconfig */; };
+		4E18DFE02C50E063004FEDF8 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4EF931392B1C913000E5794B /* Info.plist */; };
 		4E21846D2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */; };
 		4E21846F2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */; };
 		4E2184712C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */; };
@@ -70,7 +73,6 @@
 		4EF931432B1C913000E5794B /* JASSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931422B1C913000E5794B /* JASSTests.swift */; };
 		4EF9314D2B1C913000E5794B /* JASSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9314C2B1C913000E5794B /* JASSUITests.swift */; };
 		4EF9314F2B1C913000E5794B /* JASSUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9314E2B1C913000E5794B /* JASSUITestsLaunchTests.swift */; };
-		4EF9315C2B1DC92900E5794B /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 4EF9315B2B1DC92900E5794B /* Secrets.xcconfig */; };
 		4EF931622B218AFC00E5794B /* GooglePlacesAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931612B218AFC00E5794B /* GooglePlacesAPI.swift */; };
 		4EF931652B218B3800E5794B /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF931642B218B3800E5794B /* SnapKit */; };
 		4EF931692B21C00300E5794B /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931682B21C00300E5794B /* Place.swift */; };
@@ -116,6 +118,8 @@
 		4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
 		4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterManager.swift; sourceTree = "<group>"; };
+		4E18DFDA2C50D09F004FEDF8 /* NanumOenSonJabIDoYeBbeo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = NanumOenSonJabIDoYeBbeo.ttf; path = ../Downloads/NanumOenSonJabIDoYeBbeo.ttf; sourceTree = "<group>"; };
+		4E18DFDE2C50DF29004FEDF8 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyFacilitiesViewModel.swift; sourceTree = "<group>"; };
 		4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacilityCollectionViewCell.swift; sourceTree = "<group>"; };
 		4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyFacilitiesTableViewCell.swift; sourceTree = "<group>"; };
@@ -169,7 +173,6 @@
 		4EF931482B1C913000E5794B /* JASSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JASSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EF9314C2B1C913000E5794B /* JASSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JASSUITests.swift; sourceTree = "<group>"; };
 		4EF9314E2B1C913000E5794B /* JASSUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JASSUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		4EF9315B2B1DC92900E5794B /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		4EF931612B218AFC00E5794B /* GooglePlacesAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GooglePlacesAPI.swift; sourceTree = "<group>"; };
 		4EF931682B21C00300E5794B /* Place.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
 		4EF9316A2B21C04600E5794B /* PlaceSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceSearchViewModel.swift; sourceTree = "<group>"; };
@@ -264,12 +267,12 @@
 		4E7CB9642C0F3D5D00F5F3D7 /* Application */ = {
 			isa = PBXGroup;
 			children = (
+				4EF931392B1C913000E5794B /* Info.plist */,
 				4EF9312D2B1C912E00E5794B /* SceneDelegate.swift */,
 				4EF9312B2B1C912E00E5794B /* AppDelegate.swift */,
 				4EF931362B1C913000E5794B /* LaunchScreen.storyboard */,
 				4E97CA8F2C2D772900ECF24B /* AppCoordinator.swift */,
 				4EF931342B1C913000E5794B /* Assets.xcassets */,
-				4EF9315B2B1DC92900E5794B /* Secrets.xcconfig */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -477,6 +480,8 @@
 		4EF9311F2B1C912E00E5794B = {
 			isa = PBXGroup;
 			children = (
+				4E18DFDE2C50DF29004FEDF8 /* Secrets.xcconfig */,
+				4E18DFDA2C50D09F004FEDF8 /* NanumOenSonJabIDoYeBbeo.ttf */,
 				4EF9312A2B1C912E00E5794B /* JASS */,
 				4EF9318B2B3E9A2C00E5794B /* Service */,
 				4EA179CD2B5BB234006A1D51 /* Utils */,
@@ -503,7 +508,6 @@
 		4EF9312A2B1C912E00E5794B /* JASS */ = {
 			isa = PBXGroup;
 			children = (
-				4EF931392B1C913000E5794B /* Info.plist */,
 				4E7CB9642C0F3D5D00F5F3D7 /* Application */,
 				4E7CB9672C0F3D8700F5F3D7 /* Presentation */,
 			);
@@ -708,8 +712,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				4EF931382B1C913000E5794B /* LaunchScreen.storyboard in Resources */,
+				4E18DFDF2C50DF29004FEDF8 /* Secrets.xcconfig in Resources */,
+				4E18DFDB2C50D09F004FEDF8 /* NanumOenSonJabIDoYeBbeo.ttf in Resources */,
+				4E18DFE02C50E063004FEDF8 /* Info.plist in Resources */,
 				4EF931352B1C913000E5794B /* Assets.xcassets in Resources */,
-				4EF9315C2B1DC92900E5794B /* Secrets.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -946,7 +952,6 @@
 /* Begin XCBuildConfiguration section */
 		4EF931502B1C913000E5794B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4EF9315B2B1DC92900E5794B /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -1010,7 +1015,6 @@
 		};
 		4EF931512B1C913000E5794B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4EF9315B2B1DC92900E5794B /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -1075,7 +1079,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9A69549U7C;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = /Users/ganghoseong/JASS/JASS/Info.plist;
+        INFOPLIST_FILE = "$(SRCROOT)/JASS/Application/Info.plist";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -1106,7 +1110,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9A69549U7C;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = /Users/ganghoseong/JASS/JASS/Info.plist;
+        INFOPLIST_FILE = "$(SRCROOT)/JASS/Application/Info.plist";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
