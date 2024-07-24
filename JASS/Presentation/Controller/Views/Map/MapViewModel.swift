@@ -7,7 +7,7 @@ import RxCocoa
 class MapViewModel: ViewModelType {
     struct Input {
         let viewDidLoad: Observable<Void>
-        let searchQuery: Observable<String>
+        let searchButtonClicked: Observable<String>  
         let filterSelection: Observable<Set<String>>
         let mapIdleAt: Observable<GMSCameraPosition>
         let markerTapped: Observable<GMSMarker>
@@ -61,7 +61,7 @@ class MapViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
 
-        input.searchQuery
+        input.searchButtonClicked
             .flatMapLatest { [weak self] query -> Observable<[Place]> in
                 guard let self = self else { return .empty() }
                 return self.searchPlaces(query: query)

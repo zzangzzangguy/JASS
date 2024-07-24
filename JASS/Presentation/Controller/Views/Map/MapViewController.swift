@@ -70,20 +70,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     private func setupBindings() {
         let input = MapViewModel.Input(
             viewDidLoad: .just(()),
-            searchQuery: searchController.searchBar.rx.text.orEmpty
-                        .debounce(.milliseconds(300), scheduler: MainScheduler.instance) // 쓰로틀링 추가
-                        .distinctUntilChanged(),
+            searchButtonClicked: searchController.searchBar.rx.searchButtonClicked
+                .withLatestFrom(searchController.searchBar.rx.text.orEmpty)
+                .filter { !$0.isEmpty },
             filterSelection: filterSelectionSubject.asObservable(),
             mapIdleAt: mapIdleSubject.asObservable(),
             markerTapped: markerTappedSubject.asObservable(),
             zoomIn: zoomInButton.rx.tap.asObservable(),
             zoomOut: zoomOutButton.rx.tap.asObservable()
-            
         )
-        mapView.delegate = self
-
 
         output = viewModel.transform(input: input)
+
         
 
         output.places
@@ -370,9 +368,6 @@ extension MapViewController: UISearchBarDelegate {
             searchRecentViewModel.saveSearchHistory(query: searchText)
             showLoadingIndicator()
             placeSearchViewModel.searchPlace(input: searchText, filters: viewModel.selectedCategories, currentLocation: locationManager.location?.coordinate)
-
-
-
                 .subscribe(onNext: { [weak self] places in
                     guard let self = self, let firstPlace = places.first else {
                         self?.showToast("검색 결과가 없습니다.")
@@ -380,13 +375,14 @@ extension MapViewController: UISearchBarDelegate {
                         return
                     }
                     self.hideLoadingIndicator()
-
+                    self.updateMapMarkers(with: places)
                     let camera = GMSCameraPosition.camera(withLatitude: firstPlace.geometry.location.lat,
                                                           longitude: firstPlace.geometry.location.lng,
                                                           zoom: 15.0)
                     self.mapView.animate(to: camera)
-                }, onError: { error in
-                    self.hideLoadingIndicator()
+                }, onError: { [weak self] error in
+                    self?.hideLoadingIndicator()
+                    self?.showToast("검색 중 오류가 발생했습니다.")
                 })
                 .disposed(by: disposeBag)
         }
