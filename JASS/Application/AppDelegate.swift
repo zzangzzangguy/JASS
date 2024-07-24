@@ -39,15 +39,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             migrationBlock: { migration, oldSchemaVersion in
                 if oldSchemaVersion < 5 {
                     migration.enumerateObjects(ofType: FavoritePlace.className()) { oldObject, newObject in
-                        // 필요한 마이그레이션 로직 추가
                     }
                 }
             })
 
-        // Realm 설정 적용
         Realm.Configuration.defaultConfiguration = config
 
-        // Realm 초기화
         do {
             _ = try Realm()
         } catch {

@@ -25,5 +25,9 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>NanumOenSonJablDoYeBbeo</string>
+	</array>
 </dict>
 </plist>
