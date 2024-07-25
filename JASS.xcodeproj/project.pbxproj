@@ -7,13 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		047B1AEDB7F199DD1BA48CE3 /* Pods_JASS_JASSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80C4746D5A3A954984A69E3B /* Pods_JASS_JASSUITests.framework */; };
 		4E0DD6872C2C43220029EDDB /* GymDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0DD6862C2C43220029EDDB /* GymDetailViewModel.swift */; };
 		4E17CF532BCFDDB40064FD48 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */; };
 		4E17CF572BCFEFB00064FD48 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */; };
 		4E17CF5D2BD52D8D0064FD48 /* ClusterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */; };
-		4E18DFDB2C50D09F004FEDF8 /* NanumOenSonJabIDoYeBbeo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E18DFDA2C50D09F004FEDF8 /* NanumOenSonJabIDoYeBbeo.ttf */; };
-		4E18DFDF2C50DF29004FEDF8 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 4E18DFDE2C50DF29004FEDF8 /* Secrets.xcconfig */; };
-		4E18DFE02C50E063004FEDF8 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4EF931392B1C913000E5794B /* Info.plist */; };
 		4E21846D2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */; };
 		4E21846F2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */; };
 		4E2184712C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */; };
@@ -22,16 +20,11 @@
 		4E3D70112C370D650090EBDF /* RecentPlacesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3D70102C370D650090EBDF /* RecentPlacesManager.swift */; };
 		4E52D97B2C19AE0D0007494A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E52D97A2C19AE0D0007494A /* SearchViewController.swift */; };
 		4E56EB932C4530CA00A10724 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E56EB922C4530C900A10724 /* FilterCollectionViewCell.swift */; };
-		4E7CB96B2C10139E00F5F3D7 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96A2C10139E00F5F3D7 /* RxCocoa */; };
-		4E7CB96D2C10139E00F5F3D7 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96C2C10139E00F5F3D7 /* RxRelay */; };
-		4E7CB96F2C10139E00F5F3D7 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB96E2C10139E00F5F3D7 /* RxSwift */; };
-		4E7CB9722C11AA9700F5F3D7 /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB9712C11AA9700F5F3D7 /* Moya */; };
-		4E7CB9742C11AA9700F5F3D7 /* RxMoya in Frameworks */ = {isa = PBXBuildFile; productRef = 4E7CB9732C11AA9700F5F3D7 /* RxMoya */; };
+		4E67EEC62C524FF700582B7E /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 4E6A66272C52275C00AFAC13 /* Secrets.xcconfig */; };
 		4E8225972C29F73500A0AE94 /* LoadingIndicatorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8225912C29EB5400A0AE94 /* LoadingIndicatorManager.swift */; };
 		4E82259B2C29F82E00A0AE94 /* FavoriteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E82259A2C29F82E00A0AE94 /* FavoriteManager.swift */; };
 		4E82259C2C29F92200A0AE94 /* FavoritePlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8225962C29F73200A0AE94 /* FavoritePlace.swift */; };
 		4E8551FA2C477BAC0033BC72 /* PlaceRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E97CAB92C2DE7C300ECF24B /* PlaceRepositoryImpl.swift */; };
-		4E8A694D2C32B828007DDBC1 /* KakaoMapsSDK-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4E8A694C2C32B828007DDBC1 /* KakaoMapsSDK-SPM */; };
 		4E97CA8E2C2D771900ECF24B /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E97CA8D2C2D771900ECF24B /* MainCoordinator.swift */; };
 		4E97CA902C2D772900ECF24B /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E97CA8F2C2D772900ECF24B /* AppCoordinator.swift */; };
 		4E97CA922C2D773C00ECF24B /* SearchCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E97CA912C2D773C00ECF24B /* SearchCoordinator.swift */; };
@@ -49,8 +42,6 @@
 		4E97CAC42C3059C300ECF24B /* GetFavoritesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E97CAC32C3059C300ECF24B /* GetFavoritesUseCase.swift */; };
 		4E97CAC72C305CA300ECF24B /* PlaceUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E97CAC62C305CA300ECF24B /* PlaceUseCase.swift */; };
 		4E97CAC92C305CA800ECF24B /* SearchPlacesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E97CAC82C305CA800ECF24B /* SearchPlacesUseCase.swift */; };
-		4E9966C92BE12858002E3763 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 4E9966C82BE12858002E3763 /* SDWebImage */; };
-		4E9966CC2BE12CB1002E3763 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4E9966CB2BE12CB1002E3763 /* Kingfisher */; };
 		4E9966CE2BE141BF002E3763 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9966CD2BE141BF002E3763 /* LocationManager.swift */; };
 		4EA179D32B6837EA006A1D51 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA179D22B6837EA006A1D51 /* Filter.swift */; };
 		4EB7B3842C411F75002442AC /* ReviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EB7B3832C411F75002442AC /* ReviewTableViewCell.swift */; };
@@ -59,12 +50,10 @@
 		4ECA89E02BF11978006C6DEC /* ToastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ECA89DF2BF11978006C6DEC /* ToastManager.swift */; };
 		4EDB89822BEA9F8A001C558E /* FavoritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDB89812BEA9F8A001C558E /* FavoritesViewController.swift */; };
 		4EDB89862BEAA118001C558E /* FavoritePlaceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDB89852BEAA118001C558E /* FavoritePlaceCell.swift */; };
-		4EDB89892BEAA6C0001C558E /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 4EDB89882BEAA6C0001C558E /* Toast */; };
 		4EE526412C36A55D00DD3355 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE526402C36A55D00DD3355 /* MainViewModel.swift */; };
 		4EE526432C36A83900DD3355 /* NearbyFacilitiesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE526422C36A83900DD3355 /* NearbyFacilitiesUseCase.swift */; };
 		4EE526452C36A86900DD3355 /* RecentPlacesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE526442C36A86900DD3355 /* RecentPlacesUseCase.swift */; };
 		4EE526472C36A92E00DD3355 /* RecentPlacesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE526462C36A92E00DD3355 /* RecentPlacesTableViewCell.swift */; };
-		4EF0BE222BCCE6350076074E /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF0BE212BCCE6350076074E /* Then */; };
 		4EF0BE242BCCE70F0076074E /* GymDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF0BE232BCCE70F0076074E /* GymDetailViewController.swift */; };
 		4EF9312C2B1C912E00E5794B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9312B2B1C912E00E5794B /* AppDelegate.swift */; };
 		4EF9312E2B1C912E00E5794B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9312D2B1C912E00E5794B /* SceneDelegate.swift */; };
@@ -74,12 +63,9 @@
 		4EF9314D2B1C913000E5794B /* JASSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9314C2B1C913000E5794B /* JASSUITests.swift */; };
 		4EF9314F2B1C913000E5794B /* JASSUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9314E2B1C913000E5794B /* JASSUITestsLaunchTests.swift */; };
 		4EF931622B218AFC00E5794B /* GooglePlacesAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931612B218AFC00E5794B /* GooglePlacesAPI.swift */; };
-		4EF931652B218B3800E5794B /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF931642B218B3800E5794B /* SnapKit */; };
 		4EF931692B21C00300E5794B /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931682B21C00300E5794B /* Place.swift */; };
 		4EF9316B2B21C04600E5794B /* PlaceSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9316A2B21C04600E5794B /* PlaceSearchViewModel.swift */; };
 		4EF9316D2B21C32D00E5794B /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9316C2B21C32D00E5794B /* MapViewController.swift */; };
-		4EF931762B294E3700E5794B /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF931752B294E3700E5794B /* Realm */; };
-		4EF931782B294E3700E5794B /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4EF931772B294E3700E5794B /* RealmSwift */; };
 		4EF9317C2B29DB6400E5794B /* RecentSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9317B2B29DB6400E5794B /* RecentSearchViewController.swift */; };
 		4EF9317E2B29DB7800E5794B /* SearchResultsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9317D2B29DB7800E5794B /* SearchResultsCell.swift */; };
 		4EF931802B31918200E5794B /* SearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF9317F2B31918200E5794B /* SearchResultsViewController.swift */; };
@@ -88,9 +74,8 @@
 		4EF931882B3B426D00E5794B /* RecentPlacesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */; };
 		4EF9318A2B3D5FEC00E5794B /* RecentSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931892B3D5FEB00E5794B /* RecentSearchCell.swift */; };
 		4EF931922B46CB5E00E5794B /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF931912B46CB5E00E5794B /* MainViewController.swift */; };
-		6849A1E7D4E698DC5295B51F /* Pods_JASS_JASSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A443FE70FCA6FD95B0FAD66A /* Pods_JASS_JASSUITests.framework */; };
-		9BA96E90A6EDF7FACF48ED39 /* Pods_JASSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 233BF59C04B16159286444DA /* Pods_JASSTests.framework */; };
-		A05233FC9453E9ECD1A0C1EE /* Pods_JASS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8B4E8DCF4D2127BF8BB476F /* Pods_JASS.framework */; };
+		50322CBE502823116E35FE4E /* Pods_JASSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3F6E8ED92E38F36F0BE2CCC /* Pods_JASSTests.framework */; };
+		A3021150DD47446D0CFC4374 /* Pods_JASS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F31A84395136004AA0890E5 /* Pods_JASS.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,15 +96,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1594BFCDD21C8D31FFE1A929 /* Pods-JASS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASS.release.xcconfig"; path = "Target Support Files/Pods-JASS/Pods-JASS.release.xcconfig"; sourceTree = "<group>"; };
-		1C74AD347A026648AAAEF905 /* Pods-JASS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASS.debug.xcconfig"; path = "Target Support Files/Pods-JASS/Pods-JASS.debug.xcconfig"; sourceTree = "<group>"; };
-		233BF59C04B16159286444DA /* Pods_JASSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JASSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CA0108333D4CA9CC989071C /* Pods-JASSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASSTests.release.xcconfig"; path = "Target Support Files/Pods-JASSTests/Pods-JASSTests.release.xcconfig"; sourceTree = "<group>"; };
+		22D74A1FA43DB2FE96C1141F /* Pods-JASS-JASSUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASS-JASSUITests.debug.xcconfig"; path = "Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		2A8D90F626A8157FF9E084F5 /* Pods-JASSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASSTests.debug.xcconfig"; path = "Target Support Files/Pods-JASSTests/Pods-JASSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		3F31A84395136004AA0890E5 /* Pods_JASS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JASS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E0DD6862C2C43220029EDDB /* GymDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymDetailViewModel.swift; sourceTree = "<group>"; };
 		4E17CF522BCFDDB40064FD48 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
 		4E17CF562BCFEFB00064FD48 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		4E17CF5C2BD52D8D0064FD48 /* ClusterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterManager.swift; sourceTree = "<group>"; };
-		4E18DFDA2C50D09F004FEDF8 /* NanumOenSonJabIDoYeBbeo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = NanumOenSonJabIDoYeBbeo.ttf; path = ../Downloads/NanumOenSonJabIDoYeBbeo.ttf; sourceTree = "<group>"; };
-		4E18DFDE2C50DF29004FEDF8 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		4E21846C2C1F5DBE00967E04 /* NearbyFacilitiesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyFacilitiesViewModel.swift; sourceTree = "<group>"; };
 		4E21846E2C1F5DCC00967E04 /* FacilityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacilityCollectionViewCell.swift; sourceTree = "<group>"; };
 		4E2184702C1F5DDD00967E04 /* NearbyFacilitiesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyFacilitiesTableViewCell.swift; sourceTree = "<group>"; };
@@ -128,6 +112,7 @@
 		4E3D70102C370D650090EBDF /* RecentPlacesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlacesManager.swift; sourceTree = "<group>"; };
 		4E52D97A2C19AE0D0007494A /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		4E56EB922C4530C900A10724 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FilterCollectionViewCell.swift; path = /Users/ganghoseong/JASS/JASS/Presentation/Controller/Views/Filter/FilterCollectionViewCell.swift; sourceTree = "<absolute>"; };
+		4E6A66272C52275C00AFAC13 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		4E8225912C29EB5400A0AE94 /* LoadingIndicatorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LoadingIndicatorManager.swift; path = ../JASS/Presentation/Controller/LoadingIndicatorManager.swift; sourceTree = "<group>"; };
 		4E8225962C29F73200A0AE94 /* FavoritePlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePlace.swift; sourceTree = "<group>"; };
 		4E82259A2C29F82E00A0AE94 /* FavoriteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteManager.swift; sourceTree = "<group>"; };
@@ -185,12 +170,11 @@
 		4EF931872B3B426D00E5794B /* RecentPlacesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPlacesViewModel.swift; sourceTree = "<group>"; };
 		4EF931892B3D5FEB00E5794B /* RecentSearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchCell.swift; sourceTree = "<group>"; };
 		4EF931912B46CB5E00E5794B /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
-		593AB7EB27EB748C2C1C6986 /* Pods-JASS-JASSUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASS-JASSUITests.debug.xcconfig"; path = "Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		5D67473D39348A02FE47E7CD /* Pods-JASS-JASSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASS-JASSUITests.release.xcconfig"; path = "Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests.release.xcconfig"; sourceTree = "<group>"; };
-		68F54845682E30DC664DBC5A /* Pods-JASSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASSTests.debug.xcconfig"; path = "Target Support Files/Pods-JASSTests/Pods-JASSTests.debug.xcconfig"; sourceTree = "<group>"; };
-		8D43031FBF0739BC1CA09A6D /* Pods-JASSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASSTests.release.xcconfig"; path = "Target Support Files/Pods-JASSTests/Pods-JASSTests.release.xcconfig"; sourceTree = "<group>"; };
-		A443FE70FCA6FD95B0FAD66A /* Pods_JASS_JASSUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JASS_JASSUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E8B4E8DCF4D2127BF8BB476F /* Pods_JASS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JASS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5DEC2DFB308DC7862E7B46BB /* Pods-JASS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASS.release.xcconfig"; path = "Target Support Files/Pods-JASS/Pods-JASS.release.xcconfig"; sourceTree = "<group>"; };
+		80C4746D5A3A954984A69E3B /* Pods_JASS_JASSUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JASS_JASSUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A968EECEA044EA67CD1B2383 /* Pods-JASS-JASSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASS-JASSUITests.release.xcconfig"; path = "Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests.release.xcconfig"; sourceTree = "<group>"; };
+		D104361BC457581D1707373B /* Pods-JASS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JASS.debug.xcconfig"; path = "Target Support Files/Pods-JASS/Pods-JASS.debug.xcconfig"; sourceTree = "<group>"; };
+		F3F6E8ED92E38F36F0BE2CCC /* Pods_JASSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JASSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -198,20 +182,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4E7CB9742C11AA9700F5F3D7 /* RxMoya in Frameworks */,
-				4E7CB96D2C10139E00F5F3D7 /* RxRelay in Frameworks */,
-				4E7CB96B2C10139E00F5F3D7 /* RxCocoa in Frameworks */,
-				4E7CB9722C11AA9700F5F3D7 /* Moya in Frameworks */,
-				4EDB89892BEAA6C0001C558E /* Toast in Frameworks */,
-				4E9966C92BE12858002E3763 /* SDWebImage in Frameworks */,
-				4EF0BE222BCCE6350076074E /* Then in Frameworks */,
-				4E9966CC2BE12CB1002E3763 /* Kingfisher in Frameworks */,
-				4EF931782B294E3700E5794B /* RealmSwift in Frameworks */,
-				4EF931762B294E3700E5794B /* Realm in Frameworks */,
-				4EF931652B218B3800E5794B /* SnapKit in Frameworks */,
-				4E7CB96F2C10139E00F5F3D7 /* RxSwift in Frameworks */,
-				A05233FC9453E9ECD1A0C1EE /* Pods_JASS.framework in Frameworks */,
-				4E8A694D2C32B828007DDBC1 /* KakaoMapsSDK-SPM in Frameworks */,
+				A3021150DD47446D0CFC4374 /* Pods_JASS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,7 +190,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9BA96E90A6EDF7FACF48ED39 /* Pods_JASSTests.framework in Frameworks */,
+				50322CBE502823116E35FE4E /* Pods_JASSTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -227,7 +198,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6849A1E7D4E698DC5295B51F /* Pods_JASS_JASSUITests.framework in Frameworks */,
+				047B1AEDB7F199DD1BA48CE3 /* Pods_JASS_JASSUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,9 +209,9 @@
 			isa = PBXGroup;
 			children = (
 				4EF0BE252BCD2D750076074E /* GooglePlaces.xcframework */,
-				E8B4E8DCF4D2127BF8BB476F /* Pods_JASS.framework */,
-				A443FE70FCA6FD95B0FAD66A /* Pods_JASS_JASSUITests.framework */,
-				233BF59C04B16159286444DA /* Pods_JASSTests.framework */,
+				3F31A84395136004AA0890E5 /* Pods_JASS.framework */,
+				80C4746D5A3A954984A69E3B /* Pods_JASS_JASSUITests.framework */,
+				F3F6E8ED92E38F36F0BE2CCC /* Pods_JASSTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -267,9 +238,9 @@
 		4E7CB9642C0F3D5D00F5F3D7 /* Application */ = {
 			isa = PBXGroup;
 			children = (
-				4EF931392B1C913000E5794B /* Info.plist */,
 				4EF9312D2B1C912E00E5794B /* SceneDelegate.swift */,
 				4EF9312B2B1C912E00E5794B /* AppDelegate.swift */,
+				4E6A66272C52275C00AFAC13 /* Secrets.xcconfig */,
 				4EF931362B1C913000E5794B /* LaunchScreen.storyboard */,
 				4E97CA8F2C2D772900ECF24B /* AppCoordinator.swift */,
 				4EF931342B1C913000E5794B /* Assets.xcassets */,
@@ -480,8 +451,6 @@
 		4EF9311F2B1C912E00E5794B = {
 			isa = PBXGroup;
 			children = (
-				4E18DFDE2C50DF29004FEDF8 /* Secrets.xcconfig */,
-				4E18DFDA2C50D09F004FEDF8 /* NanumOenSonJabIDoYeBbeo.ttf */,
 				4EF9312A2B1C912E00E5794B /* JASS */,
 				4EF9318B2B3E9A2C00E5794B /* Service */,
 				4EA179CD2B5BB234006A1D51 /* Utils */,
@@ -508,6 +477,7 @@
 		4EF9312A2B1C912E00E5794B /* JASS */ = {
 			isa = PBXGroup;
 			children = (
+				4EF931392B1C913000E5794B /* Info.plist */,
 				4E7CB9642C0F3D5D00F5F3D7 /* Application */,
 				4E7CB9672C0F3D8700F5F3D7 /* Presentation */,
 			);
@@ -566,12 +536,12 @@
 		CBCD7C11E863260F62E1B3DA /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				1C74AD347A026648AAAEF905 /* Pods-JASS.debug.xcconfig */,
-				1594BFCDD21C8D31FFE1A929 /* Pods-JASS.release.xcconfig */,
-				593AB7EB27EB748C2C1C6986 /* Pods-JASS-JASSUITests.debug.xcconfig */,
-				5D67473D39348A02FE47E7CD /* Pods-JASS-JASSUITests.release.xcconfig */,
-				68F54845682E30DC664DBC5A /* Pods-JASSTests.debug.xcconfig */,
-				8D43031FBF0739BC1CA09A6D /* Pods-JASSTests.release.xcconfig */,
+				D104361BC457581D1707373B /* Pods-JASS.debug.xcconfig */,
+				5DEC2DFB308DC7862E7B46BB /* Pods-JASS.release.xcconfig */,
+				22D74A1FA43DB2FE96C1141F /* Pods-JASS-JASSUITests.debug.xcconfig */,
+				A968EECEA044EA67CD1B2383 /* Pods-JASS-JASSUITests.release.xcconfig */,
+				2A8D90F626A8157FF9E084F5 /* Pods-JASSTests.debug.xcconfig */,
+				1CA0108333D4CA9CC989071C /* Pods-JASSTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -583,32 +553,18 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4EF931522B1C913000E5794B /* Build configuration list for PBXNativeTarget "JASS" */;
 			buildPhases = (
-				444A17DAFD35C8804730658B /* [CP] Check Pods Manifest.lock */,
+				79FBDAAD1A42A3D67CB0D1E2 /* [CP] Check Pods Manifest.lock */,
 				4EF931242B1C912E00E5794B /* Sources */,
 				4EF931252B1C912E00E5794B /* Frameworks */,
 				4EF931262B1C912E00E5794B /* Resources */,
-				284952ECFEC490B7201BDBF9 /* [CP] Copy Pods Resources */,
+				AD5910FE8FA183B5C7D1E053 /* [CP] Embed Pods Frameworks */,
+				8E96EC2CDAB1F772BADB49A9 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = JASS;
-			packageProductDependencies = (
-				4EF931642B218B3800E5794B /* SnapKit */,
-				4EF931752B294E3700E5794B /* Realm */,
-				4EF931772B294E3700E5794B /* RealmSwift */,
-				4EF0BE212BCCE6350076074E /* Then */,
-				4E9966C82BE12858002E3763 /* SDWebImage */,
-				4E9966CB2BE12CB1002E3763 /* Kingfisher */,
-				4EDB89882BEAA6C0001C558E /* Toast */,
-				4E7CB96A2C10139E00F5F3D7 /* RxCocoa */,
-				4E7CB96C2C10139E00F5F3D7 /* RxRelay */,
-				4E7CB96E2C10139E00F5F3D7 /* RxSwift */,
-				4E7CB9712C11AA9700F5F3D7 /* Moya */,
-				4E7CB9732C11AA9700F5F3D7 /* RxMoya */,
-				4E8A694C2C32B828007DDBC1 /* KakaoMapsSDK-SPM */,
-			);
 			productName = JASS;
 			productReference = 4EF931282B1C912E00E5794B /* JASS.app */;
 			productType = "com.apple.product-type.application";
@@ -617,7 +573,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4EF931552B1C913000E5794B /* Build configuration list for PBXNativeTarget "JASSTests" */;
 			buildPhases = (
-				285DB342972B91460476BC8A /* [CP] Check Pods Manifest.lock */,
+				6A6A427D599EF2CA74CEE440 /* [CP] Check Pods Manifest.lock */,
 				4EF9313A2B1C913000E5794B /* Sources */,
 				4EF9313B2B1C913000E5794B /* Frameworks */,
 				4EF9313C2B1C913000E5794B /* Resources */,
@@ -636,11 +592,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4EF931582B1C913000E5794B /* Build configuration list for PBXNativeTarget "JASSUITests" */;
 			buildPhases = (
-				7B9049E837126040963F6022 /* [CP] Check Pods Manifest.lock */,
+				D65813574651F273BC877183 /* [CP] Check Pods Manifest.lock */,
 				4EF931442B1C913000E5794B /* Sources */,
 				4EF931452B1C913000E5794B /* Frameworks */,
 				4EF931462B1C913000E5794B /* Resources */,
-				3C3B9E5F84FF979B8D044A32 /* [CP] Copy Pods Resources */,
+				AA52C3D4A91F885CEE3F180A /* [CP] Embed Pods Frameworks */,
+				A79254FB78D63B6AF10AB923 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -684,17 +641,6 @@
 				Base,
 			);
 			mainGroup = 4EF9311F2B1C912E00E5794B;
-			packageReferences = (
-				4EF931632B218B3800E5794B /* XCRemoteSwiftPackageReference "SnapKit" */,
-				4EF931742B294DE900E5794B /* XCRemoteSwiftPackageReference "realm-swift" */,
-				4EF0BE202BCCE6350076074E /* XCRemoteSwiftPackageReference "Then" */,
-				4E9966C72BE12857002E3763 /* XCRemoteSwiftPackageReference "SDWebImage" */,
-				4E9966CA2BE12CB1002E3763 /* XCRemoteSwiftPackageReference "Kingfisher" */,
-				4EDB89872BEAA6C0001C558E /* XCRemoteSwiftPackageReference "Toast-Swift" */,
-				4E7CB9692C0F81AF00F5F3D7 /* XCRemoteSwiftPackageReference "RxSwift" */,
-				4E7CB9702C11AA9700F5F3D7 /* XCRemoteSwiftPackageReference "Moya" */,
-				4E8A694B2C32B827007DDBC1 /* XCRemoteSwiftPackageReference "KakaoMapsSDK-SPM" */,
-			);
 			productRefGroup = 4EF931292B1C912E00E5794B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -712,10 +658,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4EF931382B1C913000E5794B /* LaunchScreen.storyboard in Resources */,
-				4E18DFDF2C50DF29004FEDF8 /* Secrets.xcconfig in Resources */,
-				4E18DFDB2C50D09F004FEDF8 /* NanumOenSonJabIDoYeBbeo.ttf in Resources */,
-				4E18DFE02C50E063004FEDF8 /* Info.plist in Resources */,
 				4EF931352B1C913000E5794B /* Assets.xcassets in Resources */,
+				4E67EEC62C524FF700582B7E /* Secrets.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -736,24 +680,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		284952ECFEC490B7201BDBF9 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		285DB342972B91460476BC8A /* [CP] Check Pods Manifest.lock */ = {
+		6A6A427D599EF2CA74CEE440 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -775,24 +702,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		3C3B9E5F84FF979B8D044A32 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		444A17DAFD35C8804730658B /* [CP] Check Pods Manifest.lock */ = {
+		79FBDAAD1A42A3D67CB0D1E2 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -814,7 +724,75 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7B9049E837126040963F6022 /* [CP] Check Pods Manifest.lock */ = {
+		8E96EC2CDAB1F772BADB49A9 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A79254FB78D63B6AF10AB923 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AA52C3D4A91F885CEE3F180A /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JASS-JASSUITests/Pods-JASS-JASSUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AD5910FE8FA183B5C7D1E053 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JASS/Pods-JASS-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D65813574651F273BC877183 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -952,6 +930,7 @@
 /* Begin XCBuildConfiguration section */
 		4EF931502B1C913000E5794B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4E6A66272C52275C00AFAC13 /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -1015,6 +994,7 @@
 		};
 		4EF931512B1C913000E5794B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4E6A66272C52275C00AFAC13 /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -1071,7 +1051,7 @@
 		};
 		4EF931532B1C913000E5794B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1C74AD347A026648AAAEF905 /* Pods-JASS.debug.xcconfig */;
+			baseConfigurationReference = D104361BC457581D1707373B /* Pods-JASS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1079,7 +1059,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9A69549U7C;
 				GENERATE_INFOPLIST_FILE = YES;
-        INFOPLIST_FILE = "$(SRCROOT)/JASS/Application/Info.plist";
+				INFOPLIST_FILE = /Users/ganghoseong/JASS/JASS/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -1102,7 +1082,7 @@
 		};
 		4EF931542B1C913000E5794B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1594BFCDD21C8D31FFE1A929 /* Pods-JASS.release.xcconfig */;
+			baseConfigurationReference = 5DEC2DFB308DC7862E7B46BB /* Pods-JASS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1110,7 +1090,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9A69549U7C;
 				GENERATE_INFOPLIST_FILE = YES;
-        INFOPLIST_FILE = "$(SRCROOT)/JASS/Application/Info.plist";
+				INFOPLIST_FILE = /Users/ganghoseong/JASS/JASS/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -1133,7 +1113,7 @@
 		};
 		4EF931562B1C913000E5794B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 68F54845682E30DC664DBC5A /* Pods-JASSTests.debug.xcconfig */;
+			baseConfigurationReference = 2A8D90F626A8157FF9E084F5 /* Pods-JASSTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1153,7 +1133,7 @@
 		};
 		4EF931572B1C913000E5794B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8D43031FBF0739BC1CA09A6D /* Pods-JASSTests.release.xcconfig */;
+			baseConfigurationReference = 1CA0108333D4CA9CC989071C /* Pods-JASSTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1173,7 +1153,7 @@
 		};
 		4EF931592B1C913000E5794B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 593AB7EB27EB748C2C1C6986 /* Pods-JASS-JASSUITests.debug.xcconfig */;
+			baseConfigurationReference = 22D74A1FA43DB2FE96C1141F /* Pods-JASS-JASSUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CODE_SIGN_STYLE = Automatic;
@@ -1191,7 +1171,7 @@
 		};
 		4EF9315A2B1C913000E5794B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5D67473D39348A02FE47E7CD /* Pods-JASS-JASSUITests.release.xcconfig */;
+			baseConfigurationReference = A968EECEA044EA67CD1B2383 /* Pods-JASS-JASSUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CODE_SIGN_STYLE = Automatic;
@@ -1247,149 +1227,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		4E7CB9692C0F81AF00F5F3D7 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.7.1;
-			};
-		};
-		4E7CB9702C11AA9700F5F3D7 /* XCRemoteSwiftPackageReference "Moya" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Moya/Moya.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 15.0.3;
-			};
-		};
-		4E8A694B2C32B827007DDBC1 /* XCRemoteSwiftPackageReference "KakaoMapsSDK-SPM" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/kakao-mapsSDK/KakaoMapsSDK-SPM";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.10.5;
-			};
-		};
-		4E9966C72BE12857002E3763 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.19.1;
-			};
-		};
-		4E9966CA2BE12CB1002E3763 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 7.11.0;
-			};
-		};
-		4EDB89872BEAA6C0001C558E /* XCRemoteSwiftPackageReference "Toast-Swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/scalessec/Toast-Swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.1;
-			};
-		};
-		4EF0BE202BCCE6350076074E /* XCRemoteSwiftPackageReference "Then" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/devxoul/Then.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
-			};
-		};
-		4EF931632B218B3800E5794B /* XCRemoteSwiftPackageReference "SnapKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SnapKit/SnapKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.6.0;
-			};
-		};
-		4EF931742B294DE900E5794B /* XCRemoteSwiftPackageReference "realm-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		4E7CB96A2C10139E00F5F3D7 /* RxCocoa */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4E7CB9692C0F81AF00F5F3D7 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxCocoa;
-		};
-		4E7CB96C2C10139E00F5F3D7 /* RxRelay */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4E7CB9692C0F81AF00F5F3D7 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxRelay;
-		};
-		4E7CB96E2C10139E00F5F3D7 /* RxSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4E7CB9692C0F81AF00F5F3D7 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxSwift;
-		};
-		4E7CB9712C11AA9700F5F3D7 /* Moya */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4E7CB9702C11AA9700F5F3D7 /* XCRemoteSwiftPackageReference "Moya" */;
-			productName = Moya;
-		};
-		4E7CB9732C11AA9700F5F3D7 /* RxMoya */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4E7CB9702C11AA9700F5F3D7 /* XCRemoteSwiftPackageReference "Moya" */;
-			productName = RxMoya;
-		};
-		4E8A694C2C32B828007DDBC1 /* KakaoMapsSDK-SPM */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4E8A694B2C32B827007DDBC1 /* XCRemoteSwiftPackageReference "KakaoMapsSDK-SPM" */;
-			productName = "KakaoMapsSDK-SPM";
-		};
-		4E9966C82BE12858002E3763 /* SDWebImage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4E9966C72BE12857002E3763 /* XCRemoteSwiftPackageReference "SDWebImage" */;
-			productName = SDWebImage;
-		};
-		4E9966CB2BE12CB1002E3763 /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4E9966CA2BE12CB1002E3763 /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
-		};
-		4EDB89882BEAA6C0001C558E /* Toast */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4EDB89872BEAA6C0001C558E /* XCRemoteSwiftPackageReference "Toast-Swift" */;
-			productName = Toast;
-		};
-		4EF0BE212BCCE6350076074E /* Then */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4EF0BE202BCCE6350076074E /* XCRemoteSwiftPackageReference "Then" */;
-			productName = Then;
-		};
-		4EF931642B218B3800E5794B /* SnapKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4EF931632B218B3800E5794B /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = SnapKit;
-		};
-		4EF931752B294E3700E5794B /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4EF931742B294DE900E5794B /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		4EF931772B294E3700E5794B /* RealmSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4EF931742B294DE900E5794B /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4EF931202B1C912E00E5794B /* Project object */;
 }
