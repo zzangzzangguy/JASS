@@ -18,6 +18,7 @@ target 'JASS' do
   pod 'Kingfisher'
   pod 'SnapKit'
   pod 'Toast'
+  pod 'Moya/RxSwift'
 
   target 'JASSTests' do
     inherit! :search_paths
