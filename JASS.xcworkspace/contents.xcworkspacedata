@@ -2,12 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/ganghoseong/JASS/JASS/Presentation/Controller/Views/Filter/FilterCollectionViewCell.swift">
-   </FileRef>
-   <FileRef
-      location = "group:ViewModelType.swift">
-   </FileRef>
-   <FileRef
       location = "group:JASS.xcodeproj">
    </FileRef>
    <FileRef
