@@ -3,6 +3,7 @@ import UIKit
 import GoogleMaps
 import RxSwift
 //import RxMoya
+import RxCocoa
 import Moya
 
 struct SearchResults: Codable {
