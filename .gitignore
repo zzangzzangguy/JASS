@@ -1,10 +1,5 @@
 # Pods
 Pods/
-Podfile.lock
-*.workspace
-*.xcodeproj
-Secrets.xcconfig
-
 
 # Xcode
 .DS_Store
@@ -22,29 +17,22 @@ xcuserdata/
 *.xccheckout
 *.moved-aside
 *.xcuserstate
+*.hmap
+
+# Secrets
+Secrets.xcconfig
 
 # Swift Package Manager
 .build/
-Secrets.xcconfig
 Package.resolved
-# Xcode automatically generated files
-xcdebugger/
-*.hmap
-
-# CocoaPods
-# Add / remove Pods/ to avoid commit of dependencies
-# Dependencies should be managed via Podfile.lock
-Pods/
 
 # Carthage
 Carthage/Build/
 
 # Fastlane
-# It’s recommended to not store the screenshots in the git repo.
-# Instead, use fastlane to re-generate the screenshots.
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
 
-# Code Injection by AppCode
+# AppCode
 .idea/
