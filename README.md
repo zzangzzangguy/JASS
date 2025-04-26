@@ -52,7 +52,7 @@ JASS는 사용자 주변의 운동 시설을 쉽게 찾고 관리할 수 있는 
 ## 성과
  본래 MVVM 으로만 설계되었던 프로젝트를 Rx Swift , Clean Archtiecture , Coordinator 패턴 도입
 - 코드 모듈화 및 재사용성 70% 향상
-- 앱 크래시 율 50% 감소
+- 앱 크래시 율 감소
 - MVVM에서 MVVM-C 및 Clean Architecture로의 성공적인 마이그레이션
 
 <img src="https://github.com/user-attachments/assets/af2c2702-98b0-45d4-9515-55249b6e3d41" width="200" height="400"/>
