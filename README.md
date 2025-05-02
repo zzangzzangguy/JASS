@@ -67,7 +67,3 @@ JASS는 사용자 주변의 운동 시설을 쉽게 찾고 관리할 수 있는 
 <img src="https://github.com/user-attachments/assets/9eb12968-2558-4174-a3d4-af8cf8fb7e99" width="200" height="400"/>
 
 
-
-## 설치 방법
-
-1. 저장소 클론
